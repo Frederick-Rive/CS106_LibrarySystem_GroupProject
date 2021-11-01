@@ -4,9 +4,21 @@
 #include <QTextStream>
 #include <ctime>
 #include <vector>
+#include <QMessageBox>
+
+int ErrorMessageBox(QString errorName, QString errorText)
+{
+    QMessageBox *error = new QMessageBox;
+    error->setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
+    error->setText(errorName);
+    error->setDetailedText(errorText);
+    error->setModal(true);
+    return error->exec();
+}
 
 class LoanedBook;
-QString *ParseString(int length);
+void ParseString(QString input, QString *output);
+tm *TimeFromQString(QString input);
 
 class Book
 {
@@ -25,13 +37,14 @@ private:
 
         QTextStream out(&bookFile);
 
-        out << isbn << ',' << title << ',' << author << ',' << genre << ',' << pgCount << ',' << dewey << ',' << releaseDate << ',' << isAvailable << '\n';
+        out << isbn << ',' << title << ',' << author << ',' << genre << ',' << pgCount << ',' << dewey << ',' << releaseDate->tm_year << releaseDate->tm_mon << releaseDate->tm_mday << ',' << isAvailable << '\n';
 
+        bookFile.flush();
         bookFile.close();
     }
 
 public:
-    Book(int i, QString t, QString a, QString g, int p, int d, tm *r)
+    Book(int i, QString t, QString a, QString g, int p, int d, tm *r, bool iA = true)
     {
         isbn = i;
         title = t;
@@ -40,7 +53,7 @@ public:
         pgCount = p;
         dewey = d;
         releaseDate = r;
-        isAvailable = true;
+        isAvailable = iA;
         totalBooks++;
         WriteToMemory();
     }
@@ -83,9 +96,8 @@ public:
 class Member : public Account
 {
 private:
-    int index;
+    int index, loanedBooks[5];
     QString email, contactNo;
-    std::vector<int> loanedBooks;
     static int memberCount;
 
     void WriteToMemory ()
@@ -105,17 +117,19 @@ private:
 
         out << '\n';
 
+        memberFile.flush();
         memberFile.close();
     }
 
 public:
-    Member(int i, QString u, QString p, QString e, QString c)
+    Member(int i, QString u, QString p, QString e, QString c, int l[5] = { -1, -1, -1, -1, -1 })
     {
         index = i;
         username = u;
         password = p;
         email = e;
         contactNo = c;
+        loanedBooks = l;
         memberCount++;
         WriteToMemory();
     }
@@ -162,6 +176,7 @@ private:
 
         out << index << ',' << member << ',' << dueDate << '\n';
 
+        loanFile.flush();
         loanFile.close();
     }
 
@@ -194,14 +209,50 @@ public:
                 read = in.readLine();
             }
 
-            QString
-        }
+            QString parsed[8];
+            int isbn, pgCount, dewey;
+            tm *releaseDate;
+            bool isAvailable;
 
+            ParseString(read, &parsed[0]);
+
+            isbn = parsed[0].toInt();
+            pgCount = parsed[4].toInt();
+            dewey = parsed[5].toInt();
+            isAvailable = (parsed[7] == '1') ? true : false;
+            releaseDate = TimeFromQString(parsed[6]);
+
+            return Book(isbn, parsed[1], parsed[2], parsed[3], pgCount, dewey, releaseDate, isAvailable);
+        }
     }
 
     Member GetMember ()
     {
+        QFile memberFile ("databases/members.csv");
 
+        if (memberFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream in (&memberFile);
+
+            QString read;
+            for (int i = 0; i <= book; i++)
+            {
+                read = in.readLine();
+            }
+
+            QString parsed[9];
+            int loaned[5];
+
+            ParseString(read, &parsed[0]);
+
+            loaned[0] = parsed[4].toInt();
+            loaned[1] = parsed[5].toInt();
+            loaned[2] = parsed[6].toInt();
+            loaned[3] = parsed[7].toInt();
+            loaned[4] = parsed[8].toInt();
+
+            return Member(book, parsed[0], parsed[1], parsed[2], parsed[3], loaned);
+        }
     }
 
     bool isOverDue ()
@@ -213,9 +264,54 @@ public:
     }
 };
 
-QString ParseString (int length)
+void ParseString (QString input, QString *output)
 {
+    int i = 0;
 
+    while (input.data()[i] != '\n')
+    {
+        char c = input.data()[i].toLatin1();
+
+        switch(c)
+        {
+        case ',':
+            output++;
+            break;
+        defualt:
+            output->append(c);
+            break;
+        }
+        i++;
+    }
+}
+
+tm *TimeFromQString (QString input)
+{
+    tm *rtrn;
+    QString dates[3];
+
+    for (int i = 0; i < 4; i++)
+    {
+        dates[0].append(input.data()[i]);
+    }
+    for (int i = 4; i < 6; i++)
+    {
+        dates[1].append(input.data()[i]);
+    }
+    for (int i = 6; i < 8; i++)
+    {
+        dates[2].append(input.data()[i]);
+    }
+
+    int y = dates[0].toInt();
+    int m = dates[1].toInt();
+    int d = dates[2].toInt();
+
+    rtrn->tm_year = y;
+    rtrn->tm_mon = m;
+    rtrn->tm_mday = d;
+
+    return rtrn;
 }
 
 MainWindow::MainWindow(QWidget *parent)
