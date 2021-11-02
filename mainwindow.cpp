@@ -277,7 +277,7 @@ void ParseString (QString input, QString *output)
         case ',':
             output++;
             break;
-        defualt:
+        default:
             output->append(c);
             break;
         }
