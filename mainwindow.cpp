@@ -286,7 +286,7 @@ public:
     }
 };
 
-void ParseString (QString input, QString *output)
+void ParseString (QString input, QString *output) //turns the information we get from the file into usable data
 {
     int i = 0;
 
@@ -307,7 +307,7 @@ void ParseString (QString input, QString *output)
     }
 }
 
-QDate QDateFromQString (QString input)
+QDate QDateFromQString (QString input) //turns a QString into a QDate (only use if the qstring is in yyyymmdd format)
 {
     QDate rtrn;
     QString dates[3];
