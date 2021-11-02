@@ -1,5 +1,6 @@
 #include "login.h"
 #include "ui_login.h"
+#include <groupproject.h>
 
 login::login(QWidget *parent) :
     QWidget(parent),

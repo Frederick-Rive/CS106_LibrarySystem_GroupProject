@@ -14,6 +14,7 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
+    groupproject.h \
     login.h \
     mainwindow.h
 
