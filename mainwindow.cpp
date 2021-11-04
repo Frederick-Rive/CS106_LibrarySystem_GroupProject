@@ -1,17 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <login.h>
+#include "login.h"
 #include <librarysystems.h>
+
+static LibSystems::Account *user;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    login *l = new login;
-    l->show();
-    l->setFocus();
 
+    login *log = new login(nullptr, this, user);
+    log->show();
 }
 
 MainWindow::~MainWindow()
