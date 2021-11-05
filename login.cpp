@@ -33,19 +33,31 @@ void login::on_pushButton_clicked()
     {
         if (LibSystems::Admin.CheckPassword(pEntry))
         {
-            QtHelpers::ErrorMessageBox("Success", "You have logged on");
             rtrn = &LibSystems::Admin;
+            QtHelpers::InformationMessageBox("Success", "You have logged on as the Admin");
             main->show();
             this->hide();
         }
         else
         {
-            QtHelpers::ErrorMessageBox("Error", "Incorrect username/password");
+            switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
+            {
+            case QMessageBox::Retry:
+                break;
+            case QMessageBox::Cancel:
+                hide();
+            }
         }
     }
     else
     {
-        QtHelpers::ErrorMessageBox("Error", "Incorrect username/password");
+        switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
+        {
+        case QMessageBox::Retry:
+            break;
+        case QMessageBox::Cancel:
+            hide();
+        }
     }
 }
 

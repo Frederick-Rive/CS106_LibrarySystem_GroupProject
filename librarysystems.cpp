@@ -10,8 +10,18 @@ int QtHelpers::ErrorMessageBox(QString errorName, QString errorText) //maybe hav
 {
     QMessageBox *error = new QMessageBox;
     error->setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
-    error->setText(errorName);
-    error->setDetailedText(errorText);
+    error->setWindowTitle(errorName);
+    error->setText(errorText);
+    error->setModal(true);
+    return error->exec();
+}
+
+int QtHelpers::InformationMessageBox(QString infoName, QString infoText) //maybe have some functions that make basic error messages? idk
+{
+    QMessageBox *error = new QMessageBox;
+    error->setStandardButtons(QMessageBox::Ok);
+    error->setWindowTitle(infoName);
+    error->setText(infoText);
     error->setModal(true);
     return error->exec();
 }
