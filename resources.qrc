@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/resources">
         <file>images/wcl_logo.png</file>
+        <file>images/wcl_logo_wide.png</file>
     </qresource>
 </RCC>

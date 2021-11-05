@@ -11,7 +11,7 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
     ui(new Ui::login)
 {
     ui->setupUi(this);
-    QPixmap logo (":/resources/images/wcl_logo.png");
+    QPixmap logo (":/resources/images/wcl_logo_wide.png");
     ui->logoLabel->setPixmap(logo.scaled(ui->logoLabel->size()));
     this->setWindowTitle("Log In");
 
@@ -33,25 +33,19 @@ void login::on_pushButton_clicked()
     {
         if (LibSystems::Admin.CheckPassword(pEntry))
         {
-            QMessageBox *qMessage = new QMessageBox;
-            qMessage->setText("You Have Logged In As Admin");
-            qMessage->exec();
+            QtHelpers::ErrorMessageBox("Success", "You have logged on");
             rtrn = &LibSystems::Admin;
             main->show();
             this->hide();
         }
         else
         {
-            QMessageBox *qMessage = new QMessageBox;
-            qMessage->setText("Incorrect Password");
-            qMessage->exec();
+            QtHelpers::ErrorMessageBox("Error", "Incorrect username/password");
         }
     }
     else
     {
-        QMessageBox *qMessage = new QMessageBox;
-        qMessage->setText("Incorrect Username");
-        qMessage->exec();
+        QtHelpers::ErrorMessageBox("Error", "Incorrect username/password");
     }
 }
 

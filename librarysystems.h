@@ -7,9 +7,13 @@
 #include <QMessageBox>
 #include <QDate>
 
+/*Declarations of classes, data members, and member functions. Definitions of functions are found within the librarysystems.cpp file.
+ * Including this header file in a cpp file will allow you to use any object / function definied inside.
+ * By putting all of the classes in here, we can use them in all of our cpp files, and therefore all of our windows/widgets. */
+
 namespace LibSystems
 {
-class LoanedBook; //declarations of things
+class LoanedBook; //declaring this once early because of cascading compiler, or whatever its called.
 
 class Book //book class
 {
@@ -32,7 +36,7 @@ public: //member functions
     QDate GetReleaseDate();
     static int Count();
     bool IsAvailable();
-    QString EditBook ();
+    QString Book::EditBook(int i, QString t, QString a, QString g, int p, int d, QDate r);
     void SetAvailable(bool b);
 };
 
@@ -48,6 +52,7 @@ public:
     bool CheckUsername(QString check);
     bool CheckPassword(QString check);
     virtual LoanedBook GetLoanedBook(int index);
+    virtual LoanedBook GetLoanedBook(int index, LoanedBook *ptr);
     virtual void DisplayLoanedBooks();
     virtual void CheckoutBook(int bookIndex);
     virtual void ReturnBook(int loanIndex);
@@ -56,7 +61,7 @@ public:
     virtual QString GetContactNumber();
 };
 
-static Account Admin("username", "password");
+static Account Admin("username", "password"); //declaration of Admin account
 
 class Member : public Account //member class is a child of the account class
 {
@@ -73,6 +78,7 @@ public:
     QString GetContactNumber();
     static int Count();
     LoanedBook GetLoanedBook (int index);
+    LoanedBook GetLoanedBook (int index, LoanedBook *ptr);
     void DisplayLoanedBooks ();
     void CheckoutBook (int bookIndex);
     void ReturnBook (int loanIndex);
@@ -103,11 +109,6 @@ Book *InitialiseBooks ();
 Member *InitialiseMembers();
 LoanedBook *InitialseLoans();
 
-class LibrarySystems
-{
-public:
-    LibrarySystems();
-};
 }
 
 namespace QtHelpers
