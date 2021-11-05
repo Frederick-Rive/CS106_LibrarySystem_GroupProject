@@ -36,7 +36,7 @@ public: //member functions
     QDate GetReleaseDate();
     static int Count();
     bool IsAvailable();
-    QString Book::EditBook(int i, QString t, QString a, QString g, int p, int d, QDate r);
+    QString EditBook(int i, QString t, QString a, QString g, int p, int d, QDate r);
     void SetAvailable(bool b);
 };
 
@@ -115,6 +115,7 @@ namespace QtHelpers
 {
 void ParseString(QString input, QString *output);
 int ErrorMessageBox(QString errorName, QString errorText);
+int InformationMessageBox(QString infoName, QString infoText);
 QDate QDateFromQString (QString input);
 }
 #endif // LIBRARYSYSTEMS_H
