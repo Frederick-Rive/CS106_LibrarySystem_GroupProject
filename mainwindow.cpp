@@ -11,6 +11,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->setWindowTitle("Wellington Central Library");
+
+    QPixmap logo (":/resources/images/wcl_logo.png");
+    ui->logolabel->setPixmap(logo.scaled(ui->logolabel->size()));
+
     login *log = new login(nullptr, this, user);
     log->show();
 }
@@ -18,5 +23,14 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::on_logout_button_clicked()
+{
+    user = nullptr;
+    login *log = new login(nullptr, this, user);
+    log->show();
+    hide();
 }
 
