@@ -19,14 +19,14 @@ class Book //book class
 {
 private: //data members
     int isbn, pgCount, dewey;
-    QString title, author, genre;
+    QString title, author, genre, imgPath;
     bool isAvailable;
     QDate releaseDate;
     static int totalBooks;
 
 public: //member functions
     void WriteToMemory ();
-    Book(int i, QString t, QString a, QString g, int p, int d, QDate r, bool iA = true);
+    Book(int i, QString t, QString a, QString g, QString iP, int p, int d, QDate r, bool iA = true);
     int GetISBN();
     int GetDeweyDecimal();
     QString GetTitle();

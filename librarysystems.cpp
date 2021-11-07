@@ -74,12 +74,13 @@ QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate
     return rtrn;
 }
 
-Book::Book(int i, QString t, QString a, QString g, int p, int d, QDate r, bool iA) //constructor
+Book::Book(int i, QString t, QString a, QString g, QString iP, int p, int d, QDate r, bool iA) //constructor
 {
     isbn = i;
     title = t;
     author = a;
     genre = g;
+    imgPath = iP;
     pgCount = p;
     dewey = d;
     releaseDate = r;
@@ -97,7 +98,7 @@ void Book::WriteToMemory () //writes the book into the database. please be caref
     int y, m, d;
     releaseDate.getDate(&y, &m, &d); //convert the date into 3 ints, that can be written into a file
 
-    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << pgCount << ',' << dewey << ',' << y << m << d << ',' << isAvailable << '\n'; //write the bok data into the file
+    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << imgPath << ',' << pgCount << ',' << dewey << ',' << y << m << d << ',' << isAvailable << '\n'; //write the bok data into the file
 
     bookFile.flush(); //flush the buffer into the file
     bookFile.close(); //close the file
@@ -276,7 +277,7 @@ Book LoanedBook::GetBook () //overloaded getter that creates the book from the f
             read = in.readLine();
         }
 
-        QString parsed[8];
+        QString parsed[9];
         int isbn, pgCount, dewey;
         QDate releaseDate;
         bool isAvailable;
@@ -284,12 +285,12 @@ Book LoanedBook::GetBook () //overloaded getter that creates the book from the f
         QtHelpers::ParseString(read, &parsed[0]);
 
         isbn = parsed[0].toInt();
-        pgCount = parsed[4].toInt();
-        dewey = parsed[5].toInt();
-        isAvailable = (parsed[7] == '1') ? true : false;
-        releaseDate = QtHelpers::QDateFromQString(parsed[6]);
+        pgCount = parsed[5].toInt();
+        dewey = parsed[6].toInt();
+        isAvailable = (parsed[8] == '1') ? true : false;
+        releaseDate = QtHelpers::QDateFromQString(parsed[7]);
 
-        return Book(isbn, parsed[1], parsed[2], parsed[3], pgCount, dewey, releaseDate, isAvailable);
+        return Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable);
     }
 }
 Member LoanedBook::GetMember () //overloaded getter that creates the member from the file information (please do not duplicate members)
@@ -348,7 +349,7 @@ Book *InitialiseBooks()
 
             read = in.readLine();
 
-            QString parsed[8];
+            QString parsed[9];
             int isbn, pgCount, dewey;
             QDate releaseDate;
             bool isAvailable;
@@ -356,12 +357,12 @@ Book *InitialiseBooks()
             QtHelpers::ParseString(read, &parsed[0]);
 
             isbn = parsed[0].toInt();
-            pgCount = parsed[4].toInt();
-            dewey = parsed[5].toInt();
-            isAvailable = (parsed[7] == '1') ? true : false;
-            releaseDate = QtHelpers::QDateFromQString(parsed[6]);
+            pgCount = parsed[5].toInt();
+            dewey = parsed[6].toInt();
+            isAvailable = (parsed[8] == '1') ? true : false;
+            releaseDate = QtHelpers::QDateFromQString(parsed[7]);
 
-            bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], pgCount, dewey, releaseDate, isAvailable));
+            bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable));
         }
         return bookVec[0];
     }
