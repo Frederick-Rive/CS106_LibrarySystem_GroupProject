@@ -18,6 +18,8 @@ public:
 private slots:
     void on_logout_button_clicked();
 
+    void on_addbook_button_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

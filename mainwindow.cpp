@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "login.h"
+#include "addbook.h"
 #include <librarysystems.h>
 
 static LibSystems::Account *user;
@@ -32,5 +33,12 @@ void MainWindow::on_logout_button_clicked()
     login *log = new login(nullptr, this, user);
     log->show();
     hide();
+}
+
+
+void MainWindow::on_addbook_button_clicked()
+{
+    AddBook *add = new AddBook(this);
+    ui->gridLayout->addWidget(add, 4, 1);
 }
 
