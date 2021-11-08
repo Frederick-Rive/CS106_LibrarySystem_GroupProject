@@ -3,7 +3,7 @@
 #include "login.h"
 #include "addbook.h"
 #include <librarysystems.h>
-#include <QScrollArea>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,9 +11,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    bookVector = LibSystems::InitialiseBooks();
-    memberVector = LibSystems::InitialiseMembers();
-    loanVector = LibSystems::InitialseLoans();
+    if (QDir("databases").exists())
+    {
+        //bookVector = LibSystems::InitialiseBooks();
+        memberVector = LibSystems::InitialiseMembers();
+        loanVector = LibSystems::InitialseLoans();
+    }
+    else
+    {
+        QDir().mkdir("databases");
+        QDir().mkdir("databases/covers");
+    }
 
     this->setWindowTitle("Wellington Central Library");
 
@@ -38,14 +46,24 @@ void MainWindow::on_logout_button_clicked()
     hide();
 }
 
-
 void MainWindow::on_addbook_button_clicked()
 {
-    AddBook *add = new AddBook(this);
-    QScrollArea *vScroll = new QScrollArea(this);
-    vScroll->setWidget(add);
-    vScroll->setMinimumSize(840, 470);
-    vScroll->setMaximumSize(840, 470);
-    ui->gridLayout->addWidget(vScroll, 5, 1);
+    activeElement->~QWidget();
+    qScroll->~QScrollArea();
+    activeElement = new AddBook(this, bookVector);
+    qScroll = new QScrollArea(this);
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(840, 470);
+    qScroll->setMaximumSize(840, 470);
+    ui->gridLayout->addWidget(qScroll, 5, 1);
+}
+
+
+void MainWindow::on_viewbook_button_clicked()
+{
+    activeElement->~QWidget();
+    qScroll->~QScrollArea();
+    activeElement = new QWidget;
+    qScroll = new QScrollArea;
 }
 

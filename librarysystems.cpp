@@ -13,17 +13,19 @@ int QtHelpers::ErrorMessageBox(QString errorName, QString errorText) //maybe hav
     error->setWindowTitle(errorName);
     error->setText(errorText);
     error->setModal(true);
+    error->setMinimumSize(100, 80);
     return error->exec();
 }
 
 int QtHelpers::InformationMessageBox(QString infoName, QString infoText) //maybe have some functions that make basic error messages? idk
 {
-    QMessageBox *error = new QMessageBox;
-    error->setStandardButtons(QMessageBox::Ok);
-    error->setWindowTitle(infoName);
-    error->setText(infoText);
-    error->setModal(true);
-    return error->exec();
+    QMessageBox *info = new QMessageBox;
+    info->setStandardButtons(QMessageBox::Ok);
+    info->setWindowTitle(infoName);
+    info->setText(infoText);
+    info->setModal(true);
+    info->setMinimumSize(100, 80);
+    return info->exec();
 }
 
 void QtHelpers::ParseString (QString input, QString *output) //turns the string we get from the file into usable data, stored in a QString array.
@@ -339,7 +341,7 @@ bool LoanedBook::isOverDue () //checks if book is overdue
 */
 
 
-std::vector<Book*> InitialiseBooks()
+std::vector<Book*> LibSystems::InitialiseBooks()
 {
     QFile bookFile ("databases/books.csv");
 
@@ -376,7 +378,7 @@ std::vector<Book*> InitialiseBooks()
     return rtrn;
 }
 
-std::vector<Member*> InitialseMembers()
+std::vector<Member*> LibSystems::InitialiseMembers()
 {
     QFile memberFile ("databases/members.csv");
 
@@ -411,7 +413,7 @@ std::vector<Member*> InitialseMembers()
     return rtrn;
 }
 
-std::vector<LoanedBook*> InitialseLoans()
+std::vector<LoanedBook*> LibSystems::InitialseLoans()
 {
     QFile loanFile ("databases/loans.csv");
 
