@@ -3,14 +3,17 @@
 #include "login.h"
 #include "addbook.h"
 #include <librarysystems.h>
-
-static LibSystems::Account *user;
+#include <QScrollArea>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    bookVector = LibSystems::InitialiseBooks();
+    memberVector = LibSystems::InitialiseMembers();
+    loanVector = LibSystems::InitialseLoans();
 
     this->setWindowTitle("Wellington Central Library");
 
@@ -39,6 +42,10 @@ void MainWindow::on_logout_button_clicked()
 void MainWindow::on_addbook_button_clicked()
 {
     AddBook *add = new AddBook(this);
-    ui->gridLayout->addWidget(add, 4, 1);
+    QScrollArea *vScroll = new QScrollArea(this);
+    vScroll->setWidget(add);
+    vScroll->setMinimumSize(840, 470);
+    vScroll->setMaximumSize(840, 470);
+    ui->gridLayout->addWidget(vScroll, 5, 1);
 }
 

@@ -4,7 +4,7 @@
 #include <librarysystems.h>
 
 static LibSystems::Account *rtrn;
-static QMainWindow *main;
+static QMainWindow *mn;
 
 login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
     QWidget(parent),
@@ -16,7 +16,7 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
     this->setWindowTitle("Log In");
 
     rtrn = acc;
-    main = m;
+    mn = m;
 }
 
 login::~login()
@@ -35,7 +35,7 @@ void login::on_pushButton_clicked()
         {
             rtrn = &LibSystems::Admin;
             QtHelpers::InformationMessageBox("Success", "You have logged on as the Admin");
-            main->show();
+            mn->show();
             this->hide();
         }
         else
@@ -43,6 +43,8 @@ void login::on_pushButton_clicked()
             switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
             {
             case QMessageBox::Retry:
+                ui->username_LineEdit->setText("");
+                ui->password_LineEdit->setText("");
                 break;
             case QMessageBox::Cancel:
                 hide();
@@ -54,6 +56,8 @@ void login::on_pushButton_clicked()
         switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
         {
         case QMessageBox::Retry:
+            ui->username_LineEdit->setText("");
+            ui->password_LineEdit->setText("");
             break;
         case QMessageBox::Cancel:
             hide();
