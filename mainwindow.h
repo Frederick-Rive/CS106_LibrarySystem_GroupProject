@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <librarysystems.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,5 +23,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    LibSystems::Account *user;
+    std::vector<LibSystems::Book*> bookVector;
+    std::vector<LibSystems::Member*> memberVector;
+    std::vector<LibSystems::LoanedBook*> loanVector;
 };
 #endif // MAINWINDOW_H

@@ -28,6 +28,9 @@
      <pointsize>24</pointsize>
     </font>
    </property>
+   <property name="text">
+    <string>username</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="password_LineEdit">
    <property name="geometry">
@@ -43,6 +46,9 @@
      <family>Comic Sans MS</family>
      <pointsize>24</pointsize>
     </font>
+   </property>
+   <property name="text">
+    <string>password</string>
    </property>
    <property name="echoMode">
     <enum>QLineEdit::Password</enum>

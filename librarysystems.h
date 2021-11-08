@@ -105,9 +105,9 @@ public:
     bool isOverDue ();
 };
 
-Book *InitialiseBooks ();
-Member *InitialiseMembers();
-LoanedBook *InitialseLoans();
+std::vector<Book*> InitialiseBooks ();
+std::vector<Member*> InitialiseMembers();
+std::vector<LoanedBook*> InitialseLoans();
 
 }
 

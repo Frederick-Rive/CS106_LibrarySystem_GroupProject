@@ -216,6 +216,8 @@ LoanedBook Member::GetLoanedBook (int index) //getter that writes a new loanedbo
 
         return LoanedBook(l[0], l[1], l[2], date); //create a loanedbook object based on variables gotten from the string, and return it
     }
+
+    return LoanedBook(-1, -1, -1, QDate::currentDate());
 }
 void Member::DisplayLoanedBooks () //this will probably do some widget stuff
 {
@@ -292,6 +294,7 @@ Book LoanedBook::GetBook () //overloaded getter that creates the book from the f
 
         return Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable);
     }
+    return Book(01, "NULL", "NULL", "NULL", ":/resources/images/defaultbookcover.jpg", -1, -1, QDate::currentDate());
 }
 Member LoanedBook::GetMember () //overloaded getter that creates the member from the file information (please do not duplicate members)
 {
@@ -320,6 +323,8 @@ Member LoanedBook::GetMember () //overloaded getter that creates the member from
 
         return Member(member, parsed[0], parsed[1], parsed[2], parsed[3], loaned);
     }
+    int i[5] = {-1, -1, -1, -1, -1};
+    return Member(-1, "NULL", "NULL", "NULL", "NULL", i);
 }
 bool LoanedBook::isOverDue () //checks if book is overdue
 {
@@ -333,7 +338,8 @@ bool LoanedBook::isOverDue () //checks if book is overdue
  * also feel free to overwrite everything, as long as it produces the same result i don't care.
 */
 
-Book *InitialiseBooks()
+
+std::vector<Book*> InitialiseBooks()
 {
     QFile bookFile ("databases/books.csv");
 
@@ -364,12 +370,13 @@ Book *InitialiseBooks()
 
             bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable));
         }
-        return bookVec[0];
+        return bookVec;
     }
-    return nullptr;
+    std::vector<Book*> rtrn;
+    return rtrn;
 }
 
-Member *InitialseMembers()
+std::vector<Member*> InitialseMembers()
 {
     QFile memberFile ("databases/members.csv");
 
@@ -398,12 +405,13 @@ Member *InitialseMembers()
 
             members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], loaned));
         }
-        return members[0];
+        return members;
     }
-    return nullptr;
+    std::vector<Member*> rtrn;
+    return rtrn;
 }
 
-LoanedBook *InitialseLoans()
+std::vector<LoanedBook*> InitialseLoans()
 {
     QFile loanFile ("databases/loans.csv");
 
@@ -430,7 +438,9 @@ LoanedBook *InitialseLoans()
 
             loans.push_back(new LoanedBook(l[0], l[1], l[2], date));
         }
-        return loans[0];
+        return loans;
     }
-    return nullptr;
+    std::vector<LoanedBook*> rtrn;
+    return rtrn;
 }
+

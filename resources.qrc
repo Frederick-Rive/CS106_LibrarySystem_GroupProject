@@ -2,5 +2,6 @@
     <qresource prefix="/resources">
         <file>images/wcl_logo.png</file>
         <file>images/wcl_logo_wide.png</file>
+        <file>images/defaultbookcover.jpg</file>
     </qresource>
 </RCC>
