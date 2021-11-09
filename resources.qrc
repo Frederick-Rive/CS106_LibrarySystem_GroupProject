@@ -3,5 +3,7 @@
         <file>images/wcl_logo.png</file>
         <file>images/wcl_logo_wide.png</file>
         <file>images/defaultbookcover.jpg</file>
+        <file>images/wcl_logo_white.png</file>
+        <file>images/wcl_logo_wide_white.png</file>
     </qresource>
 </RCC>

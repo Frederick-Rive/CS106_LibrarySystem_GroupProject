@@ -13,6 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->setStyleSheet
+            (
+                "QLabel#headerBackground { background-color: #6895e8; }"
+            );
+
     if (QDir("databases").exists())
     {
         bookVector = LibSystems::InitialiseBooks();
@@ -27,11 +32,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setWindowTitle("Wellington Central Library");
 
-    QPixmap logo (":/resources/images/wcl_logo.png");
+    QPixmap logo (":/resources/images/wcl_logo_wide_white.png");
     ui->logolabel->setPixmap(logo.scaled(ui->logolabel->size()));
 
     login *log = new login(nullptr, this, user);
     log->show();
+
+    dropShadow = new QGraphicsDropShadowEffect(this);
+    dropShadow->setOffset(0, 2);
+    dropShadow->setColor(QColor::fromRgb(200, 200, 200));
 }
 
 MainWindow::~MainWindow()
@@ -64,6 +73,7 @@ void MainWindow::on_addbook_button_clicked()
 void MainWindow::on_viewbook_button_clicked()
 {
     ClearActiveArea();
+    qDebug().nospace() << "made it this far";
     QGridLayout *qGrid = new QGridLayout(activeElement);
 
     int row = 0;
@@ -168,4 +178,14 @@ void MainWindow::ClearActiveArea()
     qScroll->~QScrollArea();
     activeElement = new QWidget;
     qScroll = new QScrollArea;
+
+    if (bookVector.size() < LibSystems::Book::Count())
+    {
+        qDebug().nospace() << bookVector.size() << " " << LibSystems::Book::Count();
+        for (int i = LibSystems::Book::Count() - bookVector.size() + 1; i > 0; i--)
+        {
+            LibSystems::Book *book = bookVector[bookVector.size() - 1];
+            bookVector.push_back(book++);
+        }
+    }
 }

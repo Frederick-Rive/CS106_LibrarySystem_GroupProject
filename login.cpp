@@ -11,7 +11,8 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
     ui(new Ui::login)
 {
     ui->setupUi(this);
-    QPixmap logo (":/resources/images/wcl_logo_wide.png");
+
+    QPixmap logo (":/resources/images/wcl_logo.png");
     ui->logoLabel->setPixmap(logo.scaled(ui->logoLabel->size()));
     this->setWindowTitle("Log In");
 
