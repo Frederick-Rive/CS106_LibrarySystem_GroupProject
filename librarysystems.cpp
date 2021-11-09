@@ -39,8 +39,11 @@ void QtHelpers::ParseString (QString input, QString *output) //turns the string 
         switch(c)
         {
         case ',':
+            qDebug().nospace() << *output;
             output++;
             break;
+        case '\u0000':
+            return;
         default:
             output->append(c);
             break;
@@ -53,18 +56,18 @@ QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate
 {
     QDate rtrn;
     QString dates[3];
-
-    for (int i = 0; i < 4; i++)
+    int i = 0;
+    for (char c : input.toStdString())
     {
-        dates[0].append(input.data()[i]);
-    }
-    for (int i = 4; i < 6; i++)
-    {
-        dates[1].append(input.data()[i]);
-    }
-    for (int i = 6; i < 8; i++)
-    {
-        dates[2].append(input.data()[i]);
+        switch(c)
+        {
+        case '/':
+            i++;
+            break;
+        default:
+            dates[i].append(c);
+            break;
+        }
     }
 
     int y = dates[0].toInt();
@@ -76,13 +79,13 @@ QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate
     return rtrn;
 }
 
-Book::Book(int i, QString t, QString a, QString g, QString iP, int p, int d, QDate r, bool iA) //constructor
+Book::Book(int i, QString t, QString a, QString g, QString cP, int p, int d, QDate r, bool iA) //constructor
 {
     isbn = i;
     title = t;
     author = a;
     genre = g;
-    imgPath = iP;
+    coverPath = cP;
     pgCount = p;
     dewey = d;
     releaseDate = r;
@@ -93,14 +96,14 @@ void Book::WriteToMemory () //writes the book into the database. please be caref
 {
     QFile bookFile("databases/books.csv");
 
-    if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Text)) { return; } // !!! add a warning message box !!!
+    if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; } // !!! add a warning message box !!!
 
     QTextStream out(&bookFile);
 
     int y, m, d;
     releaseDate.getDate(&y, &m, &d); //convert the date into 3 ints, that can be written into a file
 
-    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << imgPath << ',' << pgCount << ',' << dewey << ',' << y << m << d << ',' << isAvailable << '\n'; //write the bok data into the file
+    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << '\n'; //write the bok data into the file
 
     bookFile.flush(); //flush the buffer into the file
     bookFile.close(); //close the file
@@ -110,6 +113,8 @@ int Book::GetDeweyDecimal() { return dewey; }
 QString Book::GetTitle() { return title; }
 QString Book::GetAuthor() { return author; }
 QString Book::GetGenre() { return genre; }
+QString Book::GetCoverPath() { return coverPath; }
+QPixmap Book::GetCover() { QPixmap rtrn; rtrn.load(coverPath); return rtrn; }
 int Book::GetPageCount() { return pgCount; }
 QDate Book::GetReleaseDate() { return releaseDate; }
 int Book::Count() { return totalBooks; }
@@ -172,7 +177,7 @@ void Member::WriteToMemory () //write to memory
 {
     QFile memberFile("databases/members.csv");
 
-    if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Text)) { return; } // !!! warning message box !!! also all of these should be opened in append mode but its gonna get replaced so i dont care !!!
+    if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; } // !!! warning message box !!! also all of these should be opened in append mode but its gonna get replaced so i dont care !!!
 
     QTextStream out(&memberFile);
 
@@ -250,14 +255,14 @@ void LoanedBook::WriteToMemory() //writes to memory
 {
     QFile loanFile("databases/loans.csv");
 
-    if (!loanFile.open(QIODevice::WriteOnly | QIODevice::Text)) { return; }
+    if (!loanFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; }
 
     QTextStream out(&loanFile);
 
     int y, m, d;
     dueDate.getDate(&y, &m, &d); //convert date to ints, so it can be written into the file
 
-    out << index << ',' << book << ',' << member << ',' << y << m << d << '\n';
+    out << index << ',' << book << ',' << member << ',' << y << '/' << m<< '/' << d << '\n';
 
     loanFile.flush(); //flush buffer into file
     loanFile.close(); //close
@@ -340,6 +345,7 @@ bool LoanedBook::isOverDue () //checks if book is overdue
  * also feel free to overwrite everything, as long as it produces the same result i don't care.
 */
 
+//out << isbn << ',' << title << ',' << author << ',' << genre << ',' << imgPath << ',' << pgCount << ',' << dewey << ',' << y << m << d << ',' << isAvailable << '\n'; //write the bok data into the file
 
 std::vector<Book*> LibSystems::InitialiseBooks()
 {
@@ -357,6 +363,8 @@ std::vector<Book*> LibSystems::InitialiseBooks()
 
             read = in.readLine();
 
+            qDebug().nospace() << read;
+
             QString parsed[9];
             int isbn, pgCount, dewey;
             QDate releaseDate;
@@ -367,7 +375,7 @@ std::vector<Book*> LibSystems::InitialiseBooks()
             isbn = parsed[0].toInt();
             pgCount = parsed[5].toInt();
             dewey = parsed[6].toInt();
-            isAvailable = (parsed[8] == '1') ? true : false;
+            isAvailable = (parsed[8][0] == '1') ? true : false;
             releaseDate = QtHelpers::QDateFromQString(parsed[7]);
 
             bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable));

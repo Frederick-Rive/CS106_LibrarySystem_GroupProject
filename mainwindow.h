@@ -24,6 +24,14 @@ private slots:
 
     void on_viewbook_button_clicked();
 
+    void on_addmember_button_clicked();
+
+    void on_viewmember_button_clicked();
+
+    void on_overduebooks_button_clicked();
+
+    void on_checkoutbooks_button_clicked();
+
 private:
     Ui::MainWindow *ui;
     LibSystems::Account *user;
@@ -32,5 +40,7 @@ private:
     std::vector<LibSystems::LoanedBook*> loanVector;
     QWidget *activeElement = new QWidget;
     QScrollArea *qScroll = new QScrollArea;
+
+    void ClearActiveArea();
 };
 #endif // MAINWINDOW_H
