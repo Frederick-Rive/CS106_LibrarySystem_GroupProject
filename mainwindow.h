@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <librarysystems.h>
 #include <qscrollarea.h>
+#include <QGraphicsDropShadowEffect>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,6 +41,7 @@ private:
     std::vector<LibSystems::LoanedBook*> loanVector;
     QWidget *activeElement = new QWidget;
     QScrollArea *qScroll = new QScrollArea;
+    QGraphicsDropShadowEffect *dropShadow;
 
     void ClearActiveArea();
 };

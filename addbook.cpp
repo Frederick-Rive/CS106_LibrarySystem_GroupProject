@@ -10,6 +10,12 @@ AddBook::AddBook(QWidget *parent, std::vector<LibSystems::Book*> b) :
 
     bookVec = b;
 
+    this->setStyleSheet
+            (
+                "QLineEdit { border-radius: 6px; border-style: outset; }"
+                "QSpinBox { border-radius: 6px; border-style: outset; }"
+            );
+
     QPixmap defaultCover;
     defaultCover.load(":/resources/images/defaultbookcover.jpg");
     ui->coverlabel->setPixmap(defaultCover.scaled(ui->coverlabel->size()));
