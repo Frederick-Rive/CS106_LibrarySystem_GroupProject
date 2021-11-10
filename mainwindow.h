@@ -41,8 +41,9 @@ private:
     std::vector<LibSystems::LoanedBook*> loanVector;
     QWidget *activeElement = new QWidget;
     QScrollArea *qScroll = new QScrollArea;
-    QGraphicsDropShadowEffect *dropShadow;
+    QPushButton *activeButton = nullptr;
 
     void ClearActiveArea();
+    void SetActiveButton (QPushButton *pressed);
 };
 #endif // MAINWINDOW_H

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "login.h"
 #include "addbook.h"
+#include "bookdisplay.h"
 #include <librarysystems.h>
 #include <QDir>
 #include <QLabel>
@@ -15,7 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setStyleSheet
             (
-                "QLabel#headerBackground { background-color: #6895e8; }"
+                "QWidget#header { background: qlineargradient(x1:0, y1:0, x2:1, y2:0.3, stop:0 #4d7fc9, stop: 0.4 #5687d1 stop:1 #88b5f8) }"
+                "QPushButton#logout_button { border: 1px; border-color: #FFFFFF; border-style: solid; }"
             );
 
     if (QDir("databases").exists())
@@ -35,12 +37,15 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap logo (":/resources/images/wcl_logo_wide_white.png");
     ui->logolabel->setPixmap(logo.scaled(ui->logolabel->size()));
 
+    QLabel *background = new QLabel;
+    QPixmap pixmap;
+    pixmap.load(":/resources/images/background.png");
+    background->setPixmap(pixmap.scaled(1280, 720));
+    activeElement = background;
+    ui->activeLayout->addWidget(activeElement, 1);
+
     login *log = new login(nullptr, this, user);
     log->show();
-
-    dropShadow = new QGraphicsDropShadowEffect(this);
-    dropShadow->setOffset(0, 2);
-    dropShadow->setColor(QColor::fromRgb(200, 200, 200));
 }
 
 MainWindow::~MainWindow()
@@ -60,12 +65,12 @@ void MainWindow::on_logout_button_clicked()
 void MainWindow::on_addbook_button_clicked()
 {
     ClearActiveArea();
+    SetActiveButton(ui->addbook_button);
     activeElement = new AddBook(this, bookVector);
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
     qScroll->setMaximumSize(840, 470);
-    qScroll->setStyleSheet("border: 0px;");
     ui->activeLayout->addWidget(qScroll, 1);
 }
 
@@ -73,6 +78,7 @@ void MainWindow::on_addbook_button_clicked()
 void MainWindow::on_viewbook_button_clicked()
 {
     ClearActiveArea();
+    SetActiveButton(ui->viewbook_button);
     qDebug().nospace() << "made it this far";
     QGridLayout *qGrid = new QGridLayout(activeElement);
 
@@ -82,28 +88,9 @@ void MainWindow::on_viewbook_button_clicked()
     {
         LibSystems::Book *book = bookVector[index];
 
-        QWidget *item = new QWidget(activeElement);
-        QVBoxLayout *itemLayout = new QVBoxLayout(item);
+        BookDisplay *display = new BookDisplay(activeElement, book);
 
-        QLabel *coverLab = new QLabel(item);
-        QLabel *titleLab = new QLabel(item);
-        QLabel *authorLab = new QLabel(item);
-        QLabel *genreLab = new QLabel(item);
-
-        coverLab->setPixmap(book->GetCover().scaled(135, 180));
-        titleLab->setText(book->GetTitle());
-        titleLab->setMaximumSize(140, 20);
-        authorLab->setText(QString("Author: ") + book->GetAuthor());
-        authorLab->setMaximumSize(140, 20);
-        genreLab->setText(QString("Genre: ")+ book->GetGenre());
-        genreLab->setMaximumSize(140, 20);
-
-        itemLayout->addWidget(coverLab, 0);
-        itemLayout->addWidget(titleLab, 1);
-        itemLayout->addWidget(authorLab, 2);
-        itemLayout->addWidget(genreLab, 3);
-
-        qGrid->addWidget(item, row, column);
+        qGrid->addWidget(display, row, column);
 
         column++;
         if (column == 5)
@@ -117,30 +104,9 @@ void MainWindow::on_viewbook_button_clicked()
     {
         for (column; column < 5; column++)
         {
-            QWidget *item = new QWidget(activeElement);
-            QVBoxLayout *itemLayout = new QVBoxLayout(item);
+            BookDisplay *display = new BookDisplay(activeElement);
 
-            QLabel *coverLab = new QLabel(item);
-            QLabel *titleLab = new QLabel(item);
-            QLabel *authorLab = new QLabel(item);
-            QLabel *genreLab = new QLabel(item);
-
-            QPixmap defaultCover;
-            defaultCover.load(":/resources/images/defaultbookcover.jpg");
-            coverLab->setPixmap(defaultCover.scaled(135, 180));
-            titleLab->setText("---");
-            titleLab->setMaximumSize(140, 20);
-            authorLab->setText("---");
-            authorLab->setMaximumSize(140, 20);
-            genreLab->setText("---");
-            genreLab->setMaximumSize(140, 20);
-
-            itemLayout->addWidget(coverLab, 0);
-            itemLayout->addWidget(titleLab, 0);
-            itemLayout->addWidget(authorLab, 0);
-            itemLayout->addWidget(genreLab, 0);
-
-            qGrid->addWidget(item, row, column);
+            qGrid->addWidget(display, row, column);
         }
     }
 
@@ -155,21 +121,25 @@ void MainWindow::on_viewbook_button_clicked()
 void MainWindow::on_addmember_button_clicked()
 {
     ClearActiveArea();
+    SetActiveButton(ui->addmember_button);
 }
 
 void MainWindow::on_viewmember_button_clicked()
 {
     ClearActiveArea();
+    SetActiveButton(ui->viewmember_button);
 }
 
 void MainWindow::on_overduebooks_button_clicked()
 {
     ClearActiveArea();
+    SetActiveButton(ui->overduebooks_button);
 }
 
 void MainWindow::on_checkoutbooks_button_clicked()
 {
     ClearActiveArea();
+    SetActiveButton(ui->checkoutbooks_button);
 }
 
 void MainWindow::ClearActiveArea()
@@ -179,7 +149,7 @@ void MainWindow::ClearActiveArea()
     activeElement = new QWidget;
     qScroll = new QScrollArea;
 
-    if (bookVector.size() < LibSystems::Book::Count())
+    if (bookVector.size() - 1 < LibSystems::Book::Count())
     {
         qDebug().nospace() << bookVector.size() << " " << LibSystems::Book::Count();
         for (int i = LibSystems::Book::Count() - bookVector.size() + 1; i > 0; i--)
@@ -188,4 +158,19 @@ void MainWindow::ClearActiveArea()
             bookVector.push_back(book++);
         }
     }
+}
+
+void MainWindow::SetActiveButton(QPushButton *pressed)
+{
+    if (activeButton != nullptr)
+    {
+        activeButton->setStyleSheet("background-color: rgba(0,0,0,0); color: #FFFFFF; :hover { background-color: #6895e8; }");
+        activeButton->setGraphicsEffect(0);
+    }
+    pressed->setStyleSheet("background-color: #FFFFFF; color: #6895e8; ");
+    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
+    dropShadow->setOffset(0, 2);
+    dropShadow->setColor(QColor::fromRgb(68, 95, 158));
+    pressed->setGraphicsEffect(dropShadow);
+    activeButton = pressed;
 }

@@ -20,6 +20,7 @@ private slots:
     void on_ddSlider_valueChanged(int value);
 
     void on_ddCounter_valueChanged(int arg1);
+
     void on_coverpathSearch_clicked();
 
     void on_saveButton_clicked();

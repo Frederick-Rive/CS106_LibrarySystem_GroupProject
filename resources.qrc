@@ -5,5 +5,6 @@
         <file>images/defaultbookcover.jpg</file>
         <file>images/wcl_logo_white.png</file>
         <file>images/wcl_logo_wide_white.png</file>
+        <file>images/background.png</file>
     </qresource>
 </RCC>
