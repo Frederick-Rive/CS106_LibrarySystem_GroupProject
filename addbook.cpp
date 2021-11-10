@@ -12,8 +12,13 @@ AddBook::AddBook(QWidget *parent, std::vector<LibSystems::Book*> b) :
 
     this->setStyleSheet
             (
+                "QPushButton { background-color: #6895e8; }"
+                "QPushButton:hover { background-color: #5687d1; }"
                 "QLineEdit { border-radius: 6px; border-style: outset; }"
                 "QSpinBox { border-radius: 6px; border-style: outset; }"
+                "QSlider::groove {  }"
+                "QSlider::handle { background-color: #6895e8; border-radius: 2px; border-style: outset; }"
+                "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
 
     QPixmap defaultCover;
@@ -47,7 +52,6 @@ void AddBook::on_coverpathSearch_clicked()
         ui->coverpathEntry->setText(filePath);
     }
 }
-
 
 void AddBook::on_saveButton_clicked()
 {

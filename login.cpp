@@ -12,6 +12,14 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
 {
     ui->setupUi(this);
 
+    this->setStyleSheet
+            (
+                "QPushButton { background-color: #6895e8; }"
+                "QPushButton:hover { background-color: #5784d7; }"
+                "QLabel { font-size: 24px; }"
+                "QLineEdit { border-radius: 20px; border-style: outset; padding-left: 20px; }"
+            );
+
     QPixmap logo (":/resources/images/wcl_logo.png");
     ui->logoLabel->setPixmap(logo.scaled(ui->logoLabel->size()));
     this->setWindowTitle("Log In");
