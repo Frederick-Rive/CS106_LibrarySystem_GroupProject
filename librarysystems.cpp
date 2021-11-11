@@ -158,7 +158,6 @@ QString Account::GetUsername() { return username; }//getters
 QString Account::GetPassword() { return password; }
 bool Account::CheckUsername(QString check) { return (check == username); } //use these to validate login data
 bool Account::CheckPassword(QString check) { return (check == password); }
-LoanedBook Account::GetLoanedBook(int index) { return LoanedBook (-1, -1, -1, QDate::currentDate(), nullptr); } //virtual functions, placeholder definitions
 LoanedBook Account::GetLoanedBook(int index, LoanedBook *ptr) { return LoanedBook (-1, -1, -1, QDate::currentDate(), nullptr); } //this is so we can store the users account as an account pointer
 void Account::DisplayLoanedBooks() { return; }                                                                          //and still use these functions if they are a member
 void Account::CheckoutBook(int bookIndex) { return; }
@@ -166,14 +165,19 @@ void Account::ReturnBook(int loanIndex) { return; }
 int Account::GetIndex() { return -1; }
 QString Account::GetEmail() { return "NULL"; }
 QString Account::GetContactNumber() { return "NULL"; }
+QString Account::GetFirstName() { return "NULL"; }
+QString Account::GetLastName() { return "NULL"; }
+QString Account::GetFullName() { return "NULL"; }
 
-Member::Member(int i, QString u, QString p, QString e, QString c, int l[5], Member *prev) //constructor
+Member::Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, int l[5], Member *prev) //constructor
 {
     index = i;
     username = u;
     password = p;
     email = e;
     contactNo = c;
+    firstName = fN;
+    lastName = lN;
 
     links[0] = prev;
     links[1] = nullptr;
@@ -193,7 +197,7 @@ void Member::WriteToMemory () //write to memory
 
     QTextStream out(&memberFile);
 
-    out << username << ',' << password << ',' << email << ',' << contactNo; //send data to textstream
+    out << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName; //send data to textstream
 
     for (int i : loanedBooks) //add the books the member has loaned to the file
     {
@@ -208,6 +212,13 @@ void Member::WriteToMemory () //write to memory
 int Member::GetIndex() { return index; } //getters
 QString Member::GetEmail() { return email; }
 QString Member::GetContactNumber() { return contactNo; }
+QString Member::GetFirstName() { return firstName; }
+QString Member::GetLastName() { return lastName; }
+QString Member::GetFullName() { return firstName + " " + lastName; }
+Member* Member::Prev() { return links[0]; }
+Member* Member::Next() { return links[1]; }
+void Member::SetPrev(Member *p) { links[0] = p; }
+void Member::SetNext(Member *n) { links[1] = n; }
 int Member::Count() { return totalMembers; }
 LoanedBook Member::GetLoanedBook (int index, LoanedBook *ptr) { return *(ptr + loanedBooks[index]); }
 void Member::DisplayLoanedBooks () //this will probably do some widget stuff
@@ -260,6 +271,10 @@ int LoanedBook::Count() { return totalLoans; }
 QDate LoanedBook::GetDueDate () { return dueDate; }
 Book LoanedBook::GetBook(std::vector<Book> books) { return books[book]; }
 Member LoanedBook::GetMember(std::vector<Member> members) { return members[member]; }
+LoanedBook* LoanedBook::Prev() { return links[0]; }
+LoanedBook* LoanedBook::Next() { return links[1]; }
+void LoanedBook::SetPrev(LoanedBook *p) { links[0] = p; }
+void LoanedBook::SetNext(LoanedBook *n) { links[1] = n; }
 bool LoanedBook::isOverDue () //checks if book is overdue
 {
     QDate current = QDate::currentDate();
@@ -280,7 +295,7 @@ Book* LibSystems::InitialiseBooks()
 
     std::vector<Book*> bookVec;
 
-    if (bookFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (bookFile.open(QIODevice::ReadOnly | QIODevice::Text) && !bookFile.atEnd())
     {
         QTextStream in (&bookFile);
 
@@ -302,7 +317,6 @@ Book* LibSystems::InitialiseBooks()
             dewey = parsed[6].toInt();
             isAvailable = (parsed[8][0] == '1') ? true : false;
             releaseDate = QtHelpers::QDateFromQString(parsed[7]);
-
             if (bookVec.size() == 0)
             {
                 bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, nullptr, isAvailable));
@@ -324,7 +338,7 @@ Member* LibSystems::InitialiseMembers()
 
     std::vector<Member*> members;
 
-    if (memberFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (memberFile.open(QIODevice::ReadOnly | QIODevice::Text) && !memberFile.atEnd())
     {
         QTextStream in (&memberFile);
 
@@ -334,24 +348,24 @@ Member* LibSystems::InitialiseMembers()
 
             read = in.readLine();
 
-            QString parsed[9];
+            QString parsed[11];
             int loaned[5];
 
             QtHelpers::ParseString(read, &parsed[0]);
 
-            loaned[0] = parsed[4].toInt();
-            loaned[1] = parsed[5].toInt();
-            loaned[2] = parsed[6].toInt();
-            loaned[3] = parsed[7].toInt();
-            loaned[4] = parsed[8].toInt();
+            loaned[0] = parsed[6].toInt();
+            loaned[1] = parsed[7].toInt();
+            loaned[2] = parsed[8].toInt();
+            loaned[3] = parsed[9].toInt();
+            loaned[4] = parsed[10].toInt();
 
             if (members.size() == 0)
             {
-                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], loaned, nullptr));
+                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[5], loaned, nullptr));
             }
             else
             {
-                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], loaned, members[members.size() - 1]));
+                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[5], loaned, members[members.size() - 1]));
                 members[members.size() - 2]->SetNext(members[members.size() - 1]);
             }
         }
@@ -366,7 +380,7 @@ LoanedBook* LibSystems::InitialseLoans()
 
     std::vector<LoanedBook*> loans;
 
-    if (loanFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (loanFile.open(QIODevice::ReadOnly | QIODevice::Text) && !loanFile.atEnd())
     {
         QTextStream in (&loanFile);
 

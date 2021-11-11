@@ -2,11 +2,13 @@
 #include "ui_addmember.h"
 
 
-AddMember::AddMember(QWidget *parent) :
+AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember) :
     QWidget(parent),
     ui(new Ui::AddMember)
 {
     ui->setupUi(this);
+
+    member = lastMember;
 
     this->setStyleSheet
             (
@@ -43,7 +45,12 @@ void AddMember::on_showPassword_clicked(bool checked)
 void AddMember::on_pushButton_clicked()
 {
     int i[5] = { -1, -1, -1, -1, -1 };
-    LibSystems::memberVector.push_back(new LibSystems::Member(LibSystems::Member::Count(), ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(), ui->cntctEntry->text(), i));
-    LibSystems::memberVector[LibSystems::Member::Count() - 1]->WriteToMemory();
+    LibSystems::Member *newMember = new LibSystems::Member(LibSystems::Member::Count(), ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(),
+                                                           ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), i, member);
+    newMember->WriteToMemory();
+    if (member != nullptr) { member->SetNext(newMember); }
+    member = newMember;
+
+    QtHelpers::InformationMessageBox("Success", "The new member has been added to the database");
 }
 

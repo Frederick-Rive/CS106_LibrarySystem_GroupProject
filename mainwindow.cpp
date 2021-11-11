@@ -23,9 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (QDir("databases").exists())
     {
-        LibSystems::bookVector = LibSystems::InitialiseBooks();
-        LibSystems::memberVector = LibSystems::InitialiseMembers();
-        LibSystems::loanVector = LibSystems::InitialseLoans();
+        books = LibSystems::InitialiseBooks();
+        members = LibSystems::InitialiseMembers();
+        loans = LibSystems::InitialseLoans();
     }
     else
     {
@@ -65,7 +65,14 @@ void MainWindow::on_addbook_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->addbook_button);
-    activeElement = new AddBook(this);
+
+    LibSystems::Book *last = books;
+
+    while (last != nullptr && last->Next() != nullptr)
+    {
+        last = last->Next();
+    }
+    activeElement = new AddBook(this, last);
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
@@ -82,15 +89,14 @@ void MainWindow::on_viewbook_button_clicked()
 
     int row = 0;
     int column = 0;
+    LibSystems::Book *displayBook = books;
     for (int index = 0; index < LibSystems::Book::Count(); index++)
     {
-        LibSystems::Book *book = LibSystems::bookVector[index];
-
-        BookDisplay *display = new BookDisplay(activeElement, book);
-
-        display->setAttribute(Qt::WA_Hover);
+        BookDisplay *display = new BookDisplay(activeElement, displayBook);
 
         qGrid->addWidget(display, row, column);
+
+        displayBook = displayBook->Next();
 
         column++;
         if (column == 5)
@@ -100,7 +106,7 @@ void MainWindow::on_viewbook_button_clicked()
         }
     }
 
-    if (column < 5)
+    if (column < 5 && column > 0)
     {
         for (column; column < 5; column++)
         {
@@ -121,7 +127,16 @@ void MainWindow::on_addmember_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->addmember_button);
-    activeElement = new AddMember(this);
+
+    LibSystems::Member *last = members;
+    qDebug().nospace() << "bb";
+    while(last != nullptr && last->Next() != nullptr)
+    {
+        qDebug().nospace() << "aa";
+        last = last->Next();
+    }
+
+    activeElement = new AddMember(this, last);
     ui->activeLayout->addWidget(activeElement, 1, Qt::AlignCenter);
 }
 
@@ -145,8 +160,8 @@ void MainWindow::on_checkoutbooks_button_clicked()
 
 void MainWindow::ClearActiveArea()
 {
-    activeElement->~QWidget();
-    qScroll->~QScrollArea();
+    delete activeElement;
+    delete qScroll;
     activeElement = new QWidget;
     qScroll = new QScrollArea;
 }

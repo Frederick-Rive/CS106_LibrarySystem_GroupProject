@@ -13,7 +13,7 @@ class AddMember : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddMember(QWidget *parent);
+    explicit AddMember(QWidget *parent, LibSystems::Member *lastMember);
     ~AddMember();
 
 private slots:
@@ -23,6 +23,7 @@ private slots:
 
 private:
     Ui::AddMember *ui;
+    LibSystems::Member *member;
 };
 
 #endif // ADDMEMBER_H

@@ -59,7 +59,6 @@ public:
     QString GetPassword();
     bool CheckUsername(QString check);
     bool CheckPassword(QString check);
-    virtual LoanedBook GetLoanedBook(int index);
     virtual LoanedBook GetLoanedBook(int index, LoanedBook *ptr);
     virtual void DisplayLoanedBooks();
     virtual void CheckoutBook(int bookIndex);
@@ -67,6 +66,9 @@ public:
     virtual int GetIndex();
     virtual QString GetEmail();
     virtual QString GetContactNumber();
+    virtual QString GetFirstName();
+    virtual QString GetLastName();
+    virtual QString GetFullName();
 };
 
 static Account Admin("username", "password"); //declaration of Admin account
@@ -75,18 +77,20 @@ class Member : public Account //member class is a child of the account class
 {
 private: //data members
     int index, loanedBooks[5]; //loaned books array stores index of loanedbook class
-    QString email, contactNo;
+    QString email, contactNo, firstName, lastName;
     Member* links[2];
     static int totalMembers;
 
 public:
-    Member(int i, QString u, QString p, QString e, QString c, int l[5], Member *prev);
+    Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, int l[5], Member *prev);
     void WriteToMemory ();
     int GetIndex();
     QString GetEmail();
     QString GetContactNumber();
+    QString GetFirstName();
+    QString GetLastName();
+    QString GetFullName();
     static int Count();
-    LoanedBook GetLoanedBook (int index);
     LoanedBook GetLoanedBook (int index, LoanedBook *ptr);
     void DisplayLoanedBooks ();
     void CheckoutBook (int bookIndex);
@@ -114,8 +118,6 @@ public:
     QDate GetDueDate ();
     Book GetBook(std::vector<Book> books);
     Member GetMember(std::vector<Member> members);
-    Book GetBook ();
-    Member GetMember ();
     bool isOverDue ();
     LoanedBook *Prev();
     LoanedBook *Next();

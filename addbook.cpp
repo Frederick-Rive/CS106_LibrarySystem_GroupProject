@@ -2,11 +2,13 @@
 #include "ui_addbook.h"
 #include "QFileDialog"
 
-AddBook::AddBook(QWidget *parent) :
+AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook) :
     QWidget(parent),
     ui(new Ui::AddBook)
 {
     ui->setupUi(this);
+
+    book = lastBook;
 
     this->setStyleSheet
             (
@@ -62,9 +64,12 @@ void AddBook::on_saveButton_clicked()
     QString filePath = QString("databases/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png");
     cover.save(filePath);
 
-    LibSystems::bookVector.push_back(new LibSystems::Book(LibSystems::Book::Count(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
-                                           ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
-    LibSystems::bookVector[LibSystems::Book::Count() - 2]->WriteToMemory();
+    LibSystems::Book *newBook = new LibSystems::Book(LibSystems::Book::Count(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
+                                           ui->pgEntry->value(), ui->ddCounter->value(), releaseDate, book);
+    newBook->WriteToMemory();
+    if (book != nullptr) { book->SetNext(newBook); }
+    book = newBook;
+
     QtHelpers::InformationMessageBox("Success", "The new book has been added to the database");
 }
 
