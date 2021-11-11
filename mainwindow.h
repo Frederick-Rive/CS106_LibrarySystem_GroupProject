@@ -36,6 +36,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
     LibSystems::Account *user;
+    LibSystems::Book *books = nullptr;
+    LibSystems::Member *members = nullptr;
+    LibSystems::LoanedBook *loans = nullptr;
     QWidget *activeElement = new QWidget;
     QScrollArea *qScroll = new QScrollArea;
     QPushButton *activeButton = nullptr;
