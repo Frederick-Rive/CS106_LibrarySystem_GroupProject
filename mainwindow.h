@@ -36,9 +36,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     LibSystems::Account *user;
-    std::vector<LibSystems::Book*> bookVector;
-    std::vector<LibSystems::Member*> memberVector;
-    std::vector<LibSystems::LoanedBook*> loanVector;
     QWidget *activeElement = new QWidget;
     QScrollArea *qScroll = new QScrollArea;
     QPushButton *activeButton = nullptr;

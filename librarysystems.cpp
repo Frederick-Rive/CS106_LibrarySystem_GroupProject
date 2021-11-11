@@ -39,7 +39,6 @@ void QtHelpers::ParseString (QString input, QString *output) //turns the string 
         switch(c)
         {
         case ',':
-            qDebug().nospace() << *output;
             output++;
             break;
         case '\u0000':
@@ -79,17 +78,22 @@ QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate
     return rtrn;
 }
 
-Book::Book(int i, QString t, QString a, QString g, QString cP, int p, int d, QDate r, bool iA) //constructor
+Book::Book(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA) //constructor
 {
     isbn = i;
     title = t;
     author = a;
     genre = g;
     coverPath = cP;
+    blurb = b;
     pgCount = p;
     dewey = d;
     releaseDate = r;
     isAvailable = iA;
+
+    links[0] = prev;
+    links[1] = nullptr;
+
     totalBooks++; //increment up the total number of books
 }
 void Book::WriteToMemory () //writes the book into the database. please be careful not to duplicate books in the database
@@ -103,7 +107,7 @@ void Book::WriteToMemory () //writes the book into the database. please be caref
     int y, m, d;
     releaseDate.getDate(&y, &m, &d); //convert the date into 3 ints, that can be written into a file
 
-    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << '\n'; //write the bok data into the file
+    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << ',' << blurb <<'\n'; //write the bok data into the file
 
     bookFile.flush(); //flush the buffer into the file
     bookFile.close(); //close the file
@@ -115,8 +119,13 @@ QString Book::GetAuthor() { return author; }
 QString Book::GetGenre() { return genre; }
 QString Book::GetCoverPath() { return coverPath; }
 QPixmap Book::GetCover() { QPixmap rtrn; rtrn.load(coverPath); return rtrn; }
+QString Book::GetBlurb() { return blurb; }
 int Book::GetPageCount() { return pgCount; }
 QDate Book::GetReleaseDate() { return releaseDate; }
+Book* Book::Prev() { return links[0]; }
+Book* Book::Next() { return links[1]; }
+void Book::SetPrev(Book *p) { links[0] = p; }
+void Book::SetNext(Book *n) { links[1] = n; }
 int Book::Count() { return totalBooks; }
 bool Book::IsAvailable() { return isAvailable; }
 void Book::SetAvailable(bool b) { isAvailable = b; } //only a setter for this value. All others should only be changed from within the editbook function
@@ -149,8 +158,8 @@ QString Account::GetUsername() { return username; }//getters
 QString Account::GetPassword() { return password; }
 bool Account::CheckUsername(QString check) { return (check == username); } //use these to validate login data
 bool Account::CheckPassword(QString check) { return (check == password); }
-LoanedBook Account::GetLoanedBook(int index) { return LoanedBook (-1, -1, -1, QDate::currentDate()); } //virtual functions, placeholder definitions
-LoanedBook Account::GetLoanedBook(int index, LoanedBook *ptr) { return LoanedBook (-1, -1, -1, QDate::currentDate()); } //this is so we can store the users account as an account pointer
+LoanedBook Account::GetLoanedBook(int index) { return LoanedBook (-1, -1, -1, QDate::currentDate(), nullptr); } //virtual functions, placeholder definitions
+LoanedBook Account::GetLoanedBook(int index, LoanedBook *ptr) { return LoanedBook (-1, -1, -1, QDate::currentDate(), nullptr); } //this is so we can store the users account as an account pointer
 void Account::DisplayLoanedBooks() { return; }                                                                          //and still use these functions if they are a member
 void Account::CheckoutBook(int bookIndex) { return; }
 void Account::ReturnBook(int loanIndex) { return; }
@@ -158,13 +167,16 @@ int Account::GetIndex() { return -1; }
 QString Account::GetEmail() { return "NULL"; }
 QString Account::GetContactNumber() { return "NULL"; }
 
-Member::Member(int i, QString u, QString p, QString e, QString c, int l[5]) //constructor
+Member::Member(int i, QString u, QString p, QString e, QString c, int l[5], Member *prev) //constructor
 {
     index = i;
     username = u;
     password = p;
     email = e;
     contactNo = c;
+
+    links[0] = prev;
+    links[1] = nullptr;
 
     for (int i = 0; i < 5; i++)
     {
@@ -177,7 +189,7 @@ void Member::WriteToMemory () //write to memory
 {
     QFile memberFile("databases/members.csv");
 
-    if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; } // !!! warning message box !!! also all of these should be opened in append mode but its gonna get replaced so i dont care !!!
+    if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; } // !!! warning message box !!!
 
     QTextStream out(&memberFile);
 
@@ -198,34 +210,6 @@ QString Member::GetEmail() { return email; }
 QString Member::GetContactNumber() { return contactNo; }
 int Member::Count() { return totalMembers; }
 LoanedBook Member::GetLoanedBook (int index, LoanedBook *ptr) { return *(ptr + loanedBooks[index]); }
-LoanedBook Member::GetLoanedBook (int index) //getter that writes a new loanedbook object (please do not duplicate loanedbook objects)
-{
-    QFile loanFile ("databases/loans.csv"); //temp file location (no file actually stored there)
-
-    if (loanFile.open(QIODevice::ReadOnly | QIODevice::Text)) //attempt to open the file in readonly mode
-    {
-        QTextStream in (&loanFile); //create textstream and string
-        QString read;
-
-        for (int i = 0; i <= loanedBooks[index]; i++)
-        {
-            read = in.readLine(); //overwrites prev line until you reach the one you want
-        }
-
-        QString parsed[4]; //create an array of QStrings with a length equal to the number of comma-seperated-strings within the read string
-        int l[3]; //create an array of ints equal to the number of ints in the object we are creating
-
-        QtHelpers::ParseString(read, &parsed[0]); //divide the line into strings based on comma placements
-        l[0] = parsed[0].toInt(); //convert the strings that store int values to ints
-        l[1] = parsed[1].toInt();
-        l[2] = parsed[2].toInt();
-        QDate date = QtHelpers::QDateFromQString(parsed[3]); //convert the string that stores a date variable to a qdate
-
-        return LoanedBook(l[0], l[1], l[2], date); //create a loanedbook object based on variables gotten from the string, and return it
-    }
-
-    return LoanedBook(-1, -1, -1, QDate::currentDate());
-}
 void Member::DisplayLoanedBooks () //this will probably do some widget stuff
 {
 
@@ -243,12 +227,16 @@ void Member::EditMember() //who knows
 
 }
 
-LoanedBook::LoanedBook (int i, int b, int m, QDate dd) //constructor
+LoanedBook::LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev) //constructor
 {
     index = i;
     book = b;
     member = m;
     dueDate = dd;
+
+    links[0] = prev;
+    links[1] = nullptr;
+
     totalLoans++;
 }
 void LoanedBook::WriteToMemory() //writes to memory
@@ -272,67 +260,6 @@ int LoanedBook::Count() { return totalLoans; }
 QDate LoanedBook::GetDueDate () { return dueDate; }
 Book LoanedBook::GetBook(std::vector<Book> books) { return books[book]; }
 Member LoanedBook::GetMember(std::vector<Member> members) { return members[member]; }
-Book LoanedBook::GetBook () //overloaded getter that creates the book from the file information (please do not create duplicate books)
-{
-    QFile bookFile ("databases/books.csv");
-
-    if (bookFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream in (&bookFile);
-
-        QString read;
-        for (int i = 0; i <= book; i++)
-        {
-            read = in.readLine();
-        }
-
-        QString parsed[9];
-        int isbn, pgCount, dewey;
-        QDate releaseDate;
-        bool isAvailable;
-
-        QtHelpers::ParseString(read, &parsed[0]);
-
-        isbn = parsed[0].toInt();
-        pgCount = parsed[5].toInt();
-        dewey = parsed[6].toInt();
-        isAvailable = (parsed[8] == '1') ? true : false;
-        releaseDate = QtHelpers::QDateFromQString(parsed[7]);
-
-        return Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable);
-    }
-    return Book(01, "NULL", "NULL", "NULL", ":/resources/images/defaultbookcover.jpg", -1, -1, QDate::currentDate());
-}
-Member LoanedBook::GetMember () //overloaded getter that creates the member from the file information (please do not duplicate members)
-{
-    QFile memberFile ("databases/members.csv");
-
-    if (memberFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream in (&memberFile);
-
-        QString read;
-        for (int i = 0; i <= book; i++)
-        {
-            read = in.readLine();
-        }
-
-        QString parsed[9];
-        int loaned[5];
-
-        QtHelpers::ParseString(read, &parsed[0]);
-
-        loaned[0] = parsed[4].toInt();
-        loaned[1] = parsed[5].toInt();
-        loaned[2] = parsed[6].toInt();
-        loaned[3] = parsed[7].toInt();
-        loaned[4] = parsed[8].toInt();
-
-        return Member(member, parsed[0], parsed[1], parsed[2], parsed[3], loaned);
-    }
-    int i[5] = {-1, -1, -1, -1, -1};
-    return Member(-1, "NULL", "NULL", "NULL", "NULL", i);
-}
 bool LoanedBook::isOverDue () //checks if book is overdue
 {
     QDate current = QDate::currentDate();
@@ -347,7 +274,7 @@ bool LoanedBook::isOverDue () //checks if book is overdue
 
 //out << isbn << ',' << title << ',' << author << ',' << genre << ',' << imgPath << ',' << pgCount << ',' << dewey << ',' << y << m << d << ',' << isAvailable << '\n'; //write the bok data into the file
 
-std::vector<Book*> LibSystems::InitialiseBooks()
+Book* LibSystems::InitialiseBooks()
 {
     QFile bookFile ("databases/books.csv");
 
@@ -363,9 +290,7 @@ std::vector<Book*> LibSystems::InitialiseBooks()
 
             read = in.readLine();
 
-            qDebug().nospace() << read;
-
-            QString parsed[9];
+            QString parsed[10];
             int isbn, pgCount, dewey;
             QDate releaseDate;
             bool isAvailable;
@@ -378,15 +303,22 @@ std::vector<Book*> LibSystems::InitialiseBooks()
             isAvailable = (parsed[8][0] == '1') ? true : false;
             releaseDate = QtHelpers::QDateFromQString(parsed[7]);
 
-            bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], pgCount, dewey, releaseDate, isAvailable));
+            if (bookVec.size() == 0)
+            {
+                bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, nullptr, isAvailable));
+            }
+            else
+            {
+                bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, bookVec[bookVec.size() - 1], isAvailable));
+                bookVec[bookVec.size() - 2]->SetNext(bookVec[bookVec.size() - 1]);
+            }
         }
-        return bookVec;
+        return bookVec[0];
     }
-    std::vector<Book*> rtrn;
-    return rtrn;
+    return nullptr;
 }
 
-std::vector<Member*> LibSystems::InitialiseMembers()
+Member* LibSystems::InitialiseMembers()
 {
     QFile memberFile ("databases/members.csv");
 
@@ -413,15 +345,22 @@ std::vector<Member*> LibSystems::InitialiseMembers()
             loaned[3] = parsed[7].toInt();
             loaned[4] = parsed[8].toInt();
 
-            members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], loaned));
+            if (members.size() == 0)
+            {
+                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], loaned, nullptr));
+            }
+            else
+            {
+                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], loaned, members[members.size() - 1]));
+                members[members.size() - 2]->SetNext(members[members.size() - 1]);
+            }
         }
-        return members;
+        return members[0];
     }
-    std::vector<Member*> rtrn;
-    return rtrn;
+    return nullptr;
 }
 
-std::vector<LoanedBook*> LibSystems::InitialseLoans()
+LoanedBook* LibSystems::InitialseLoans()
 {
     QFile loanFile ("databases/loans.csv");
 
@@ -446,11 +385,18 @@ std::vector<LoanedBook*> LibSystems::InitialseLoans()
             l[2] = parsed[2].toInt();
             QDate date = QtHelpers::QDateFromQString(parsed[3]);
 
-            loans.push_back(new LoanedBook(l[0], l[1], l[2], date));
+            if (loans.size() == 0)
+            {
+                loans.push_back(new LoanedBook(l[0], l[1], l[2], date, nullptr));
+            }
+            else
+            {
+                loans.push_back(new LoanedBook(l[0], l[1], l[2], date, loans[loans.size() - 1]));
+                loans[loans.size() - 2]->SetNext(loans[loans.size() - 1]);
+            }
         }
-        return loans;
+        return loans[0];
     }
-    std::vector<LoanedBook*> rtrn;
-    return rtrn;
+    return nullptr;
 }
 

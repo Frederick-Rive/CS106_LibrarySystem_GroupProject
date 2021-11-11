@@ -13,7 +13,7 @@ class AddBook : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddBook(QWidget *parent, std::vector<LibSystems::Book*> b);
+    explicit AddBook(QWidget *parent);
     ~AddBook();
 
 private slots:
@@ -27,7 +27,6 @@ private slots:
 
 private:
     Ui::AddBook *ui;
-    std::vector<LibSystems::Book*> bookVec;
 };
 
 #endif // ADDBOOK_H
