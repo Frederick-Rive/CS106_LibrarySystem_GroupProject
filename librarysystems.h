@@ -19,14 +19,15 @@ class Book //book class
 {
 private: //data members
     int isbn, pgCount, dewey;
-    QString title, author, genre, coverPath;
+    QString title, author, genre, coverPath, blurb;
     bool isAvailable;
     QDate releaseDate;
     static int totalBooks;
+    Book* links[2];
 
 public: //member functions
     void WriteToMemory ();
-    Book(int i, QString t, QString a, QString g, QString cP, int p, int d, QDate r, bool iA = true);
+    Book(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA = true);
     int GetISBN();
     int GetDeweyDecimal();
     QString GetTitle();
@@ -34,8 +35,13 @@ public: //member functions
     QString GetGenre();
     QString GetCoverPath();
     QPixmap GetCover();
+    QString GetBlurb();
     int GetPageCount();
     QDate GetReleaseDate();
+    Book *Prev();
+    Book *Next();
+    void SetPrev(Book* p);
+    void SetNext(Book* n);
     static int Count();
     bool IsAvailable();
     QString EditBook(int i, QString t, QString a, QString g, int p, int d, QDate r);
@@ -70,10 +76,11 @@ class Member : public Account //member class is a child of the account class
 private: //data members
     int index, loanedBooks[5]; //loaned books array stores index of loanedbook class
     QString email, contactNo;
+    Member* links[2];
     static int totalMembers;
 
 public:
-    Member(int i, QString u, QString p, QString e, QString c, int l[5]);
+    Member(int i, QString u, QString p, QString e, QString c, int l[5], Member *prev);
     void WriteToMemory ();
     int GetIndex();
     QString GetEmail();
@@ -84,6 +91,10 @@ public:
     void DisplayLoanedBooks ();
     void CheckoutBook (int bookIndex);
     void ReturnBook (int loanIndex);
+    Member *Prev();
+    Member *Next();
+    void SetPrev(Member* p);
+    void SetNext(Member* n);
     void EditMember();
 };
 
@@ -92,10 +103,11 @@ class LoanedBook //loanedbook class contains the index of a book and the member 
 private: //data members
     int index, book, member;
     QDate dueDate;
+    LoanedBook *links[2];
     static int totalLoans;
 
 public:
-    LoanedBook (int i, int b, int m, QDate dd);
+    LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev);
     void WriteToMemory();
     int GetIndex();
     static int Count();
@@ -105,12 +117,15 @@ public:
     Book GetBook ();
     Member GetMember ();
     bool isOverDue ();
+    LoanedBook *Prev();
+    LoanedBook *Next();
+    void SetPrev(LoanedBook* p);
+    void SetNext(LoanedBook* n);
 };
 
-std::vector<Book*> InitialiseBooks ();
-std::vector<Member*> InitialiseMembers();
-std::vector<LoanedBook*> InitialseLoans();
-
+Book* InitialiseBooks ();
+Member* InitialiseMembers();
+LoanedBook* InitialseLoans();
 }
 
 namespace QtHelpers

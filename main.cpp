@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     a.setStyleSheet
             (
                 "QPushButton { border-radius: 15px; border-style: outset; color: #FFFFFF; background-color: rgba(0,0,0,0); font-size: 16px;}"
-                "QPushButton:hover:!pressed { background-color: #6895e8; }"
+                "QPushButton:hover:!pressed { background-color: #38588c; }"
                 "QPushButton:pressed { background-color: #FFFFFF; color: #6895e8; }"
                 "QPushButton#logout_button { border-color: #000000; }"
                 "QLineEdit { border-radius: 15px; border-style: outset; }"

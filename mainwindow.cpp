@@ -3,6 +3,7 @@
 #include "login.h"
 #include "addbook.h"
 #include "bookdisplay.h"
+#include "addmember.h"
 #include <librarysystems.h>
 #include <QDir>
 #include <QLabel>
@@ -22,9 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (QDir("databases").exists())
     {
-        bookVector = LibSystems::InitialiseBooks();
-        memberVector = LibSystems::InitialiseMembers();
-        loanVector = LibSystems::InitialseLoans();
+        LibSystems::bookVector = LibSystems::InitialiseBooks();
+        LibSystems::memberVector = LibSystems::InitialiseMembers();
+        LibSystems::loanVector = LibSystems::InitialseLoans();
     }
     else
     {
@@ -37,12 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap logo (":/resources/images/wcl_logo_wide_white.png");
     ui->logolabel->setPixmap(logo.scaled(ui->logolabel->size()));
 
-    QLabel *background = new QLabel;
     QPixmap pixmap;
     pixmap.load(":/resources/images/background.png");
-    background->setPixmap(pixmap.scaled(1280, 720));
-    activeElement = background;
-    ui->activeLayout->addWidget(activeElement, 1);
+    ui->background->setPixmap(pixmap.scaled(1280, 730));
+    activeElement = ui->background;
 
     login *log = new login(nullptr, this, user);
     log->show();
@@ -66,7 +65,7 @@ void MainWindow::on_addbook_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->addbook_button);
-    activeElement = new AddBook(this, bookVector);
+    activeElement = new AddBook(this);
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
@@ -79,16 +78,17 @@ void MainWindow::on_viewbook_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->viewbook_button);
-    qDebug().nospace() << "made it this far";
     QGridLayout *qGrid = new QGridLayout(activeElement);
 
     int row = 0;
     int column = 0;
     for (int index = 0; index < LibSystems::Book::Count(); index++)
     {
-        LibSystems::Book *book = bookVector[index];
+        LibSystems::Book *book = LibSystems::bookVector[index];
 
         BookDisplay *display = new BookDisplay(activeElement, book);
+
+        display->setAttribute(Qt::WA_Hover);
 
         qGrid->addWidget(display, row, column);
 
@@ -113,8 +113,7 @@ void MainWindow::on_viewbook_button_clicked()
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 450);
-    qScroll->setMaximumSize(840, 450);
-    qScroll->setStyleSheet("border: 0px;");
+    qScroll->setMaximumSize(1150, 450);
     ui->activeLayout->addWidget(qScroll, 1);
 }
 
@@ -122,6 +121,8 @@ void MainWindow::on_addmember_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->addmember_button);
+    activeElement = new AddMember(this);
+    ui->activeLayout->addWidget(activeElement, 1, Qt::AlignCenter);
 }
 
 void MainWindow::on_viewmember_button_clicked()
@@ -148,23 +149,13 @@ void MainWindow::ClearActiveArea()
     qScroll->~QScrollArea();
     activeElement = new QWidget;
     qScroll = new QScrollArea;
-
-    if (bookVector.size() - 1 < LibSystems::Book::Count())
-    {
-        qDebug().nospace() << bookVector.size() << " " << LibSystems::Book::Count();
-        for (int i = LibSystems::Book::Count() - bookVector.size() + 1; i > 0; i--)
-        {
-            LibSystems::Book *book = bookVector[bookVector.size() - 1];
-            bookVector.push_back(book++);
-        }
-    }
 }
 
 void MainWindow::SetActiveButton(QPushButton *pressed)
 {
     if (activeButton != nullptr)
     {
-        activeButton->setStyleSheet("background-color: rgba(0,0,0,0); color: #FFFFFF; :hover { background-color: #6895e8; }");
+        activeButton->setStyleSheet("");
         activeButton->setGraphicsEffect(0);
     }
     pressed->setStyleSheet("background-color: #FFFFFF; color: #6895e8; ");

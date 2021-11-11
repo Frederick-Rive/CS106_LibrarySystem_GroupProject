@@ -2,13 +2,11 @@
 #include "ui_addbook.h"
 #include "QFileDialog"
 
-AddBook::AddBook(QWidget *parent, std::vector<LibSystems::Book*> b) :
+AddBook::AddBook(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AddBook)
 {
     ui->setupUi(this);
-
-    bookVec = b;
 
     this->setStyleSheet
             (
@@ -17,6 +15,7 @@ AddBook::AddBook(QWidget *parent, std::vector<LibSystems::Book*> b) :
                 "QLineEdit { border-radius: 6px; border-style: outset; }"
                 "QSpinBox { border-radius: 6px; border-style: outset; }"
                 "QSlider::groove {  }"
+                "QTextEdit { border-radius: 2px; border-style: outset; border: 1px; }"
                 "QSlider::handle { background-color: #6895e8; border-radius: 2px; border-style: outset; }"
                 "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
@@ -63,8 +62,9 @@ void AddBook::on_saveButton_clicked()
     QString filePath = QString("databases/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png");
     cover.save(filePath);
 
-    bookVec.push_back(new LibSystems::Book(LibSystems::Book::Count(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath,
+    LibSystems::bookVector.push_back(new LibSystems::Book(LibSystems::Book::Count(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
                                            ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
-    bookVec[LibSystems::Book::Count() - 1]->WriteToMemory();
+    LibSystems::bookVector[LibSystems::Book::Count() - 2]->WriteToMemory();
+    QtHelpers::InformationMessageBox("Success", "The new book has been added to the database");
 }
 
