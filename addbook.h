@@ -13,7 +13,7 @@ class AddBook : public QWidget
     Q_OBJECT
 
 public:
-    explicit AddBook(QWidget *parent, LibSystems::Book *lastBook);
+    explicit AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *editBook = nullptr);
     ~AddBook();
 
 private slots:
@@ -28,6 +28,7 @@ private slots:
 private:
     Ui::AddBook *ui;
     LibSystems::Book *book;
+    LibSystems::Book *edit;
 };
 
 #endif // ADDBOOK_H

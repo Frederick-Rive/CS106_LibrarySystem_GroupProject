@@ -96,6 +96,22 @@ Book::Book(int i, QString t, QString a, QString g, QString cP, QString b, int p,
 
     totalBooks++; //increment up the total number of books
 }
+Book::Book() //default constructor. Use only for the head of the linked list
+{
+    isbn = -1;
+    title = "";
+    author = "";
+    genre = "";
+    coverPath = "";
+    blurb = "";
+    pgCount = -1;
+    dewey = -1;
+    releaseDate = QDate::currentDate();
+    isAvailable = false;
+
+    links[0] = nullptr;
+    links[1] = nullptr;
+}
 void Book::WriteToMemory () //writes the book into the database. please be careful not to duplicate books in the database
 {
     QFile bookFile("databases/books.csv");
@@ -129,12 +145,13 @@ void Book::SetNext(Book *n) { links[1] = n; }
 int Book::Count() { return totalBooks; }
 bool Book::IsAvailable() { return isAvailable; }
 void Book::SetAvailable(bool b) { isAvailable = b; } //only a setter for this value. All others should only be changed from within the editbook function
-QString Book::EditBook(int i, QString t, QString a, QString g, int p, int d, QDate r) //operates basically as a new constructor, except it returns a string ready to be inserted into a file
+QString Book::EditBook(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r) //operates basically as a new constructor, except it returns a string ready to be inserted into a file
 {
     isbn = i;
     title = t;
     author = a;
     genre = g;
+    blurb = b;
     pgCount = p;
     dewey = d;
     releaseDate = r;
@@ -188,6 +205,24 @@ Member::Member(int i, QString u, QString p, QString e, QString c, QString fN, QS
     }
 
     totalMembers++;
+}
+Member::Member() //constructor
+{
+    index = -1;
+    username = "";
+    password = "";
+    email = "";
+    contactNo = "";
+    firstName = "";
+    lastName = "";
+
+    links[0] = nullptr;
+    links[1] = nullptr;
+
+    for (int i = 0; i < 5; i++)
+    {
+        loanedBooks[i] = -1; //indexes of loaned books. store as -1 if the user hasnt loaned a book in that slot
+    }
 }
 void Member::WriteToMemory () //write to memory
 {
@@ -249,6 +284,17 @@ LoanedBook::LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev) //const
     links[1] = nullptr;
 
     totalLoans++;
+}
+LoanedBook::LoanedBook () //constructor
+{
+    index = -1;
+    book = -1;
+    member = -1;
+    dueDate = QDate::currentDate();
+
+    links[0] = nullptr;
+    links[1] = nullptr;
+
 }
 void LoanedBook::WriteToMemory() //writes to memory
 {

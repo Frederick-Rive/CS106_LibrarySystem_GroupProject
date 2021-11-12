@@ -13,11 +13,23 @@ class BookDisplay : public QWidget
     Q_OBJECT
 
 public:
-    explicit BookDisplay(QWidget *parent, LibSystems::Book *book = nullptr);
+    explicit BookDisplay(QWidget *parent, LibSystems::Book *b = nullptr);
     ~BookDisplay();
+
+signals:
+    void Edit(LibSystems::Book *book);
+
+private slots:
+    void on_cover_clicked();
+
+    void SendBook();
 
 private:
     Ui::BookDisplay *ui;
+    LibSystems::Book *book;
+
+    bool eventFilter(QObject *obj, QEvent *event);
+
 };
 
 #endif // BOOKDISPLAY_H

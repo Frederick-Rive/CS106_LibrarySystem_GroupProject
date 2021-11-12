@@ -28,6 +28,7 @@ private: //data members
 public: //member functions
     void WriteToMemory ();
     Book(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA = true);
+    Book();
     int GetISBN();
     int GetDeweyDecimal();
     QString GetTitle();
@@ -44,7 +45,7 @@ public: //member functions
     void SetNext(Book* n);
     static int Count();
     bool IsAvailable();
-    QString EditBook(int i, QString t, QString a, QString g, int p, int d, QDate r);
+    QString EditBook(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r);
     void SetAvailable(bool b);
 };
 
@@ -83,6 +84,7 @@ private: //data members
 
 public:
     Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, int l[5], Member *prev);
+    Member();
     void WriteToMemory ();
     int GetIndex();
     QString GetEmail();
@@ -112,6 +114,7 @@ private: //data members
 
 public:
     LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev);
+    LoanedBook();
     void WriteToMemory();
     int GetIndex();
     static int Count();
@@ -138,3 +141,9 @@ int InformationMessageBox(QString infoName, QString infoText);
 QDate QDateFromQString (QString input);
 }
 #endif // LIBRARYSYSTEMS_H
+
+/*
+Q_DECLARE_METATYPE(LibSystems::Book);
+Q_DECLARE_METATYPE(LibSystems::Member);
+Q_DECLARE_METATYPE(LibSystems::LoanedBook);
+*/
