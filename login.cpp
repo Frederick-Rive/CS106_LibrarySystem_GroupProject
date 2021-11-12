@@ -3,10 +3,7 @@
 #include <QMainWindow>
 #include <librarysystems.h>
 
-static LibSystems::Account *rtrn;
-static QMainWindow *mn;
-
-login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
+login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc, LibSystems::Member *memb) :
     QWidget(parent),
     ui(new Ui::login)
 {
@@ -26,6 +23,7 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc) :
 
     rtrn = acc;
     mn = m;
+    members = memb;
 }
 
 login::~login()
@@ -42,35 +40,40 @@ void login::on_pushButton_clicked()
     {
         if (LibSystems::Admin.CheckPassword(pEntry))
         {
-            rtrn = &LibSystems::Admin;
+            *rtrn = LibSystems::Admin;
             QtHelpers::InformationMessageBox("Success", "You have logged on as the Admin");
             mn->show();
             this->hide();
-        }
-        else
-        {
-            switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
-            {
-            case QMessageBox::Retry:
-                ui->username_LineEdit->setText("");
-                ui->password_LineEdit->setText("");
-                break;
-            case QMessageBox::Cancel:
-                hide();
-            }
+            return;
         }
     }
     else
     {
-        switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
+        while (members != nullptr)
         {
-        case QMessageBox::Retry:
-            ui->username_LineEdit->setText("");
-            ui->password_LineEdit->setText("");
-            break;
-        case QMessageBox::Cancel:
-            hide();
+            if (members->CheckUsername(uEntry))
+            {
+                if (members->CheckPassword(pEntry))
+                {
+                    *rtrn = *members;
+                    QtHelpers::InformationMessageBox("Success", "You have logged on as " + members->GetUsername());
+                    mn->show();
+                    this->hide();
+                    return;
+                }
+            }
+            members = members->Next();
         }
+    }
+
+    switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
+    {
+    case QMessageBox::Retry:
+        ui->username_LineEdit->setText("");
+        ui->password_LineEdit->setText("");
+        break;
+    case QMessageBox::Cancel:
+        hide();
     }
 }
 

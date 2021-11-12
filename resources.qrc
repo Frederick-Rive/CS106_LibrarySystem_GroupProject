@@ -6,5 +6,8 @@
         <file>images/wcl_logo_white.png</file>
         <file>images/wcl_logo_wide_white.png</file>
         <file>images/background.png</file>
+        <file>images/instaLogo.jfif</file>
+        <file>images/twitterLogo.png</file>
+        <file>images/facebookLogo.png</file>
     </qresource>
 </RCC>

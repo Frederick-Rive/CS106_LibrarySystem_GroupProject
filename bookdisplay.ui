@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>220</width>
+    <width>180</width>
     <height>382</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>220</width>
+    <width>180</width>
     <height>350</height>
    </size>
   </property>
@@ -39,24 +39,15 @@
     <number>5</number>
    </property>
    <item>
-    <widget class="QLabel" name="cover">
+    <widget class="QPushButton" name="cover">
      <property name="minimumSize">
       <size>
-       <width>220</width>
-       <height>290</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>220</width>
-       <height>290</height>
+       <width>180</width>
+       <height>288</height>
       </size>
      </property>
      <property name="text">
       <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
