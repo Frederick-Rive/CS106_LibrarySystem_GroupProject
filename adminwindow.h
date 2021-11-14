@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef ADMINWINDOW_H
+#define ADMINWINDOW_H
 
 #include <QMainWindow>
 #include <librarysystems.h>
@@ -58,4 +58,4 @@ private:
     void ClearActiveArea();
     void SetActiveButton (QPushButton *pressed);;
 };
-#endif // MAINWINDOW_H
+#endif // ADMINWINDOW_H

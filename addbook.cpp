@@ -22,7 +22,9 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
                 "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
 
-    if (editBook == nullptr)
+    edit = editBook;
+
+    if (edit == nullptr)
     {
         QPixmap defaultCover;
         defaultCover.load(":/resources/images/defaultbookcover.jpg");
@@ -30,11 +32,10 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
     }
     else
     {
-        edit = editBook;
         ui->titleEdit->setText(edit->GetTitle()); ui->authorEdit->setText(edit->GetAuthor()); ui->genreBox->setCurrentText(edit->GetGenre()); ui->ddCounter->setValue(edit->GetDeweyDecimal());
         ui->ddSlider->setValue(edit->GetDeweyDecimal()); ui->dayEntry->setValue(edit->GetReleaseDate().day()); ui->monthEntry->setValue(edit->GetReleaseDate().month());
         ui->yearEntry->setValue(edit->GetReleaseDate().year()); ui->blurbEdit->setText(edit->GetBlurb()); ui->coverpathEntry->setText(edit->GetCoverPath());
-        ui->coverlabel->setPixmap(edit->GetCover()); ui->pgEntry->setValue(edit->GetPageCount());
+        ui->coverlabel->setPixmap(edit->GetCover().scaled(ui->coverlabel->size())); ui->pgEntry->setValue(edit->GetPageCount());
     }
 }
 
@@ -95,6 +96,8 @@ void AddBook::on_saveButton_clicked()
         {
             QTextStream in (&bookFile);
 
+           QString read;
+
             for (int i = 0; i < edit->GetISBN(); i++)
             {
                 QString read;
@@ -111,16 +114,15 @@ void AddBook::on_saveButton_clicked()
             {
                 QPixmap cover;
                 cover.load(ui->coverpathEntry->text());
-                ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png"));
+                ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(edit->GetISBN()) + QString(".png"));
                 cover.save(ui->coverpathEntry->text());
             }
 
             bookVec.push_back(edit->EditBook(edit->GetISBN(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), ui->coverpathEntry->text(), ui->blurbEdit->toPlainText(), ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
 
+            read = in.readLine();
             while (!in.atEnd())
             {
-                QString read;
-
                 read = in.readLine();
 
                 bookVec.push_back(read);
@@ -131,21 +133,46 @@ void AddBook::on_saveButton_clicked()
 
         QFile outFile ("databases/books.csv");
 
-        if (outFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        if (outFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
             QTextStream out(&outFile);
+            qDebug().nospace() << "aa";
 
             for (QString b : bookVec)
             {
-                if (b.length() > 0)
+                qDebug().nospace() << b;
+                if (b.size() > 0)
                 {
                     out << b << '\n';
                 }
             }
         }
 
-        bookFile.flush();
-        bookFile.close();
+        outFile.flush();
+        outFile.close();
+        QtHelpers::InformationMessageBox("Success", "The changes have been saved to the database");
+    }
+}
+
+void AddBook::on_monthEntry_valueChanged(int arg1)
+{
+    switch (arg1)
+    {
+    case 2:
+        if (ui->yearEntry->value() % 4 != 0)
+        {
+            ui->dayEntry->setMaximum(28);
+        }
+        else
+        {
+            ui->dayEntry->setMaximum(29);
+        }
+        break;
+    case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+        ui->dayEntry->setMaximum(31);
+        break;
+    default:
+        ui->dayEntry->setMaximum(30);
     }
 }
 

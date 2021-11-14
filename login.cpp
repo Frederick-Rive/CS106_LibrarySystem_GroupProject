@@ -11,8 +11,9 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc, LibSyste
 
     this->setStyleSheet
             (
-                "QPushButton { background-color: #6895e8; }"
-                "QPushButton:hover { background-color: #5784d7; }"
+                "QPushButton#pushButton { background-color: #6895e8; }"
+                "QPushButton#closeButton { font-size: 60px; color: #6895e8; }"
+                "QPushButton#closeButton:hover { font-size: 65px; background-color: rgba(0,0,0,0); color: #38588c; }"
                 "QLabel { font-size: 24px; }"
                 "QLineEdit { border-radius: 20px; border-style: outset; padding-left: 20px; }"
             );
@@ -20,6 +21,11 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc, LibSyste
     QPixmap logo (":/resources/images/wcl_logo.png");
     ui->logoLabel->setPixmap(logo.scaled(ui->logoLabel->size()));
     this->setWindowTitle("Log In");
+    QPixmap icon;
+    icon.load(":/resources/images/taskbarImg.PNG");
+    this->setWindowIcon(QIcon(icon));
+
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     rtrn = acc;
     mn = m;
@@ -75,5 +81,10 @@ void login::on_pushButton_clicked()
     case QMessageBox::Cancel:
         hide();
     }
+}
+
+void login::on_closeButton_clicked()
+{
+    this->hide();
 }
 

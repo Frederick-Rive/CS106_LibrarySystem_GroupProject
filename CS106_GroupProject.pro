@@ -11,26 +11,26 @@ CONFIG += c++11
 SOURCES += \
     addbook.cpp \
     addmember.cpp \
+    adminwindow.cpp \
     bookdisplay.cpp \
     librarysystems.cpp \
     login.cpp \
-    main.cpp \
-    mainwindow.cpp
+    main.cpp
 
 HEADERS += \
     addbook.h \
     addmember.h \
+    adminwindow.h \
     bookdisplay.h \
     librarysystems.h \
-    login.h \
-    mainwindow.h
+    login.h
 
 FORMS += \
     addbook.ui \
     addmember.ui \
+    adminwindow.ui \
     bookdisplay.ui \
-    login.ui \
-    mainwindow.ui
+    login.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

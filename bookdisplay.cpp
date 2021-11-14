@@ -1,7 +1,7 @@
 #include "bookdisplay.h"
 #include "ui_bookdisplay.h"
 #include <QGraphicsDropShadowEffect>
-#include <mainwindow.h>
+#include <adminwindow.h>
 
 BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
     QWidget(parent),
@@ -42,9 +42,14 @@ BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
         ui->cover->setGraphicsEffect(dropShadow);
     }
 
-    this->setStyleSheet("QLabel { color: rgba(0,0,0,0); } QPushButton:hover { background-color: rgba(0,0,0,0); }");
+    ui->title->setStyleSheet("color: rgba(0,0,0,0);");
+    ui->author->setStyleSheet("color: rgba(0,0,0,0);");
+    ui->genre->setStyleSheet("color: rgba(0,0,0,0);");
+    ui->cover->setStyleSheet("background-color: rgba(0,0,0,0);");
 
-    //ui->cover->installEventFilter(this);
+    this->setMouseTracking(true);
+    ui->cover->setAttribute(Qt::WA_Hover);
+    ui->cover->installEventFilter(this);
 
     connect(ui->cover, SIGNAL(clicked()), this, SLOT(SendBook()));
 }
@@ -61,13 +66,19 @@ bool BookDisplay::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Enter)
         {
-            this->setStyleSheet("QLabel { color: black; }");
+            ui->title->setStyleSheet("color: black;");
+            ui->author->setStyleSheet("color: black;");
+            ui->genre->setStyleSheet("color: black;");
+            ui->cover->setStyleSheet("background-color: rgba(100,100,100,20);");
         }
         else if (event->type() == QEvent::Leave)
         {
-            this->setStyleSheet("QLabel { color: rgba(0,0,0,0); }");
+            ui->title->setStyleSheet("color: rgba(0,0,0,0);");
+            ui->author->setStyleSheet("color: rgba(0,0,0,0);");
+            ui->genre->setStyleSheet("color: rgba(0,0,0,0);");
+            ui->cover->setStyleSheet("background-color: rgba(0,0,0,0);");
         }
-        return true;
+        return QWidget::eventFilter(obj, event);
     }
     else
     {
@@ -80,8 +91,4 @@ void BookDisplay::SendBook()
     emit Edit(book);
 }
 
-void BookDisplay::on_cover_clicked()
-{
-
-}
 
