@@ -9,5 +9,6 @@
         <file>images/instaLogo.jfif</file>
         <file>images/twitterLogo.png</file>
         <file>images/facebookLogo.png</file>
+        <file>images/taskbarImg.PNG</file>
     </qresource>
 </RCC>

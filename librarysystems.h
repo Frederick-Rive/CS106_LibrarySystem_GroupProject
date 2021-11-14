@@ -41,6 +41,7 @@ public: //member functions
     QDate GetReleaseDate();
     Book *Prev();
     Book *Next();
+    Book *Next(int index);
     void SetPrev(Book* p);
     void SetNext(Book* n);
     static int Count();
@@ -60,7 +61,7 @@ public:
     QString GetPassword();
     bool CheckUsername(QString check);
     bool CheckPassword(QString check);
-    virtual LoanedBook GetLoanedBook(int index, LoanedBook *ptr);
+    virtual int GetLoanedBook(int index);
     virtual void DisplayLoanedBooks();
     virtual void CheckoutBook(int bookIndex);
     virtual void ReturnBook(int loanIndex);
@@ -93,12 +94,13 @@ public:
     QString GetLastName();
     QString GetFullName();
     static int Count();
-    LoanedBook GetLoanedBook (int index, LoanedBook *ptr);
+    int GetLoanedBook (int index);
     void DisplayLoanedBooks ();
     void CheckoutBook (int bookIndex);
     void ReturnBook (int loanIndex);
     Member *Prev();
     Member *Next();
+    Member *Next(int index);
     void SetPrev(Member* p);
     void SetNext(Member* n);
     void EditMember();
@@ -119,11 +121,12 @@ public:
     int GetIndex();
     static int Count();
     QDate GetDueDate ();
-    Book GetBook(std::vector<Book> books);
-    Member GetMember(std::vector<Member> members);
+    Book* GetBook(Book *books);
+    Member* GetMember(Member *members);
     bool isOverDue ();
     LoanedBook *Prev();
     LoanedBook *Next();
+    LoanedBook *Next(int index);
     void SetPrev(LoanedBook* p);
     void SetNext(LoanedBook* n);
 };

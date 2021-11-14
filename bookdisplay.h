@@ -20,8 +20,6 @@ signals:
     void Edit(LibSystems::Book *book);
 
 private slots:
-    void on_cover_clicked();
-
     void SendBook();
 
 private:

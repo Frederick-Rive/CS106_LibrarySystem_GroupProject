@@ -25,6 +25,8 @@ private slots:
 
     void on_saveButton_clicked();
 
+    void on_monthEntry_valueChanged(int arg1);
+
 private:
     Ui::AddBook *ui;
     LibSystems::Book *book;

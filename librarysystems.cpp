@@ -140,6 +140,7 @@ int Book::GetPageCount() { return pgCount; }
 QDate Book::GetReleaseDate() { return releaseDate; }
 Book* Book::Prev() { return links[0]; }
 Book* Book::Next() { return links[1]; }
+Book* Book::Next(int index) { Book* rtrn = links[1]; for (int i = 0; i < index; i++) { rtrn = rtrn->links[1]; } return rtrn; }
 void Book::SetPrev(Book *p) { links[0] = p; }
 void Book::SetNext(Book *n) { links[1] = n; }
 int Book::Count() { return totalBooks; }
@@ -159,11 +160,13 @@ QString Book::EditBook(int i, QString t, QString a, QString g, QString cP, QStri
     int y, m, dy;
     releaseDate.getDate(&y, &m, &dy); //convert the date into 3 ints, that can be written into a file
 
-    QTextStream rtrn;
+    QString rtrn;
+    QTextStream ts(&rtrn);
 
-    rtrn << isbn << ',' << title << ',' << author << ',' << genre << ',' << pgCount << ',' << dewey << ',' << y << m << dy << ',' << isAvailable << '\n';
+    ts << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << ',' << blurb;
 
-    return rtrn.readLine();
+    qDebug().nospace() << rtrn;
+    return rtrn;
 }
 
 Account::Account (QString u, QString p) //constructor
@@ -175,7 +178,7 @@ QString Account::GetUsername() { return username; }//getters
 QString Account::GetPassword() { return password; }
 bool Account::CheckUsername(QString check) { return (check == username); } //use these to validate login data
 bool Account::CheckPassword(QString check) { return (check == password); }
-LoanedBook Account::GetLoanedBook(int index, LoanedBook *ptr) { return LoanedBook (-1, -1, -1, QDate::currentDate(), nullptr); } //this is so we can store the users account as an account pointer
+int Account::GetLoanedBook(int index) { return -1; }//this is so we can store the users account as an account pointer
 void Account::DisplayLoanedBooks() { return; }                                                                          //and still use these functions if they are a member
 void Account::CheckoutBook(int bookIndex) { return; }
 void Account::ReturnBook(int loanIndex) { return; }
@@ -252,10 +255,11 @@ QString Member::GetLastName() { return lastName; }
 QString Member::GetFullName() { return firstName + " " + lastName; }
 Member* Member::Prev() { return links[0]; }
 Member* Member::Next() { return links[1]; }
+Member* Member::Next(int index) { Member* rtrn = links[1]; for (int i = 0; i < index; i++) { rtrn = rtrn->links[1]; } return rtrn; }
 void Member::SetPrev(Member *p) { links[0] = p; }
 void Member::SetNext(Member *n) { links[1] = n; }
 int Member::Count() { return totalMembers; }
-LoanedBook Member::GetLoanedBook (int index, LoanedBook *ptr) { return *(ptr + loanedBooks[index]); }
+int Member::GetLoanedBook (int index) { return loanedBooks[index]; }
 void Member::DisplayLoanedBooks () //this will probably do some widget stuff
 {
 
@@ -315,10 +319,11 @@ void LoanedBook::WriteToMemory() //writes to memory
 int LoanedBook::GetIndex() { return index; } //getters
 int LoanedBook::Count() { return totalLoans; }
 QDate LoanedBook::GetDueDate () { return dueDate; }
-Book LoanedBook::GetBook(std::vector<Book> books) { return books[book]; }
-Member LoanedBook::GetMember(std::vector<Member> members) { return members[member]; }
+Book* LoanedBook::GetBook(Book *books) { return books->Next(book); }
+Member* LoanedBook::GetMember(Member *members) { return members->Next(member); }
 LoanedBook* LoanedBook::Prev() { return links[0]; }
 LoanedBook* LoanedBook::Next() { return links[1]; }
+LoanedBook* LoanedBook::Next(int index) { LoanedBook* rtrn = links[1]; for (int i = 0; i < index; i++) { rtrn = rtrn->links[1]; } return rtrn; }
 void LoanedBook::SetPrev(LoanedBook *p) { links[0] = p; }
 void LoanedBook::SetNext(LoanedBook *n) { links[1] = n; }
 bool LoanedBook::isOverDue () //checks if book is overdue

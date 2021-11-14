@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "adminwindow.h"
 #include "login.h"
 #include "librarysystems.h"
 #include <QApplication>

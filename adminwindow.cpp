@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "adminwindow.h"
 #include "ui_mainwindow.h"
 #include "login.h"
 #include "addbook.h"
@@ -23,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
                 "QWidget#header { background: qlineargradient(x1:0, y1:0, x2:1, y2:0.3, stop:0 #4d7fc9, stop: 0.4 #5687d1 stop:1 #88b5f8) }"
                 "QPushButton#logout_button { border: 1px; border-color: #FFFFFF; border-style: solid; }"
             );
+
+    //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    QPixmap icon;
+    icon.load(":/resources/images/taskbarImg.PNG");
+    this->setWindowIcon(QIcon(icon));
 
     if (QDir("databases").exists())
     {
@@ -116,39 +121,45 @@ void MainWindow::on_viewbook_button_clicked()
         QGridLayout *qGrid = new QGridLayout(activeElement);
 
         int row = 0;
-        int column = 0;
+        int column = 1;
         LibSystems::Book *displayBook = books->Next();
+
+        QWidget *spacer = new QWidget(activeElement);
+        spacer->setMinimumSize(75, 0);
+        qGrid->addWidget(spacer, 0, 0);
+
         for (int index = 0; index < LibSystems::Book::Count(); index++)
         {
             BookDisplay *display = new BookDisplay(activeElement, displayBook);
 
             qGrid->addWidget(display, row, column);
+            column++;
 
             displayBook = displayBook->Next();
 
             connect(display, &BookDisplay::Edit, this, &MainWindow::EditBook);
-
-            column++;
-            if (column == 5)
+            if (column == 6)
             {
                 row += 1;
-                column = 0;
+                column = 1;
+                QWidget *spacer = new QWidget(activeElement);
+                spacer->setMinimumSize(75, 0);
+                qGrid->addWidget(spacer, row, 0);
             }
         }
 
-        if (column < 5 && column > 0)
+        if (column < 6 && column > 0)
         {
-            for (column; column < 5; column++)
+            for (column; column < 6; column++)
             {
                 BookDisplay *display = new BookDisplay(activeElement);
-
                 qGrid->addWidget(display, row, column);
             }
         }
 
         qScroll = new QScrollArea(this);
         qScroll->setWidget(activeElement);
-        qScroll->setMinimumSize(840, 450);
+        qScroll->setMinimumSize(970, 450);
         qScroll->setMaximumSize(1150, 450);
         ui->activeLayout->addWidget(qScroll, 1);
     }
@@ -173,6 +184,37 @@ void MainWindow::on_viewmember_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->viewmember_button);
+
+    if (LibSystems::Member::Count() > 0)
+    {
+        QGridLayout *qGrid = new QGridLayout(activeElement);
+        qGrid->setSpacing(0);
+        LibSystems::Member *thisMember = members->Next();
+        activeElement->setStyleSheet("QLabel { border-width: 1px; border-style: solid; }");
+
+        for (int i = 0; i < LibSystems::Member::Count(); i++)
+        {
+            QLabel *memberInfo = new QLabel(activeElement);
+            QString memberString;
+            QTextStream memberStream(&memberString);
+            memberStream << thisMember->GetFullName() << "\t" << thisMember->GetUsername() << "\t" << thisMember->GetEmail() << "\t" << thisMember->GetContactNumber();
+            for (int o = 0; o < 5; o++)
+            {
+                memberStream << "\t" << thisMember->GetLoanedBook(o);
+            }
+            memberInfo->setText(memberString);
+            memberInfo->setMinimumSize(1130, 25);
+            qGrid->addWidget(memberInfo, i, 0);
+            thisMember = thisMember->Next();
+        }
+
+        qScroll = new QScrollArea(this);
+        qScroll->setWidget(activeElement);
+        qScroll->setMinimumSize(970, 450);
+        qScroll->setMaximumSize(1150, 450);
+
+        ui->activeLayout->addWidget(qScroll, 1);
+    }
 }
 
 void MainWindow::on_overduebooks_button_clicked()
@@ -224,4 +266,3 @@ void MainWindow::on_instaButton_clicked()
 {
     QDesktopServices::openUrl(QUrl(QString("https://www.instagram.com/wcl_library/")));
 }
-
