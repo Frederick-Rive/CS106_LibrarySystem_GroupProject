@@ -14,10 +14,10 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
             (
                 "QPushButton { background-color: #6895e8; }"
                 "QPushButton:hover { background-color: #5687d1; }"
-                "QLineEdit { border-radius: 6px; border-style: outset; }"
-                "QSpinBox { border-radius: 6px; border-style: outset; }"
-                "QSlider::groove {  }"
-                "QTextEdit { border-radius: 2px; border-style: outset; border: 1px; }"
+                "QLineEdit { border-radius: 6px; border-style: outset; font: 10pt 'Roboto Regular'; }"
+                "QSpinBox { border-radius: 6px; border-style: outset; font: 10pt 'Roboto Regular'; }"
+                "QComboBox { font: 10pt 'Roboto Regular'; }"
+                "QTextEdit { border-radius: 25px; border-style: solid; border-width: 1px; background-color: white; padding: 10px; font: 10pt 'Roboto Regular'; }"
                 "QSlider::handle { background-color: #6895e8; border-radius: 2px; border-style: outset; }"
                 "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
@@ -136,11 +136,9 @@ void AddBook::on_saveButton_clicked()
         if (outFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
             QTextStream out(&outFile);
-            qDebug().nospace() << "aa";
 
             for (QString b : bookVec)
             {
-                qDebug().nospace() << b;
                 if (b.size() > 0)
                 {
                     out << b << '\n';

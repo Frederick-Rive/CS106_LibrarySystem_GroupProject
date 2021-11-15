@@ -6,9 +6,10 @@
         <file>images/wcl_logo_white.png</file>
         <file>images/wcl_logo_wide_white.png</file>
         <file>images/background.png</file>
-        <file>images/instaLogo.jfif</file>
-        <file>images/twitterLogo.png</file>
-        <file>images/facebookLogo.png</file>
         <file>images/taskbarImg.PNG</file>
+        <file>images/instalogo.png</file>
+        <file>images/facebooklogo.png</file>
+        <file>images/twitterlogo.png</file>
+        <file>Roboto/Roboto-Regular.ttf</file>
     </qresource>
 </RCC>

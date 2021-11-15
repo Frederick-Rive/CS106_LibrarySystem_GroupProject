@@ -15,9 +15,9 @@ BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
     {
         ui->cover->setIcon(QIcon(book->GetCover()));
         ui->cover->setIconSize(ui->cover->size());
-        ui->title->setText(book->GetTitle());
-        ui->author->setText(book->GetAuthor());
-        ui->genre->setText(book->GetGenre());
+        ui->title->setText("Title: " + book->GetTitle());
+        ui->author->setText("Author: " + book->GetAuthor());
+        ui->genre->setText("Genre: " + book->GetGenre());
 
         QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
         dropShadow->setOffset(0, 4);
@@ -42,9 +42,9 @@ BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
         ui->cover->setGraphicsEffect(dropShadow);
     }
 
-    ui->title->setStyleSheet("color: rgba(0,0,0,0);");
-    ui->author->setStyleSheet("color: rgba(0,0,0,0);");
-    ui->genre->setStyleSheet("color: rgba(0,0,0,0);");
+    ui->title->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
+    ui->author->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
+    ui->genre->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
     ui->cover->setStyleSheet("background-color: rgba(0,0,0,0);");
 
     this->setMouseTracking(true);
@@ -66,16 +66,16 @@ bool BookDisplay::eventFilter(QObject *obj, QEvent *event)
     {
         if (event->type() == QEvent::Enter)
         {
-            ui->title->setStyleSheet("color: black;");
-            ui->author->setStyleSheet("color: black;");
-            ui->genre->setStyleSheet("color: black;");
+            ui->title->setStyleSheet("color: black; font: 10pt 'Roboto Regular';");
+            ui->author->setStyleSheet("color: black; font: 10pt 'Roboto Regular';");
+            ui->genre->setStyleSheet("color: black; font: 10pt 'Roboto Regular';");
             ui->cover->setStyleSheet("background-color: rgba(100,100,100,20);");
         }
         else if (event->type() == QEvent::Leave)
         {
-            ui->title->setStyleSheet("color: rgba(0,0,0,0);");
-            ui->author->setStyleSheet("color: rgba(0,0,0,0);");
-            ui->genre->setStyleSheet("color: rgba(0,0,0,0);");
+            ui->title->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
+            ui->author->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
+            ui->genre->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
             ui->cover->setStyleSheet("background-color: rgba(0,0,0,0);");
         }
         return QWidget::eventFilter(obj, event);
