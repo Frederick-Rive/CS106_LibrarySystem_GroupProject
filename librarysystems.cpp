@@ -165,7 +165,6 @@ QString Book::EditBook(int i, QString t, QString a, QString g, QString cP, QStri
 
     ts << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << ',' << blurb;
 
-    qDebug().nospace() << rtrn;
     return rtrn;
 }
 

@@ -1,5 +1,5 @@
 #include "adminwindow.h"
-#include "ui_mainwindow.h"
+#include "ui_adminwindow.h"
 #include "login.h"
 #include "addbook.h"
 #include "bookdisplay.h"
@@ -21,7 +21,12 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStyleSheet
             (
                 "QWidget#header { background: qlineargradient(x1:0, y1:0, x2:1, y2:0.3, stop:0 #4d7fc9, stop: 0.4 #5687d1 stop:1 #88b5f8) }"
+                "QPushButton { font: 12pt 'Roboto Regular'; }"
                 "QPushButton#logout_button { border: 1px; border-color: #FFFFFF; border-style: solid; }"
+                "QPushButton#facebookButton:hover { background-color: rgba(0,0,0,0); }"
+                "QPushButton#twitterButton:hover { background-color: rgba(0,0,0,0); }"
+                "QPushButton#instaButton:hover { background-color: rgba(0,0,0,0); }"
+                "QLabel#followus { color: #6895e8; }"
             );
 
     //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
@@ -50,9 +55,10 @@ MainWindow::MainWindow(QWidget *parent)
     pixmap.load(":/resources/images/background.png");
     ui->background->setPixmap(pixmap.scaled(1280, 730));
     activeElement = ui->background;
+    auxWidget = ui->auxLabel;
 
     QPixmap facebookImg, twitterImg, instaImg;
-    facebookImg.load(":/resources/images/facebookLogo.png"); twitterImg.load(":/resources/images/twitterLogo.png"); instaImg.load(":/resources/images/instaLogo.jfif");
+    facebookImg.load(":/resources/images/facebooklogo.png"); twitterImg.load(":/resources/images/twitterlogo.png"); instaImg.load(":/resources/images/instalogo.png");
     QIcon facebookIcon(facebookImg), twitterIcon(twitterImg), instaIcon(instaImg);
     ui->facebookButton->setIcon(facebookIcon); ui->twitterButton->setIcon(twitterIcon); ui->instaButton->setIcon(instaIcon);
     ui->facebookButton->setIconSize(ui->facebookButton->size()); ui->twitterButton->setIconSize(ui->twitterButton->size()); ui->instaButton->setIconSize(ui->instaButton->size());
@@ -91,12 +97,16 @@ void MainWindow::on_addbook_button_clicked()
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
     qScroll->setMaximumSize(840, 470);
-    ui->activeLayout->addWidget(qScroll, 1);
+    ui->activeLayout->addWidget(qScroll, 1, 1);
 }
 
 void MainWindow::EditBook (LibSystems::Book *book)
 {
     ClearActiveArea();
+
+    QLabel *editLabel = new QLabel;
+    editLabel->setText("Edit an Existing Book");
+    editLabel->setStyleSheet("font: 24pt 'Roboto Regular; color: #6895e8;");
 
     LibSystems::Book *last = books;
 
@@ -109,7 +119,7 @@ void MainWindow::EditBook (LibSystems::Book *book)
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
     qScroll->setMaximumSize(840, 470);
-    ui->activeLayout->addWidget(qScroll, 1);
+    ui->activeLayout->addWidget(qScroll, 1, 1);
 }
 
 void MainWindow::on_viewbook_button_clicked()
@@ -148,7 +158,7 @@ void MainWindow::on_viewbook_button_clicked()
             }
         }
 
-        if (column < 6 && column > 0)
+        if (column < 6 && column > 1)
         {
             for (column; column < 6; column++)
             {
@@ -161,7 +171,7 @@ void MainWindow::on_viewbook_button_clicked()
         qScroll->setWidget(activeElement);
         qScroll->setMinimumSize(970, 450);
         qScroll->setMaximumSize(1150, 450);
-        ui->activeLayout->addWidget(qScroll, 1);
+        ui->activeLayout->addWidget(qScroll, 1, 1);
     }
 }
 
@@ -213,7 +223,7 @@ void MainWindow::on_viewmember_button_clicked()
         qScroll->setMinimumSize(970, 450);
         qScroll->setMaximumSize(1150, 450);
 
-        ui->activeLayout->addWidget(qScroll, 1);
+        ui->activeLayout->addWidget(qScroll, 1, 1);
     }
 }
 
@@ -233,8 +243,10 @@ void MainWindow::ClearActiveArea()
 {
     delete activeElement;
     delete qScroll;
+    delete auxWidget;
     activeElement = new QWidget;
     qScroll = new QScrollArea;
+    auxWidget = new QWidget;
 }
 
 void MainWindow::SetActiveButton(QPushButton *pressed)

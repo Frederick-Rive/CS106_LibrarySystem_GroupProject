@@ -52,6 +52,7 @@ private:
     LibSystems::Member *members = new LibSystems::Member();
     LibSystems::LoanedBook *loans = new LibSystems::LoanedBook();
     QWidget *activeElement = new QWidget;
+    QWidget *auxWidget = new QWidget;
     QScrollArea *qScroll = new QScrollArea;
     QPushButton *activeButton = nullptr;
 

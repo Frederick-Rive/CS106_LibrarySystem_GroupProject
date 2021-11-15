@@ -14,8 +14,8 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc, LibSyste
                 "QPushButton#pushButton { background-color: #6895e8; }"
                 "QPushButton#closeButton { font-size: 60px; color: #6895e8; }"
                 "QPushButton#closeButton:hover { font-size: 65px; background-color: rgba(0,0,0,0); color: #38588c; }"
-                "QLabel { font-size: 24px; }"
-                "QLineEdit { border-radius: 20px; border-style: outset; padding-left: 20px; }"
+                "QLabel { font: 24pt 'Roboto Regular'; }"
+                "QLineEdit { border-radius: 20px; border-style: outset; padding-left: 20px; font: 24pt 'Roboto Regular'; }"
             );
 
     QPixmap logo (":/resources/images/wcl_logo.png");
