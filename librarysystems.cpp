@@ -187,8 +187,9 @@ QString Account::GetContactNumber() { return "NULL"; }
 QString Account::GetFirstName() { return "NULL"; }
 QString Account::GetLastName() { return "NULL"; }
 QString Account::GetFullName() { return "NULL"; }
+QDate Account::GetDOB() { return QDate::currentDate(); }
 
-Member::Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, int l[5], Member *prev) //constructor
+Member::Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, QDate d, int l[5], Member *prev) //constructor
 {
     index = i;
     username = u;
@@ -197,6 +198,7 @@ Member::Member(int i, QString u, QString p, QString e, QString c, QString fN, QS
     contactNo = c;
     firstName = fN;
     lastName = lN;
+    dob = d;
 
     links[0] = prev;
     links[1] = nullptr;
@@ -217,6 +219,7 @@ Member::Member() //constructor
     contactNo = "";
     firstName = "";
     lastName = "";
+    dob = QDate::currentDate();
 
     links[0] = nullptr;
     links[1] = nullptr;
@@ -234,7 +237,10 @@ void Member::WriteToMemory () //write to memory
 
     QTextStream out(&memberFile);
 
-    out << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName; //send data to textstream
+    int d, m, y;
+    dob.getDate(&y, &m, &d);
+
+    out << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << y << '/' << m << '/' << d; //send data to textstream
 
     for (int i : loanedBooks) //add the books the member has loaned to the file
     {
@@ -252,6 +258,7 @@ QString Member::GetContactNumber() { return contactNo; }
 QString Member::GetFirstName() { return firstName; }
 QString Member::GetLastName() { return lastName; }
 QString Member::GetFullName() { return firstName + " " + lastName; }
+QDate Member::GetDOB() { return dob; }
 Member* Member::Prev() { return links[0]; }
 Member* Member::Next() { return links[1]; }
 Member* Member::Next(int index) { Member* rtrn = links[1]; for (int i = 0; i < index; i++) { rtrn = rtrn->links[1]; } return rtrn; }
@@ -403,6 +410,8 @@ Member* LibSystems::InitialiseMembers()
 
             QtHelpers::ParseString(read, &parsed[0]);
 
+            QDate dob = QtHelpers::QDateFromQString(parsed[7]);
+
             loaned[0] = parsed[6].toInt();
             loaned[1] = parsed[7].toInt();
             loaned[2] = parsed[8].toInt();
@@ -411,11 +420,11 @@ Member* LibSystems::InitialiseMembers()
 
             if (members.size() == 0)
             {
-                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[5], loaned, nullptr));
+                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[5], dob, loaned, nullptr));
             }
             else
             {
-                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[5], loaned, members[members.size() - 1]));
+                members.push_back(new Member(Member::Count(), parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[5], dob, loaned, members[members.size() - 1]));
                 members[members.size() - 2]->SetNext(members[members.size() - 1]);
             }
         }

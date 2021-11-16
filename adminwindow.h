@@ -31,11 +31,13 @@ private slots:
 
     void on_viewbook_button_clicked();
 
-    void DisplayBooks (QString search = "");
+    void DisplayBooks();
 
     void on_addmember_button_clicked();
 
     void on_viewmember_button_clicked();
+
+    void DisplayMembers();
 
     void on_overduebooks_button_clicked();
 

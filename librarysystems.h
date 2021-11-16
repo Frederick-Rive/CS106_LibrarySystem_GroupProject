@@ -71,6 +71,7 @@ public:
     virtual QString GetFirstName();
     virtual QString GetLastName();
     virtual QString GetFullName();
+    virtual QDate GetDOB();
 };
 
 static Account Admin("username", "password"); //declaration of Admin account
@@ -80,11 +81,12 @@ class Member : public Account //member class is a child of the account class
 private: //data members
     int index, loanedBooks[5]; //loaned books array stores index of loanedbook class
     QString email, contactNo, firstName, lastName;
+    QDate dob;
     Member* links[2];
     static int totalMembers;
 
 public:
-    Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, int l[5], Member *prev);
+    Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, QDate d, int l[5], Member *prev);
     Member();
     void WriteToMemory ();
     int GetIndex();
@@ -93,6 +95,7 @@ public:
     QString GetFirstName();
     QString GetLastName();
     QString GetFullName();
+    QDate GetDOB();
     static int Count();
     int GetLoanedBook (int index);
     void DisplayLoanedBooks ();
