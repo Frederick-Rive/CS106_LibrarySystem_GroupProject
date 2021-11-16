@@ -46,12 +46,37 @@ void AddMember::on_showPassword_clicked(bool checked)
 void AddMember::on_pushButton_clicked()
 {
     int i[5] = { -1, -1, -1, -1, -1 };
+    QDate dob;
+    dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
     LibSystems::Member *newMember = new LibSystems::Member(LibSystems::Member::Count(), ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(),
-                                                           ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), i, member);
+                                                           ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob, i, member);
     newMember->WriteToMemory();
     if (member != nullptr) { member->SetNext(newMember); }
     member = newMember;
 
     QtHelpers::InformationMessageBox("Success", "The new member has been added to the database");
+}
+
+
+void AddMember::on_monthEntry_valueChanged(int arg1)
+{
+    switch (arg1)
+    {
+    case 2:
+        if (ui->yearEntry->value() % 4 != 0)
+        {
+            ui->dayEntry->setMaximum(28);
+        }
+        else
+        {
+            ui->dayEntry->setMaximum(29);
+        }
+        break;
+    case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+        ui->dayEntry->setMaximum(31);
+        break;
+    default:
+        ui->dayEntry->setMaximum(30);
+    }
 }
 

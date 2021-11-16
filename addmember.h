@@ -21,6 +21,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_monthEntry_valueChanged(int arg1);
+
 private:
     Ui::AddMember *ui;
     LibSystems::Member *member;

@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>920</height>
+    <height>850</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1280</width>
-    <height>920</height>
+    <height>850</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -548,14 +548,14 @@
        <widget class="QPushButton" name="facebookButton">
         <property name="minimumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>30</width>
+          <height>30</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>30</width>
+          <height>30</height>
          </size>
         </property>
         <property name="cursor">
@@ -576,7 +576,7 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
+          <width>20</width>
           <height>20</height>
          </size>
         </property>
@@ -586,14 +586,14 @@
        <widget class="QPushButton" name="twitterButton">
         <property name="minimumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>30</width>
+          <height>30</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>30</width>
+          <height>30</height>
          </size>
         </property>
         <property name="cursor">
@@ -614,7 +614,7 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
+          <width>20</width>
           <height>20</height>
          </size>
         </property>
@@ -624,14 +624,14 @@
        <widget class="QPushButton" name="instaButton">
         <property name="minimumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>30</width>
+          <height>30</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>50</width>
-          <height>50</height>
+          <width>30</width>
+          <height>30</height>
          </size>
         </property>
         <property name="cursor">
@@ -665,7 +665,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

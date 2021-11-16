@@ -90,7 +90,7 @@ void MainWindow::on_addbook_button_clicked()
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Add a new book");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 36px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Book *last = books;
@@ -114,7 +114,7 @@ void MainWindow::EditBook (LibSystems::Book *book)
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Edit an existing book");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 36px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Book *last = books;
@@ -138,20 +138,27 @@ void MainWindow::on_viewbook_button_clicked()
 
     auxWidget = new QWidget(this);
     QLineEdit *searchEdit = new QLineEdit(auxWidget);
-    connect(searchEdit, &QLineEdit::textChanged, this, &MainWindow::DisplayBooks);
-    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding: 10px;");
+    searchEdit->objectName() = "SearchBar";
+    connect(searchEdit, &QLineEdit::returnPressed, this, &MainWindow::DisplayBooks);
+    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding: 5px;");
     auxWidget->setMinimumSize(400, 30);
-    searchEdit->setMinimumSize(400, 30);
+    searchEdit->setMinimumSize(400, 10);
     ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignCenter);
 
     DisplayBooks();
 }
 
-void MainWindow::DisplayBooks(QString search)
+void MainWindow::DisplayBooks()
 {
     if (LibSystems::Book::Count() > 0)
     {
+        delete activeElement;
+        delete qScroll;
+
         activeElement = new QWidget;
+
+        QLineEdit *searchEdit = qobject_cast<QLineEdit*>(auxWidget->children()[0]);
+        QString search = searchEdit->text().toLower();
 
         QGridLayout *qGrid = new QGridLayout(activeElement);
 
@@ -165,7 +172,7 @@ void MainWindow::DisplayBooks(QString search)
 
         for (int index = 0; index < LibSystems::Book::Count(); index++)
         {
-            if (search == "" || (displayBook->GetTitle().contains(search) || displayBook->GetAuthor().contains(search) || displayBook->GetGenre().contains(search) ||  displayBook->GetBlurb().contains(search)))
+            if (search == "" || (displayBook->GetTitle().toLower().contains(search) || displayBook->GetAuthor().toLower().contains(search) || displayBook->GetGenre().toLower().contains(search) ||  displayBook->GetBlurb().toLower().contains(search)))
             {
                 BookDisplay *display = new BookDisplay(activeElement, displayBook);
 
@@ -208,6 +215,12 @@ void MainWindow::on_addmember_button_clicked()
     ClearActiveArea();
     SetActiveButton(ui->addmember_button);
 
+    auxWidget = new QLabel(this);
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Add a new member");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; margin-top: 10px; margin-left: 220px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
     LibSystems::Member *last = members;
     while(last->Next() != nullptr)
     {
@@ -215,7 +228,7 @@ void MainWindow::on_addmember_button_clicked()
     }
 
     activeElement = new AddMember(this, last);
-    ui->activeLayout->addWidget(activeElement, 1, Qt::AlignCenter);
+    ui->activeLayout->addWidget(activeElement, 1, 1, Qt::AlignHCenter);
 }
 
 void MainWindow::on_viewmember_button_clicked()
@@ -223,37 +236,110 @@ void MainWindow::on_viewmember_button_clicked()
     ClearActiveArea();
     SetActiveButton(ui->viewmember_button);
 
+    auxWidget = new QWidget(this);
+    QLineEdit *searchEdit = new QLineEdit(auxWidget);
+    searchEdit->objectName() = "SearchBar";
+    connect(searchEdit, &QLineEdit::returnPressed, this, &MainWindow::DisplayMembers);
+    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding: 5px;");
+    auxWidget->setMinimumSize(400, 30);
+    searchEdit->setMinimumSize(400, 10);
+    ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignCenter);
+
+    DisplayMembers();
+}
+
+void MainWindow::DisplayMembers()
+{
     if (LibSystems::Member::Count() > 0)
     {
+        delete activeElement;
+        delete qScroll;
+        activeElement = new QWidget(this);
+
+        QLineEdit *searchEdit = qobject_cast<QLineEdit*>(auxWidget->children()[0]);
+        QString search = searchEdit->text().toLower();
+
         QGridLayout *qGrid = new QGridLayout(activeElement);
-        qGrid->setSpacing(0);
+        qGrid->setSpacing(5);
         LibSystems::Member *thisMember = members->Next();
-        activeElement->setStyleSheet("QLabel { border-width: 1px; border-style: solid; }");
+
+        QLabel *memberInfo = new QLabel(activeElement);
+        QLabel *memberWidgets[6];
+        QString memberData[6] = { "Id", "Full name", "Username", "Email", "Contact Number", "Date of birth" };
+
+        QHBoxLayout *hLayout = new QHBoxLayout(memberInfo);
+
+        for (int i = 0; i < 6; i++)
+        {
+            memberWidgets[i] = new QLabel;
+            memberWidgets[i]->setText(memberData[i]);
+            if (i > 0)
+            {
+                memberWidgets[i]->setMinimumSize(200, 25);
+            }
+            else
+            {
+                memberWidgets[i]->setMinimumSize(30, 25);
+
+            }
+            memberWidgets[i]->setStyleSheet("border-width: 0px;");
+            memberWidgets[i]->setAlignment(Qt::AlignHCenter);
+            hLayout->addWidget(memberWidgets[i]);
+        }
+        memberInfo->setMinimumSize(1100, 30);
+        memberInfo->setStyleSheet("color: #6895e8; border: 0px;");
+        qGrid->addWidget(memberInfo, 0, 0);
+
+        activeElement->setStyleSheet("QLabel { border-width: 1px; border-style: solid; font: 12pt 'Roboto Regular'; border-radius: 5px; }");
 
         for (int i = 0; i < LibSystems::Member::Count(); i++)
         {
-            QLabel *memberInfo = new QLabel(activeElement);
-            QString memberString;
-            QTextStream memberStream(&memberString);
-            memberStream << thisMember->GetFullName() << "\t" << thisMember->GetUsername() << "\t" << thisMember->GetEmail() << "\t" << thisMember->GetContactNumber();
-            for (int o = 0; o < 5; o++)
+            if (search == "" || (thisMember->GetUsername().toLower().contains(search) || thisMember->GetFullName().contains(search)))
             {
-                memberStream << "\t" << thisMember->GetLoanedBook(o);
+                QLabel *memberInfo = new QLabel(activeElement);
+                QLabel *memberWidgets[6];
+                QString memberData[6] = {QString::number(thisMember->GetIndex()), thisMember->GetFullName(), thisMember->GetUsername(), thisMember->GetEmail(), thisMember->GetContactNumber(),
+                                         (QString::number(thisMember->GetDOB().day()) + "/" + QString::number(thisMember->GetDOB().month()) + "/" + QString::number(thisMember->GetDOB().year()))};
+
+                QHBoxLayout *hLayout = new QHBoxLayout(memberInfo);
+
+                for (int i = 0; i < 6; i++)
+                {
+                    memberWidgets[i] = new QLabel;
+                    memberWidgets[i]->setText(memberData[i]);
+                    if (i > 0)
+                    {
+                        memberWidgets[i]->setMinimumSize(200, 25);
+                    }
+                    else
+                    {
+                        memberWidgets[i]->setMinimumSize(30, 25);
+
+                    }
+                    memberWidgets[i]->setStyleSheet("border-width: 0px;");
+                    memberWidgets[i]->setAlignment(Qt::AlignHCenter);
+                    hLayout->addWidget(memberWidgets[i]);
+                }
+
+                memberInfo->setMinimumSize(1100, 40);
+                qGrid->addWidget(memberInfo, i + 1, 0);
             }
-            memberInfo->setText(memberString);
-            memberInfo->setMinimumSize(1130, 25);
-            qGrid->addWidget(memberInfo, i, 0);
             thisMember = thisMember->Next();
         }
 
         qScroll = new QScrollArea(this);
         qScroll->setWidget(activeElement);
-        qScroll->setMinimumSize(970, 450);
-        qScroll->setMaximumSize(1150, 450);
+        qScroll->setMinimumSize(1120, 450);
+        qScroll->setMaximumSize(1120, 450);
 
         ui->activeLayout->addWidget(qScroll, 1, 1);
     }
 }
+
+/*void MainWindow::EditMember(LibSystems::Member *member)
+{
+
+}*/
 
 void MainWindow::on_overduebooks_button_clicked()
 {
