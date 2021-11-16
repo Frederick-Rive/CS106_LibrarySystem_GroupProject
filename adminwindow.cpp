@@ -11,6 +11,7 @@
 #include <QIcon>
 #include <QDesktopServices>
 #include <QUrl>
+#include <qlineedit.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -86,6 +87,12 @@ void MainWindow::on_addbook_button_clicked()
     ClearActiveArea();
     SetActiveButton(ui->addbook_button);
 
+    auxWidget = new QLabel(this);
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Add a new book");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 36px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
     LibSystems::Book *last = books;
 
     while (last->Next() != nullptr)
@@ -104,9 +111,11 @@ void MainWindow::EditBook (LibSystems::Book *book)
 {
     ClearActiveArea();
 
-    QLabel *editLabel = new QLabel;
-    editLabel->setText("Edit an Existing Book");
-    editLabel->setStyleSheet("font: 24pt 'Roboto Regular; color: #6895e8;");
+    auxWidget = new QLabel(this);
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Edit an existing book");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 36px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Book *last = books;
 
@@ -126,8 +135,24 @@ void MainWindow::on_viewbook_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->viewbook_button);
+
+    auxWidget = new QWidget(this);
+    QLineEdit *searchEdit = new QLineEdit(auxWidget);
+    connect(searchEdit, &QLineEdit::textChanged, this, &MainWindow::DisplayBooks);
+    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding: 10px;");
+    auxWidget->setMinimumSize(400, 30);
+    searchEdit->setMinimumSize(400, 30);
+    ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignCenter);
+
+    DisplayBooks();
+}
+
+void MainWindow::DisplayBooks(QString search)
+{
     if (LibSystems::Book::Count() > 0)
     {
+        activeElement = new QWidget;
+
         QGridLayout *qGrid = new QGridLayout(activeElement);
 
         int row = 0;
@@ -140,22 +165,25 @@ void MainWindow::on_viewbook_button_clicked()
 
         for (int index = 0; index < LibSystems::Book::Count(); index++)
         {
-            BookDisplay *display = new BookDisplay(activeElement, displayBook);
+            if (search == "" || (displayBook->GetTitle().contains(search) || displayBook->GetAuthor().contains(search) || displayBook->GetGenre().contains(search) ||  displayBook->GetBlurb().contains(search)))
+            {
+                BookDisplay *display = new BookDisplay(activeElement, displayBook);
 
-            qGrid->addWidget(display, row, column);
-            column++;
+                qGrid->addWidget(display, row, column);
+                column++;
+
+                connect(display, &BookDisplay::Edit, this, &MainWindow::EditBook);
+                if (column == 6)
+                {
+                    row += 1;
+                    column = 1;
+                    QWidget *spacer = new QWidget(activeElement);
+                    spacer->setMinimumSize(75, 0);
+                    qGrid->addWidget(spacer, row, 0);
+                }
+            }
 
             displayBook = displayBook->Next();
-
-            connect(display, &BookDisplay::Edit, this, &MainWindow::EditBook);
-            if (column == 6)
-            {
-                row += 1;
-                column = 1;
-                QWidget *spacer = new QWidget(activeElement);
-                spacer->setMinimumSize(75, 0);
-                qGrid->addWidget(spacer, row, 0);
-            }
         }
 
         if (column < 6 && column > 1)
@@ -247,6 +275,8 @@ void MainWindow::ClearActiveArea()
     activeElement = new QWidget;
     qScroll = new QScrollArea;
     auxWidget = new QWidget;
+
+    ui->activeSpacer->changeSize(0, 50);
 }
 
 void MainWindow::SetActiveButton(QPushButton *pressed)

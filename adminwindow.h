@@ -31,6 +31,8 @@ private slots:
 
     void on_viewbook_button_clicked();
 
+    void DisplayBooks (QString search = "");
+
     void on_addmember_button_clicked();
 
     void on_viewmember_button_clicked();
