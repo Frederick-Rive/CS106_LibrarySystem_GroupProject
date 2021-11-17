@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent = nullptr);
     ~MainWindow();
 
 signals:
@@ -61,6 +61,6 @@ private:
     QPushButton *activeButton = nullptr;
 
     void ClearActiveArea();
-    void SetActiveButton (QPushButton *pressed);;
+    void SetActiveButton (QPushButton *pressed);
 };
 #endif // ADMINWINDOW_H

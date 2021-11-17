@@ -1,11 +1,10 @@
 #include "adminwindow.h"
 #include "ui_adminwindow.h"
-#include "login.h"
 #include "addbook.h"
 #include "bookdisplay.h"
 #include "addmember.h"
+#include "login.h"
 #include <librarysystems.h>
-#include <QDir>
 #include <QLabel>
 #include <QLayout>
 #include <QIcon>
@@ -13,11 +12,16 @@
 #include <QUrl>
 #include <qlineedit.h>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    books = b;
+    members = m;
+    loans = l;
+    user = *a;
 
     this->setStyleSheet
             (
@@ -35,18 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
     icon.load(":/resources/images/taskbarImg.PNG");
     this->setWindowIcon(QIcon(icon));
 
-    if (QDir("databases").exists())
-    {
-        books->SetNext(LibSystems::InitialiseBooks());
-        members->SetNext(LibSystems::InitialiseMembers());
-        loans->SetNext(LibSystems::InitialseLoans());
-    }
-    else
-    {
-        QDir().mkdir("databases");
-        QDir().mkdir("databases/covers");
-    }
-
     this->setWindowTitle("Wellington Central Library");
 
     QPixmap logo (":/resources/images/wcl_logo_wide_white.png");
@@ -63,9 +55,6 @@ MainWindow::MainWindow(QWidget *parent)
     QIcon facebookIcon(facebookImg), twitterIcon(twitterImg), instaIcon(instaImg);
     ui->facebookButton->setIcon(facebookIcon); ui->twitterButton->setIcon(twitterIcon); ui->instaButton->setIcon(instaIcon);
     ui->facebookButton->setIconSize(ui->facebookButton->size()); ui->twitterButton->setIconSize(ui->twitterButton->size()); ui->instaButton->setIconSize(ui->instaButton->size());
-
-    login *log = new login(nullptr, this, &user, members->Next());
-    log->show();
 }
 
 MainWindow::~MainWindow()
@@ -77,7 +66,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_logout_button_clicked()
 {
     user = LibSystems::Account();
-    login *log = new login(nullptr, this, &user, members->Next());
+    login *log = new login(nullptr);
     log->show();
     hide();
 }
@@ -138,12 +127,12 @@ void MainWindow::on_viewbook_button_clicked()
 
     auxWidget = new QWidget(this);
     QLineEdit *searchEdit = new QLineEdit(auxWidget);
-    searchEdit->objectName() = "SearchBar";
     connect(searchEdit, &QLineEdit::returnPressed, this, &MainWindow::DisplayBooks);
-    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding: 5px;");
+    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding-top: 10px;");
+    searchEdit->setStyleSheet("padding: 5px; border-radius: 10px;");
     auxWidget->setMinimumSize(400, 30);
-    searchEdit->setMinimumSize(400, 10);
-    ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignCenter);
+    searchEdit->setMinimumSize(400, 15);
+    ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignHCenter | Qt::AlignBottom);
 
     DisplayBooks();
 }
@@ -238,12 +227,12 @@ void MainWindow::on_viewmember_button_clicked()
 
     auxWidget = new QWidget(this);
     QLineEdit *searchEdit = new QLineEdit(auxWidget);
-    searchEdit->objectName() = "SearchBar";
     connect(searchEdit, &QLineEdit::returnPressed, this, &MainWindow::DisplayMembers);
-    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding: 5px;");
+    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding-top: 10px;");
+    searchEdit->setStyleSheet("padding: 5px; border-radius: 10px;");
     auxWidget->setMinimumSize(400, 30);
-    searchEdit->setMinimumSize(400, 10);
-    ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignCenter);
+    searchEdit->setMinimumSize(400, 15);
+    ui->activeLayout->addWidget(auxWidget, 0, 1, Qt::AlignCenter | Qt::AlignBottom);
 
     DisplayMembers();
 }

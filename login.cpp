@@ -1,13 +1,30 @@
 #include "login.h"
+#include "adminwindow.h"
+#include "memberwindow.h"
 #include "ui_login.h"
 #include <QMainWindow>
 #include <librarysystems.h>
+#include <QDir>
 
-login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc, LibSystems::Member *memb) :
+login::login(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::login)
 {
     ui->setupUi(this);
+
+    acc = new LibSystems::Account;
+
+    if (QDir("databases").exists())
+    {
+        books->SetNext(LibSystems::InitialiseBooks());
+        members->SetNext(LibSystems::InitialiseMembers());
+        loans->SetNext(LibSystems::InitialseLoans());
+    }
+    else
+    {
+        QDir().mkdir("databases");
+        QDir().mkdir("databases/covers");
+    }
 
     this->setStyleSheet
             (
@@ -26,10 +43,6 @@ login::login(QWidget *parent, QMainWindow *m, LibSystems::Account *acc, LibSyste
     this->setWindowIcon(QIcon(icon));
 
     this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-
-    rtrn = acc;
-    mn = m;
-    members = memb;
 }
 
 login::~login()
@@ -46,9 +59,12 @@ void login::on_pushButton_clicked()
     {
         if (LibSystems::Admin.CheckPassword(pEntry))
         {
-            *rtrn = LibSystems::Admin;
+            *acc = LibSystems::Admin;
             QtHelpers::InformationMessageBox("Success", "You have logged on as the Admin");
-            mn->show();
+
+            MainWindow *m = new MainWindow(books, members, loans, acc);
+            m->show();
+
             this->hide();
             return;
         }
@@ -61,9 +77,12 @@ void login::on_pushButton_clicked()
             {
                 if (members->CheckPassword(pEntry))
                 {
-                    *rtrn = *members;
+                    *acc = *members;
                     QtHelpers::InformationMessageBox("Success", "You have logged on as " + members->GetUsername());
-                    mn->show();
+
+                    MemberWindow *m = new MemberWindow(books, members, loans, acc);
+                    m->show();
+
                     this->hide();
                     return;
                 }

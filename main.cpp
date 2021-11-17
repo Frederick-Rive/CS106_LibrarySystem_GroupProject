@@ -1,4 +1,5 @@
 #include "adminwindow.h"
+#include "memberwindow.h"
 #include "login.h"
 #include "librarysystems.h"
 #include <QApplication>
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
                 "QScrollArea { border: 1px; border-style: outset; border-radius: 5px; }"
             );
 
-    MainWindow w;
+    login l;
+    l.show();
     return a.exec();
 }
