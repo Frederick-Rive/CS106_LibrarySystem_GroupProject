@@ -14,7 +14,7 @@ class login : public QWidget
     Q_OBJECT
 
 public:
-    explicit login(QWidget *parent = nullptr, QMainWindow *m = nullptr, LibSystems::Account *acc = nullptr, LibSystems::Member *memb = nullptr);
+    explicit login(QWidget *parent = nullptr);
     ~login();
 
 private slots:
@@ -24,9 +24,10 @@ private slots:
 
 private:
     Ui::login *ui;
-    LibSystems::Account *rtrn;
-    LibSystems::Member *members;
-    QMainWindow *mn;
+    LibSystems::Account *acc;
+    LibSystems::Book *books = new LibSystems::Book();
+    LibSystems::Member *members = new LibSystems::Member();
+    LibSystems::LoanedBook *loans = new LibSystems::LoanedBook();
 };
 
 #endif // LOGIN_H
