@@ -5,6 +5,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QDesktopServices>
 #include <QLineEdit>
+#include <QUrl>
 
 MemberWindow::MemberWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent) :
     QMainWindow(parent),
@@ -133,7 +134,7 @@ void MemberWindow::DisplayBooks()
 void MemberWindow::on_logout_button_clicked()
 {
     user = LibSystems::Account();
-    login *log = new login(nullptr);
+    login *log = new login(nullptr, books->Next(), members->Next(), loans->Next());
     log->show();
     hide();
 }

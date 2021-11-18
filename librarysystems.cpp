@@ -78,8 +78,9 @@ QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate
     return rtrn;
 }
 
-Book::Book(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA) //constructor
+Book::Book(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA) //constructor
 {
+    index = totalBooks;
     isbn = i;
     title = t;
     author = a;
@@ -96,8 +97,13 @@ Book::Book(int i, QString t, QString a, QString g, QString cP, QString b, int p,
 
     totalBooks++; //increment up the total number of books
 }
+Book::~Book()
+{
+    totalBooks--;
+}
 Book::Book() //default constructor. Use only for the head of the linked list
 {
+    index = -1;
     isbn = -1;
     title = "";
     author = "";
@@ -128,7 +134,8 @@ void Book::WriteToMemory () //writes the book into the database. please be caref
     bookFile.flush(); //flush the buffer into the file
     bookFile.close(); //close the file
 }
-int Book::GetISBN() { return isbn; } //getters
+int Book::GetIndex() { return index; }
+QString Book::GetISBN() { return isbn; } //getters
 int Book::GetDeweyDecimal() { return dewey; }
 QString Book::GetTitle() { return title; }
 QString Book::GetAuthor() { return author; }
@@ -146,7 +153,7 @@ void Book::SetNext(Book *n) { links[1] = n; }
 int Book::Count() { return totalBooks; }
 bool Book::IsAvailable() { return isAvailable; }
 void Book::SetAvailable(bool b) { isAvailable = b; } //only a setter for this value. All others should only be changed from within the editbook function
-QString Book::EditBook(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r) //operates basically as a new constructor, except it returns a string ready to be inserted into a file
+QString Book::EditBook(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r) //operates basically as a new constructor, except it returns a string ready to be inserted into a file
 {
     isbn = i;
     title = t;
@@ -229,6 +236,10 @@ Member::Member() //constructor
         loanedBooks[i] = -1; //indexes of loaned books. store as -1 if the user hasnt loaned a book in that slot
     }
 }
+Member::~Member()
+{
+    totalMembers--;
+}
 void Member::WriteToMemory () //write to memory
 {
     QFile memberFile("databases/members.csv");
@@ -278,9 +289,30 @@ void Member::ReturnBook (int loanIndex) //returns a book. pass in the index of t
 {
 
 }
-void Member::EditMember() //who knows
+QString Member::EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date)
 {
+    username = u;
+    password = p;
+    email = e;
+    contactNo = c;
+    firstName = fN;
+    lastName = lN;
+    dob = date;
 
+    int d, m, y;
+    dob.getDate(&y, &m, &d);
+
+    QString rtrn;
+    QTextStream ts(&rtrn);
+
+    ts << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << y << '/' << m << '/' << d; //send data to textstream
+
+    for (int i : loanedBooks)
+    {
+        ts << ',' << i;
+    }
+
+    return rtrn;
 }
 
 LoanedBook::LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev) //constructor
@@ -305,6 +337,10 @@ LoanedBook::LoanedBook () //constructor
     links[0] = nullptr;
     links[1] = nullptr;
 
+}
+LoanedBook::~LoanedBook()
+{
+    totalLoans--;
 }
 void LoanedBook::WriteToMemory() //writes to memory
 {
@@ -363,24 +399,23 @@ Book* LibSystems::InitialiseBooks()
             read = in.readLine();
 
             QString parsed[10];
-            int isbn, pgCount, dewey;
+            int pgCount, dewey;
             QDate releaseDate;
             bool isAvailable;
 
             QtHelpers::ParseString(read, &parsed[0]);
 
-            isbn = parsed[0].toInt();
             pgCount = parsed[5].toInt();
             dewey = parsed[6].toInt();
             isAvailable = (parsed[8][0] == '1') ? true : false;
             releaseDate = QtHelpers::QDateFromQString(parsed[7]);
             if (bookVec.size() == 0)
             {
-                bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, nullptr, isAvailable));
+                bookVec.push_back(new Book(parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, nullptr, isAvailable));
             }
             else
             {
-                bookVec.push_back(new Book(isbn, parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, bookVec[bookVec.size() - 1], isAvailable));
+                bookVec.push_back(new Book(parsed[0], parsed[1], parsed[2], parsed[3], parsed[4], parsed[9], pgCount, dewey, releaseDate, bookVec[bookVec.size() - 1], isAvailable));
                 bookVec[bookVec.size() - 2]->SetNext(bookVec[bookVec.size() - 1]);
             }
         }
@@ -405,18 +440,18 @@ Member* LibSystems::InitialiseMembers()
 
             read = in.readLine();
 
-            QString parsed[11];
+            QString parsed[12];
             int loaned[5];
 
             QtHelpers::ParseString(read, &parsed[0]);
 
-            QDate dob = QtHelpers::QDateFromQString(parsed[7]);
+            QDate dob = QtHelpers::QDateFromQString(parsed[6]);
 
-            loaned[0] = parsed[6].toInt();
-            loaned[1] = parsed[7].toInt();
-            loaned[2] = parsed[8].toInt();
-            loaned[3] = parsed[9].toInt();
-            loaned[4] = parsed[10].toInt();
+            loaned[0] = parsed[7].toInt();
+            loaned[1] = parsed[8].toInt();
+            loaned[2] = parsed[9].toInt();
+            loaned[3] = parsed[10].toInt();
+            loaned[4] = parsed[11].toInt();
 
             if (members.size() == 0)
             {

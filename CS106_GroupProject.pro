@@ -16,6 +16,7 @@ SOURCES += \
     librarysystems.cpp \
     login.cpp \
     main.cpp \
+    memberinfo.cpp \
     memberwindow.cpp
 
 HEADERS += \
@@ -25,6 +26,7 @@ HEADERS += \
     bookdisplay.h \
     librarysystems.h \
     login.h \
+    memberinfo.h \
     memberwindow.h
 
 FORMS += \

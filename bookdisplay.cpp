@@ -13,7 +13,9 @@ BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
 
     if (book != nullptr)
     {
-        ui->cover->setIcon(QIcon(book->GetCover()));
+        QPixmap cover;
+        cover.load(book->GetCoverPath());
+        ui->cover->setIcon(QIcon(cover));
         ui->cover->setIconSize(ui->cover->size());
         ui->title->setText("Title: " + book->GetTitle());
         ui->author->setText("Author: " + book->GetAuthor());
@@ -60,7 +62,6 @@ BookDisplay::~BookDisplay()
 }
 
 bool BookDisplay::eventFilter(QObject *obj, QEvent *event)
-
 {
     if (obj == (QObject*)ui->cover)
     {
@@ -88,7 +89,7 @@ bool BookDisplay::eventFilter(QObject *obj, QEvent *event)
 
 void BookDisplay::SendBook()
 {
-    emit Edit(book);
+    emit BookSignal(book);
 }
 
 

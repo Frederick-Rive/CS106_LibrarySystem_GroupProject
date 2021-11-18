@@ -18,8 +18,8 @@ class LoanedBook; //declaring this once early because of cascading compiler, or 
 class Book //book class
 {
 private: //data members
-    int isbn, pgCount, dewey;
-    QString title, author, genre, coverPath, blurb;
+    int index, pgCount, dewey;
+    QString isbn, title, author, genre, coverPath, blurb;
     bool isAvailable;
     QDate releaseDate;
     static int totalBooks;
@@ -27,9 +27,11 @@ private: //data members
 
 public: //member functions
     void WriteToMemory ();
-    Book(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA = true);
+    Book(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r, Book* prev, bool iA = true);
     Book();
-    int GetISBN();
+    ~Book();
+    int GetIndex();
+    QString GetISBN();
     int GetDeweyDecimal();
     QString GetTitle();
     QString GetAuthor();
@@ -46,7 +48,7 @@ public: //member functions
     void SetNext(Book* n);
     static int Count();
     bool IsAvailable();
-    QString EditBook(int i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r);
+    QString EditBook(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r);
     void SetAvailable(bool b);
 };
 
@@ -88,6 +90,7 @@ private: //data members
 public:
     Member(int i, QString u, QString p, QString e, QString c, QString fN, QString lN, QDate d, int l[5], Member *prev);
     Member();
+    ~Member();
     void WriteToMemory ();
     int GetIndex();
     QString GetEmail();
@@ -106,7 +109,7 @@ public:
     Member *Next(int index);
     void SetPrev(Member* p);
     void SetNext(Member* n);
-    void EditMember();
+    QString EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date);
 };
 
 class LoanedBook //loanedbook class contains the index of a book and the member it was lent too, and the date that the book is due.
@@ -120,6 +123,7 @@ private: //data members
 public:
     LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev);
     LoanedBook();
+    ~LoanedBook();
     void WriteToMemory();
     int GetIndex();
     static int Count();
@@ -147,9 +151,3 @@ int InformationMessageBox(QString infoName, QString infoText);
 QDate QDateFromQString (QString input);
 }
 #endif // LIBRARYSYSTEMS_H
-
-/*
-Q_DECLARE_METATYPE(LibSystems::Book);
-Q_DECLARE_METATYPE(LibSystems::Member);
-Q_DECLARE_METATYPE(LibSystems::LoanedBook);
-*/

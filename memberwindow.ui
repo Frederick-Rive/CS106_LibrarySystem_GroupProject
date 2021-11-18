@@ -293,15 +293,15 @@
     <item>
      <layout class="QGridLayout" name="activeLayout">
       <property name="spacing">
-       <number>0</number>
+       <number>6</number>
       </property>
       <item row="0" column="0">
        <spacer name="activeSpacer">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
+         <enum>QSizePolicy::Minimum</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -317,7 +317,7 @@
          <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -494,7 +494,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
