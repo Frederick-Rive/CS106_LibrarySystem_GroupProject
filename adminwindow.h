@@ -18,11 +18,10 @@ public:
     MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent = nullptr);
     ~MainWindow();
 
-signals:
-    void Edit(LibSystems::Book *book);
-
 public slots:
     void EditBook(LibSystems::Book *book);
+
+    void EditMember(LibSystems::Member *member);
 
 private slots:
     void on_logout_button_clicked();

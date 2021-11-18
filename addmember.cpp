@@ -1,8 +1,7 @@
 #include "addmember.h"
 #include "ui_addmember.h"
 
-
-AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember) :
+AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems::Member *editMember) :
     QWidget(parent),
     ui(new Ui::AddMember)
 {
@@ -14,14 +13,19 @@ AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember) :
             (
                 "QPushButton { background-color: #6895e8; }"
                 "QPushButton:hover { background-color: #5687d1; }"
-                "QLineEdit { border-radius: 6px; border-style: outset; }"
-                "QSpinBox { border-radius: 6px; border-style: outset; }"
+                "QLineEdit { border-radius: 6px; border-style: outset; font: 16pt 'Roboto Regular'; }"
+                "QSpinBox { border-radius: 6px; border-style: outset; font: 16pt 'Roboto Regular'; }"
+                "QCheckBox { font: 12pt 'Roboto Regular'; } "
                 "QCheckBox::indicator { border: 0px; border-radius: 2px; background-color: white; border-style: solid; }"
                 "QCheckBox::indicator::checked { border: 2px; border-radius: 2px; border-color: white; background-color: #6895e8; }"
-                "QTextEdit { border-radius: 2px; border-style: outset; border: 1px; }"
-                "QSlider::handle { background-color: #6895e8; border-radius: 2px; border-style: outset; }"
-                "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
+    edit = editMember;
+    if (edit != nullptr)
+    {
+        ui->usernameEntry->setText(edit->GetUsername()); ui->passwordEntry->setText(edit->GetPassword()); ui->firstnameEntry->setText(edit->GetFirstName());
+        ui->lastnameEntry->setText(edit->GetLastName()); ui->emailEntry->setText(edit->GetEmail()); ui->cntctEntry->setText(edit->GetContactNumber());
+        ui->dayEntry->setValue(edit->GetDOB().day()); ui->monthEntry->setValue(edit->GetDOB().month()); ui->yearEntry->setValue(edit->GetDOB().year()); ui->pushButton->setText("Save member");
+    }
 }
 
 AddMember::~AddMember()
@@ -42,21 +46,73 @@ void AddMember::on_showPassword_clicked(bool checked)
     }
 }
 
-
 void AddMember::on_pushButton_clicked()
 {
-    int i[5] = { -1, -1, -1, -1, -1 };
-    QDate dob;
-    dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
-    LibSystems::Member *newMember = new LibSystems::Member(LibSystems::Member::Count(), ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(),
-                                                           ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob, i, member);
-    newMember->WriteToMemory();
-    if (member != nullptr) { member->SetNext(newMember); }
-    member = newMember;
+    if (edit == nullptr)
+    {
+        int i[5] = { -1, -1, -1, -1, -1 };
+        QDate dob;
+        dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
+        LibSystems::Member *newMember = new LibSystems::Member(LibSystems::Member::Count(), ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(),
+                                                               ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob, i, member);
+        newMember->WriteToMemory();
+        if (member != nullptr) { member->SetNext(newMember); }
+        member = newMember;
 
-    QtHelpers::InformationMessageBox("Success", "The new member has been added to the database");
+        QtHelpers::InformationMessageBox("Success", "The new member has been added to the database");
+    }
+    else
+    {
+        QFile memberFile("databases/members.csv");
+
+        std::vector<QString> memberVec;
+
+        if (memberFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            QTextStream in(&memberFile);
+
+            for (int i = 0; i < edit->GetIndex(); i++)
+            {
+                memberVec.push_back(in.readLine());
+            }
+
+            QDate dob;
+            dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
+
+            memberVec.push_back(edit->EditMember(ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(), ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob));
+
+            while (!in.atEnd())
+            {
+                memberVec.push_back(in.readLine());
+            }
+        }
+        else
+        {
+            QtHelpers::ErrorMessageBox("Error", "File Didn't Open");
+            return;
+        }
+
+        memberFile.close();
+
+        if (memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            QTextStream out(&memberFile);
+
+            for (QString s : memberVec)
+            {
+                out << s << '\n';
+            }
+        }
+        else
+        {
+            QtHelpers::ErrorMessageBox("Error", "File Didn't Open");
+            return;
+        }
+
+        memberFile.flush();
+        memberFile.close();
+    }
 }
-
 
 void AddMember::on_monthEntry_valueChanged(int arg1)
 {

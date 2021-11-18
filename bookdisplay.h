@@ -17,7 +17,7 @@ public:
     ~BookDisplay();
 
 signals:
-    void Edit(LibSystems::Book *book);
+    void BookSignal(LibSystems::Book *book);
 
 private slots:
     void SendBook();

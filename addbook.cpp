@@ -35,7 +35,7 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
         ui->titleEdit->setText(edit->GetTitle()); ui->authorEdit->setText(edit->GetAuthor()); ui->genreBox->setCurrentText(edit->GetGenre()); ui->ddCounter->setValue(edit->GetDeweyDecimal());
         ui->ddSlider->setValue(edit->GetDeweyDecimal()); ui->dayEntry->setValue(edit->GetReleaseDate().day()); ui->monthEntry->setValue(edit->GetReleaseDate().month());
         ui->yearEntry->setValue(edit->GetReleaseDate().year()); ui->blurbEdit->setText(edit->GetBlurb()); ui->coverpathEntry->setText(edit->GetCoverPath());
-        ui->coverlabel->setPixmap(edit->GetCover().scaled(ui->coverlabel->size())); ui->pgEntry->setValue(edit->GetPageCount());
+        ui->coverlabel->setPixmap(edit->GetCover().scaled(ui->coverlabel->size())); ui->pgEntry->setValue(edit->GetPageCount()); ui->isbnEdit->setText(edit->GetISBN());
     }
 }
 
@@ -78,7 +78,7 @@ void AddBook::on_saveButton_clicked()
         QString filePath = QString("databases/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png");
         cover.save(filePath);
 
-        LibSystems::Book *newBook = new LibSystems::Book(LibSystems::Book::Count(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
+        LibSystems::Book *newBook = new LibSystems::Book(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
                                                ui->pgEntry->value(), ui->ddCounter->value(), releaseDate, book);
         newBook->WriteToMemory();
         if (book != nullptr) { book->SetNext(newBook); }
@@ -98,13 +98,9 @@ void AddBook::on_saveButton_clicked()
 
            QString read;
 
-            for (int i = 0; i < edit->GetISBN(); i++)
+            for (int i = 0; i < edit->GetIndex(); i++)
             {
-                QString read;
-
-                read = in.readLine();
-
-                bookVec.push_back(read);
+                bookVec.push_back(in.readLine());
             }
 
             QDate releaseDate;
@@ -114,11 +110,11 @@ void AddBook::on_saveButton_clicked()
             {
                 QPixmap cover;
                 cover.load(ui->coverpathEntry->text());
-                ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(edit->GetISBN()) + QString(".png"));
+                ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(edit->GetIndex()) + QString(".png"));
                 cover.save(ui->coverpathEntry->text());
             }
 
-            bookVec.push_back(edit->EditBook(edit->GetISBN(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), ui->coverpathEntry->text(), ui->blurbEdit->toPlainText(), ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
+            bookVec.push_back(edit->EditBook(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), ui->coverpathEntry->text(), ui->blurbEdit->toPlainText(), ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
 
             read = in.readLine();
             while (!in.atEnd())

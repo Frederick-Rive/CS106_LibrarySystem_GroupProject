@@ -11,6 +11,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <qlineedit.h>
+#include <memberinfo.h>
 
 MainWindow::MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent)
     : QMainWindow(parent)
@@ -66,7 +67,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_logout_button_clicked()
 {
     user = LibSystems::Account();
-    login *log = new login(nullptr);
+    login *log = new login(nullptr, books->Next(), members->Next(), loans->Next());
     log->show();
     hide();
 }
@@ -168,7 +169,7 @@ void MainWindow::DisplayBooks()
                 qGrid->addWidget(display, row, column);
                 column++;
 
-                connect(display, &BookDisplay::Edit, this, &MainWindow::EditBook);
+                connect(display, &BookDisplay::BookSignal, this, &MainWindow::EditBook);
                 if (column == 6)
                 {
                     row += 1;
@@ -252,6 +253,7 @@ void MainWindow::DisplayMembers()
         qGrid->setSpacing(5);
         LibSystems::Member *thisMember = members->Next();
 
+        //Labels up the top so the data isnt meaningless --------------------------------------------------------------
         QLabel *memberInfo = new QLabel(activeElement);
         QLabel *memberWidgets[6];
         QString memberData[6] = { "Id", "Full name", "Username", "Email", "Contact Number", "Date of birth" };
@@ -278,14 +280,17 @@ void MainWindow::DisplayMembers()
         memberInfo->setMinimumSize(1100, 30);
         memberInfo->setStyleSheet("color: #6895e8; border: 0px;");
         qGrid->addWidget(memberInfo, 0, 0);
+        //Labels up the top so the data isnt meaningless --------------------------------------------------------------
 
-        activeElement->setStyleSheet("QLabel { border-width: 1px; border-style: solid; font: 12pt 'Roboto Regular'; border-radius: 5px; }");
+        activeElement->setStyleSheet("QPushButton { border-width: 1px; border-style: solid; border-color: black; border-radius: 5px; }"
+                                     "QPushButton::hover { background-color: #DDDDDD; }"
+                                     "QLabel { font: 12pt 'Roboto Regular'; }");
 
         for (int i = 0; i < LibSystems::Member::Count(); i++)
         {
-            if (search == "" || (thisMember->GetUsername().toLower().contains(search) || thisMember->GetFullName().contains(search)))
+            if (search == "" || (thisMember->GetUsername().toLower().contains(search) || thisMember->GetFullName().toLower().contains(search)))
             {
-                QLabel *memberInfo = new QLabel(activeElement);
+                MemberInfo *memberInfo = new MemberInfo(thisMember, activeElement);
                 QLabel *memberWidgets[6];
                 QString memberData[6] = {QString::number(thisMember->GetIndex()), thisMember->GetFullName(), thisMember->GetUsername(), thisMember->GetEmail(), thisMember->GetContactNumber(),
                                          (QString::number(thisMember->GetDOB().day()) + "/" + QString::number(thisMember->GetDOB().month()) + "/" + QString::number(thisMember->GetDOB().year()))};
@@ -310,7 +315,10 @@ void MainWindow::DisplayMembers()
                     hLayout->addWidget(memberWidgets[i]);
                 }
 
-                memberInfo->setMinimumSize(1100, 40);
+                memberInfo->setMinimumSize(1100, 35);
+
+                connect(memberInfo, &MemberInfo::SendMember, this, &MainWindow::EditMember);
+
                 qGrid->addWidget(memberInfo, i + 1, 0);
             }
             thisMember = thisMember->Next();
@@ -325,10 +333,25 @@ void MainWindow::DisplayMembers()
     }
 }
 
-/*void MainWindow::EditMember(LibSystems::Member *member)
+void MainWindow::EditMember(LibSystems::Member *member)
 {
+    ClearActiveArea();
 
-}*/
+    auxWidget = new QLabel(this);
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Edit an existing member");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; margin-top: 10px; margin-left: 220px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
+    LibSystems::Member *last = members;
+    while(last->Next() != nullptr)
+    {
+        last = last->Next();
+    }
+
+    activeElement = new AddMember(this, last, member);
+    ui->activeLayout->addWidget(activeElement, 1, 1, Qt::AlignHCenter);
+}
 
 void MainWindow::on_overduebooks_button_clicked()
 {

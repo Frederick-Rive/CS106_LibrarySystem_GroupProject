@@ -6,7 +6,7 @@
 #include <librarysystems.h>
 #include <QDir>
 
-login::login(QWidget *parent) :
+login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l) :
     QWidget(parent),
     ui(new Ui::login)
 {
@@ -16,9 +16,9 @@ login::login(QWidget *parent) :
 
     if (QDir("databases").exists())
     {
-        books->SetNext(LibSystems::InitialiseBooks());
-        members->SetNext(LibSystems::InitialiseMembers());
-        loans->SetNext(LibSystems::InitialseLoans());
+        books->SetNext((b != nullptr) ? b : LibSystems::InitialiseBooks());
+        members->SetNext((m != nullptr) ? m : LibSystems::InitialiseMembers());
+        loans->SetNext((l != nullptr) ? l : LibSystems::InitialseLoans());
     }
     else
     {
@@ -71,14 +71,15 @@ void login::on_pushButton_clicked()
     }
     else
     {
-        while (members != nullptr)
+        LibSystems::Member *thisMember = members->Next();
+        while (thisMember != nullptr)
         {
-            if (members->CheckUsername(uEntry))
+            if (thisMember->CheckUsername(uEntry))
             {
-                if (members->CheckPassword(pEntry))
+                if (thisMember->CheckPassword(pEntry))
                 {
-                    *acc = *members;
-                    QtHelpers::InformationMessageBox("Success", "You have logged on as " + members->GetUsername());
+                    *acc = *thisMember;
+                    QtHelpers::InformationMessageBox("Success", "You have logged on as " + thisMember->GetUsername());
 
                     MemberWindow *m = new MemberWindow(books, members, loans, acc);
                     m->show();
@@ -87,15 +88,15 @@ void login::on_pushButton_clicked()
                     return;
                 }
             }
-            members = members->Next();
+            thisMember = thisMember->Next();
         }
     }
 
     switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
     {
     case QMessageBox::Retry:
-        ui->username_LineEdit->setText("");
-        ui->password_LineEdit->setText("");
+        //ui->username_LineEdit->setText("");
+        //ui->password_LineEdit->setText("");
         break;
     case QMessageBox::Cancel:
         hide();
