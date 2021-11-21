@@ -116,22 +116,19 @@ void AddBook::on_saveButton_clicked()
 
             bookVec.push_back(edit->EditBook(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), ui->coverpathEntry->text(), ui->blurbEdit->toPlainText(), ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
 
-            read = in.readLine();
+            in.readLine();
+
             while (!in.atEnd())
             {
-                read = in.readLine();
-
-                bookVec.push_back(read);
+                bookVec.push_back(in.readLine());
             }
         }
 
         bookFile.close();
 
-        QFile outFile ("databases/books.csv");
-
-        if (outFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        if (bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
-            QTextStream out(&outFile);
+            QTextStream out(&bookFile);
 
             for (QString b : bookVec)
             {
@@ -142,8 +139,8 @@ void AddBook::on_saveButton_clicked()
             }
         }
 
-        outFile.flush();
-        outFile.close();
+        bookFile.flush();
+        bookFile.close();
         QtHelpers::InformationMessageBox("Success", "The changes have been saved to the database");
     }
 }

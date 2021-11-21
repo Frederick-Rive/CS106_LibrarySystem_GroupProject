@@ -81,6 +81,8 @@ void AddMember::on_pushButton_clicked()
 
             memberVec.push_back(edit->EditMember(ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(), ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob));
 
+            in.readLine();
+
             while (!in.atEnd())
             {
                 memberVec.push_back(in.readLine());
@@ -100,8 +102,13 @@ void AddMember::on_pushButton_clicked()
 
             for (QString s : memberVec)
             {
-                out << s << '\n';
+                if (s.size() > 0)
+                {
+                    out << s << '\n';
+                }
             }
+
+            QtHelpers::InformationMessageBox("Success", "Your edits have been saved to the database");
         }
         else
         {

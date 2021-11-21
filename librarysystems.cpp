@@ -104,7 +104,7 @@ Book::~Book()
 Book::Book() //default constructor. Use only for the head of the linked list
 {
     index = -1;
-    isbn = -1;
+    isbn = "";
     title = "";
     author = "";
     genre = "";
@@ -184,9 +184,7 @@ QString Account::GetUsername() { return username; }//getters
 QString Account::GetPassword() { return password; }
 bool Account::CheckUsername(QString check) { return (check == username); } //use these to validate login data
 bool Account::CheckPassword(QString check) { return (check == password); }
-int Account::GetLoanedBook(int index) { return -1; }//this is so we can store the users account as an account pointer
-void Account::DisplayLoanedBooks() { return; }                                                                          //and still use these functions if they are a member
-void Account::CheckoutBook(int bookIndex) { return; }
+int Account::GetLoanedBook(int index) { return -1; }//this is so we can store the users account as an account pointer                                                                  //and still use these functions if they are a member
 void Account::ReturnBook(int loanIndex) { return; }
 int Account::GetIndex() { return -1; }
 QString Account::GetEmail() { return "NULL"; }
@@ -277,14 +275,7 @@ void Member::SetPrev(Member *p) { links[0] = p; }
 void Member::SetNext(Member *n) { links[1] = n; }
 int Member::Count() { return totalMembers; }
 int Member::GetLoanedBook (int index) { return loanedBooks[index]; }
-void Member::DisplayLoanedBooks () //this will probably do some widget stuff
-{
-
-}
-void Member::CheckoutBook (int bookIndex) //checks out a book. pass in the index of the book
-{
-    //LoanedBook loaned = LoanedBook(LoanedBook()::Count(),
-}
+void Member::SetLoanedBook (int index, int loan) { loanedBooks[index] = loan; }
 void Member::ReturnBook (int loanIndex) //returns a book. pass in the index of the loanedbook
 {
 
@@ -373,14 +364,6 @@ bool LoanedBook::isOverDue () //checks if book is overdue
     QDate current = QDate::currentDate();
     return (current.dayOfYear() >= dueDate.dayOfYear()); // !!! DOES NOT ACCOUNT FOR BOOKS CHECKED OUT LATE IN YEAR WHICH ARE DUE EARLY NEXT YEAR !!!
 }
-
-/*unclear if we will go this way yet, but the following 3 functions dynamically create all of their respective objects that are stored in files, place them in a vector (consecutive
- * memory locations), then return a pointer to the first object in the vector. with the number of objects we will be working with, this shouldn't use too much RAM and should be fine.
- * if we do go with this method then we will need to avoid calling any function that writes a new object from the files whenever possible.
- * also feel free to overwrite everything, as long as it produces the same result i don't care.
-*/
-
-//out << isbn << ',' << title << ',' << author << ',' << genre << ',' << imgPath << ',' << pgCount << ',' << dewey << ',' << y << m << d << ',' << isAvailable << '\n'; //write the bok data into the file
 
 Book* LibSystems::InitialiseBooks()
 {
