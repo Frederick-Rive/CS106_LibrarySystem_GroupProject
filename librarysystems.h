@@ -64,8 +64,6 @@ public:
     bool CheckUsername(QString check);
     bool CheckPassword(QString check);
     virtual int GetLoanedBook(int index);
-    virtual void DisplayLoanedBooks();
-    virtual void CheckoutBook(int bookIndex);
     virtual void ReturnBook(int loanIndex);
     virtual int GetIndex();
     virtual QString GetEmail();
@@ -101,8 +99,7 @@ public:
     QDate GetDOB();
     static int Count();
     int GetLoanedBook (int index);
-    void DisplayLoanedBooks ();
-    void CheckoutBook (int bookIndex);
+    void SetLoanedBook (int index, int loan);
     void ReturnBook (int loanIndex);
     Member *Prev();
     Member *Next();

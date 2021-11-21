@@ -9,9 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QFontDatabase roboto;
-
-    roboto.addApplicationFont(":/resources/Roboto/Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/resources/Roboto/Roboto-Regular.ttf");
 
     a.setStyleSheet
             (

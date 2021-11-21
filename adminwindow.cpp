@@ -162,7 +162,7 @@ void MainWindow::DisplayBooks()
 
         for (int index = 0; index < LibSystems::Book::Count(); index++)
         {
-            if (search == "" || (displayBook->GetTitle().toLower().contains(search) || displayBook->GetAuthor().toLower().contains(search) || displayBook->GetGenre().toLower().contains(search) ||  displayBook->GetBlurb().toLower().contains(search)))
+            if (search == "" || (displayBook->GetTitle().toLower().contains(search) || displayBook->GetAuthor().toLower().contains(search) || displayBook->GetGenre().toLower().contains(search)))
             {
                 BookDisplay *display = new BookDisplay(activeElement, displayBook);
 
