@@ -6,6 +6,7 @@
 #include <QDesktopServices>
 #include <QLineEdit>
 #include <QUrl>
+#include <viewbook.h>
 
 MemberWindow::MemberWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent) :
     QMainWindow(parent),
@@ -100,7 +101,7 @@ void MemberWindow::DisplayBooks()
                 qGrid->addWidget(display, row, column);
                 column++;
 
-                //connect(display, &BookDisplay::Edit, this, &MainWindow::EditBook);
+                connect(display, &BookDisplay::BookSignal, this, &MemberWindow::DisplaySingleBook);
                 if (column == 6)
                 {
                     row += 1;
@@ -129,6 +130,19 @@ void MemberWindow::DisplayBooks()
         qScroll->setMaximumSize(1150, 450);
         ui->activeLayout->addWidget(qScroll, 1, 1);
     }
+}
+
+void MemberWindow::DisplaySingleBook(LibSystems::Book *book)
+{
+    delete activeElement;
+    delete qScroll;
+
+    activeElement = new ViewBook(book, this);
+    qScroll = new QScrollArea(this);
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(970, 450);
+    qScroll->setMaximumSize(1150, 450);
+    ui->activeLayout->addWidget(qScroll, 1, 1);
 }
 
 void MemberWindow::on_logout_button_clicked()

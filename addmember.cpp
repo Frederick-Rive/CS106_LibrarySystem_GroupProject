@@ -35,14 +35,13 @@ AddMember::~AddMember()
 
 void AddMember::on_showPassword_clicked(bool checked)
 {
-    switch (checked)
+    if (checked)
     {
-    case true:
         ui->passwordEntry->setEchoMode(QLineEdit::EchoMode::Normal);
-        break;
-    case false:
+    }
+   else
+    {
         ui->passwordEntry->setEchoMode(QLineEdit::EchoMode::Password);
-        break;
     }
 }
 

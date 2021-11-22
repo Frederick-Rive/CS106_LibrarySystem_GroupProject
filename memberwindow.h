@@ -30,6 +30,8 @@ private slots:
 
     void DisplayBooks();
 
+    void DisplaySingleBook(LibSystems::Book *book);
+
 private:
     Ui::MemberWindow *ui;
     LibSystems::Account user;
