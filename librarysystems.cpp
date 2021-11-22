@@ -170,7 +170,7 @@ QString Book::EditBook(QString i, QString t, QString a, QString g, QString cP, Q
     QString rtrn;
     QTextStream ts(&rtrn);
 
-    ts << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << ',' << blurb;
+    ts << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << dy << ',' << isAvailable << ',' << blurb;
 
     return rtrn;
 }

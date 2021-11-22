@@ -83,12 +83,8 @@ void MainWindow::on_addbook_button_clicked()
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
-    LibSystems::Book *last = books;
+    LibSystems::Book *last = books->Next(LibSystems::Book::Count() - 1);
 
-    while (last->Next() != nullptr)
-    {
-        last = last->Next();
-    }
     activeElement = new AddBook(this, last);
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
@@ -107,12 +103,8 @@ void MainWindow::EditBook (LibSystems::Book *book)
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
-    LibSystems::Book *last = books;
+    LibSystems::Book *last = books->Next(LibSystems::Book::Count() - 1);
 
-    while (last->Next() != nullptr)
-    {
-        last = last->Next();
-    }
     activeElement = new AddBook(this, last, book);
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
@@ -211,11 +203,7 @@ void MainWindow::on_addmember_button_clicked()
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; margin-top: 10px; margin-left: 220px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
-    LibSystems::Member *last = members;
-    while(last->Next() != nullptr)
-    {
-        last = last->Next();
-    }
+    LibSystems::Member *last = members->Next(LibSystems::Member::Count() - 1);
 
     activeElement = new AddMember(this, last);
     ui->activeLayout->addWidget(activeElement, 1, 1, Qt::AlignHCenter);
@@ -343,11 +331,7 @@ void MainWindow::EditMember(LibSystems::Member *member)
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; margin-top: 10px; margin-left: 220px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
-    LibSystems::Member *last = members;
-    while(last->Next() != nullptr)
-    {
-        last = last->Next();
-    }
+    LibSystems::Member *last = members->Next(LibSystems::Member::Count() - 1);
 
     activeElement = new AddMember(this, last, member);
     ui->activeLayout->addWidget(activeElement, 1, 1, Qt::AlignHCenter);

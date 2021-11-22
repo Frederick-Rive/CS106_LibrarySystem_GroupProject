@@ -177,7 +177,7 @@
         </font>
        </property>
        <property name="text">
-        <string>username</string>
+        <string>abandonedwharf</string>
        </property>
       </widget>
      </item>
@@ -258,7 +258,7 @@
         </font>
        </property>
        <property name="text">
-        <string>password</string>
+        <string>pissword</string>
        </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
