@@ -17,7 +17,7 @@ MemberWindow::MemberWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystem
     books = b;
     members = m;
     loans = l;
-    user = *a;
+    user = a;
 
     this->setStyleSheet
             (
@@ -27,7 +27,7 @@ MemberWindow::MemberWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystem
                 "QPushButton#facebookButton:hover { background-color: rgba(0,0,0,0); }"
                 "QPushButton#twitterButton:hover { background-color: rgba(0,0,0,0); }"
                 "QPushButton#instaButton:hover { background-color: rgba(0,0,0,0); }"
-                "QLabel#followus { color: #6895e8; }"
+                "QLabel#followus { color: #5A98D1; }"
             );
 
     this->setWindowTitle("Wellington Central Library");
@@ -137,20 +137,43 @@ void MemberWindow::DisplaySingleBook(LibSystems::Book *book)
     delete activeElement;
     delete qScroll;
 
-    activeElement = new ViewBook(book, this);
+    ViewBook *view = new ViewBook(book, user, this);
+    activeElement = view;
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(970, 450);
     qScroll->setMaximumSize(1150, 450);
     ui->activeLayout->addWidget(qScroll, 1, 1);
+
+    connect(view, &ViewBook::Finish, this, &MemberWindow::HomeScreen);
 }
 
 void MemberWindow::on_logout_button_clicked()
 {
-    user = LibSystems::Account();
+    user = members;
     login *log = new login(nullptr, books->Next(), members->Next(), loans->Next());
     log->show();
     hide();
+}
+
+void MemberWindow::HomeScreen()
+{
+    if (activeButton != nullptr)
+    {
+        activeButton->setStyleSheet("");
+        activeButton->setGraphicsEffect(0);
+    }
+    ClearActiveArea();
+    ui->activeSpacer->changeSize(0, 0);
+    QLabel *background = new QLabel(this);
+    background->setMinimumSize(1280, 550);
+    QPixmap img;
+    img.load(":/resources/images/background.png");
+    background->setPixmap(img.scaled(1280, 730));
+    activeElement = background;
+    ui->activeLayout->addWidget(activeElement, 1, 1);
+    qScroll = new QScrollArea;
+    auxWidget = new QWidget;
 }
 
 void MemberWindow::on_facebookButton_clicked()
@@ -187,7 +210,7 @@ void MemberWindow::SetActiveButton(QPushButton *pressed)
         activeButton->setStyleSheet("");
         activeButton->setGraphicsEffect(0);
     }
-    pressed->setStyleSheet("background-color: #FFFFFF; color: #6895e8; ");
+    pressed->setStyleSheet("background-color: #FFFFFF; color: #5A98D1; ");
     QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
     dropShadow->setOffset(0, 2);
     dropShadow->setColor(QColor::fromRgb(68, 95, 158));

@@ -186,6 +186,7 @@ bool Account::CheckUsername(QString check) { return (check == username); } //use
 bool Account::CheckPassword(QString check) { return (check == password); }
 int Account::GetLoanedBook(int index) { return -1; }//this is so we can store the users account as an account pointer                                                                  //and still use these functions if they are a member
 void Account::ReturnBook(int loanIndex) { return; }
+int Account::GetOverdueCount(LoanedBook *loans) { return -1; }
 int Account::GetIndex() { return -1; }
 QString Account::GetEmail() { return "NULL"; }
 QString Account::GetContactNumber() { return "NULL"; }
@@ -276,6 +277,33 @@ void Member::SetNext(Member *n) { links[1] = n; }
 int Member::Count() { return totalMembers; }
 int Member::GetLoanedBook (int index) { return loanedBooks[index]; }
 void Member::SetLoanedBook (int index, int loan) { loanedBooks[index] = loan; }
+int Member::GetOverdueCount(LoanedBook *loans)
+{
+    int rtrn = 0;
+    for (int i : loanedBooks)
+    {
+        if (i >= 0)
+        {
+            if (loans->Next(i)->isOverDue())
+            {
+                rtrn++;
+            }
+        }
+    }
+    return rtrn;
+}
+int Member::GetLoanedCount()
+{
+    int rtrn = 0;
+    for (int i : loanedBooks)
+    {
+        if (i >= 0)
+        {
+            rtrn++;
+        }
+    }
+    return rtrn;
+}
 void Member::ReturnBook (int loanIndex) //returns a book. pass in the index of the loanedbook
 {
 
@@ -344,7 +372,7 @@ void LoanedBook::WriteToMemory() //writes to memory
     int y, m, d;
     dueDate.getDate(&y, &m, &d); //convert date to ints, so it can be written into the file
 
-    out << index << ',' << book << ',' << member << ',' << y << '/' << m<< '/' << d << '\n';
+    out << book << ',' << member << ',' << y << '/' << m<< '/' << d << '\n';
 
     loanFile.flush(); //flush buffer into file
     loanFile.close(); //close
@@ -467,22 +495,21 @@ LoanedBook* LibSystems::InitialseLoans()
 
             read = in.readLine();
 
-            QString parsed[4];
-            int l[3];
+            QString parsed[3];
+            int l[2];
 
             QtHelpers::ParseString(read, &parsed[0]);
             l[0] = parsed[0].toInt();
             l[1] = parsed[1].toInt();
-            l[2] = parsed[2].toInt();
-            QDate date = QtHelpers::QDateFromQString(parsed[3]);
+            QDate date = QtHelpers::QDateFromQString(parsed[2]);
 
             if (loans.size() == 0)
             {
-                loans.push_back(new LoanedBook(l[0], l[1], l[2], date, nullptr));
+                loans.push_back(new LoanedBook(LoanedBook::Count(), l[0], l[1], date, nullptr));
             }
             else
             {
-                loans.push_back(new LoanedBook(l[0], l[1], l[2], date, loans[loans.size() - 1]));
+                loans.push_back(new LoanedBook(LoanedBook::Count(), l[0], l[1], date, loans[loans.size() - 1]));
                 loans[loans.size() - 2]->SetNext(loans[loans.size() - 1]);
             }
         }

@@ -20,12 +20,6 @@ BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
         ui->title->setText("Title: " + book->GetTitle());
         ui->author->setText("Author: " + book->GetAuthor());
         ui->genre->setText("Genre: " + book->GetGenre());
-
-        QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
-        dropShadow->setOffset(0, 4);
-        dropShadow->setColor(QColor::fromRgb(200, 200, 200));
-        dropShadow->setBlurRadius(20);
-        ui->cover->setGraphicsEffect(dropShadow);
     }
     else
     {
@@ -36,13 +30,13 @@ BookDisplay::BookDisplay(QWidget *parent, LibSystems::Book *b) :
         ui->title->setText("---");
         ui->author->setText("---");
         ui->genre->setText("---");
-
-        QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
-        dropShadow->setOffset(0, 4);
-        dropShadow->setColor(QColor::fromRgb(200, 200, 200));
-        dropShadow->setBlurRadius(20);
-        ui->cover->setGraphicsEffect(dropShadow);
     }
+
+    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
+    dropShadow->setOffset(0, 4);
+    dropShadow->setColor(QColor::fromRgb(200, 200, 200));
+    dropShadow->setBlurRadius(20);
+    ui->cover->setGraphicsEffect(dropShadow);
 
     ui->title->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");
     ui->author->setStyleSheet("color: rgba(0,0,0,0); font: 10pt 'Roboto Regular';");

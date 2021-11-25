@@ -16,6 +16,9 @@ public:
     explicit AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *editBook = nullptr);
     ~AddBook();
 
+signals:
+    void Finish();
+
 private slots:
     void on_ddSlider_valueChanged(int value);
 

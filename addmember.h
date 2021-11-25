@@ -16,6 +16,9 @@ public:
     explicit AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems::Member *editMember = nullptr);
     ~AddMember();
 
+signals:
+    void Finish();
+
 private slots:
     void on_showPassword_clicked(bool checked);
 

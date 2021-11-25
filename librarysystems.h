@@ -66,6 +66,7 @@ public:
     virtual int GetLoanedBook(int index);
     virtual void ReturnBook(int loanIndex);
     virtual int GetIndex();
+    virtual int GetOverdueCount(LoanedBook *loans);
     virtual QString GetEmail();
     virtual QString GetContactNumber();
     virtual QString GetFirstName();
@@ -101,6 +102,8 @@ public:
     int GetLoanedBook (int index);
     void SetLoanedBook (int index, int loan);
     void ReturnBook (int loanIndex);
+    int GetOverdueCount(LoanedBook *loans);
+    int GetLoanedCount();
     Member *Prev();
     Member *Next();
     Member *Next(int index);
