@@ -13,11 +13,13 @@ SOURCES += \
     addmember.cpp \
     adminwindow.cpp \
     bookdisplay.cpp \
+    checkoutbooks.cpp \
     librarysystems.cpp \
     login.cpp \
     main.cpp \
     memberinfo.cpp \
     memberwindow.cpp \
+    overduebooks.cpp \
     viewbook.cpp
 
 HEADERS += \
@@ -25,10 +27,12 @@ HEADERS += \
     addmember.h \
     adminwindow.h \
     bookdisplay.h \
+    checkoutbooks.h \
     librarysystems.h \
     login.h \
     memberinfo.h \
     memberwindow.h \
+    overduebooks.h \
     viewbook.h
 
 FORMS += \
@@ -36,8 +40,10 @@ FORMS += \
     addmember.ui \
     adminwindow.ui \
     bookdisplay.ui \
+    checkoutbooks.ui \
     login.ui \
     memberwindow.ui \
+    overduebooks.ui \
     viewbook.ui
 
 # Default rules for deployment.

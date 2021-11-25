@@ -23,6 +23,8 @@ public slots:
 
     void EditMember(LibSystems::Member *member);
 
+    void HomeScreen();
+
 private slots:
     void on_logout_button_clicked();
 
@@ -47,6 +49,8 @@ private slots:
     void on_twitterButton_clicked();
 
     void on_instaButton_clicked();
+
+    void RemoveReservation(int index);
 
 private:
     Ui::MainWindow *ui;

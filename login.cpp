@@ -28,8 +28,8 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
 
     this->setStyleSheet
             (
-                "QPushButton#pushButton { background-color: #6895e8; }"
-                "QPushButton#closeButton { font-size: 60px; color: #6895e8; }"
+                "QPushButton#pushButton { background-color: #5A98D1; }"
+                "QPushButton#closeButton { font-size: 60px; color: #5A98D1; }"
                 "QPushButton#closeButton:hover { font-size: 65px; background-color: rgba(0,0,0,0); color: #38588c; }"
                 "QLabel { font: 24pt 'Roboto Regular'; }"
                 "QLineEdit { border-radius: 20px; border-style: outset; padding-left: 20px; font: 24pt 'Roboto Regular'; }"
@@ -78,7 +78,8 @@ void login::on_pushButton_clicked()
             {
                 if (thisMember->CheckPassword(pEntry))
                 {
-                    *acc = *thisMember;
+                    acc = thisMember;
+                    qDebug().nospace() << acc->GetFullName();
                     QtHelpers::InformationMessageBox("Success", "You have logged on as " + thisMember->GetUsername());
 
                     MemberWindow *m = new MemberWindow(books, members, loans, acc);

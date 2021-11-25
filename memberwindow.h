@@ -17,6 +17,9 @@ public:
     explicit MemberWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent = nullptr);
     ~MemberWindow();
 
+public slots:
+    void HomeScreen();
+
 private slots:
     void on_facebookButton_clicked();
 
@@ -34,7 +37,7 @@ private slots:
 
 private:
     Ui::MemberWindow *ui;
-    LibSystems::Account user;
+    LibSystems::Account *user;
     LibSystems::Book *books = new LibSystems::Book();
     LibSystems::Member *members = new LibSystems::Member();
     LibSystems::LoanedBook *loans = new LibSystems::LoanedBook();

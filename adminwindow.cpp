@@ -12,6 +12,7 @@
 #include <QUrl>
 #include <qlineedit.h>
 #include <memberinfo.h>
+#include <checkoutbooks.h>
 
 MainWindow::MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent)
     : QMainWindow(parent)
@@ -32,7 +33,7 @@ MainWindow::MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::L
                 "QPushButton#facebookButton:hover { background-color: rgba(0,0,0,0); }"
                 "QPushButton#twitterButton:hover { background-color: rgba(0,0,0,0); }"
                 "QPushButton#instaButton:hover { background-color: rgba(0,0,0,0); }"
-                "QLabel#followus { color: #6895e8; }"
+                "QLabel#followus { color: #5A98D1; }"
             );
 
     //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
@@ -80,17 +81,20 @@ void MainWindow::on_addbook_button_clicked()
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Add a new book");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 10px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; padding-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Book *last = books->Next(LibSystems::Book::Count() - 1);
 
-    activeElement = new AddBook(this, last);
+    AddBook *add = new AddBook(this, last);
+    activeElement = add;
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
     qScroll->setMaximumSize(840, 470);
     ui->activeLayout->addWidget(qScroll, 1, 1);
+
+    connect(add, &AddBook::Finish, this, &MainWindow::HomeScreen);
 }
 
 void MainWindow::EditBook (LibSystems::Book *book)
@@ -100,17 +104,20 @@ void MainWindow::EditBook (LibSystems::Book *book)
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Edit an existing book");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; padding-top: 10px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; padding-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Book *last = books->Next(LibSystems::Book::Count() - 1);
 
-    activeElement = new AddBook(this, last, book);
+    AddBook *editBook = new AddBook(this, last, book);
+    activeElement = editBook;
     qScroll = new QScrollArea(this);
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(840, 470);
     qScroll->setMaximumSize(840, 470);
     ui->activeLayout->addWidget(qScroll, 1, 1);
+
+    connect(editBook, &AddBook::Finish, this, &MainWindow::HomeScreen);
 }
 
 void MainWindow::on_viewbook_button_clicked()
@@ -200,13 +207,16 @@ void MainWindow::on_addmember_button_clicked()
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Add a new member");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; margin-top: 10px; margin-left: 220px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px; margin-left: 220px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Member *last = members->Next(LibSystems::Member::Count() - 1);
 
-    activeElement = new AddMember(this, last);
+    AddMember *add = new AddMember(this, last);
+    activeElement = add;
     ui->activeLayout->addWidget(activeElement, 1, 1, Qt::AlignHCenter);
+
+    connect(add, &AddMember::Finish, this, &MainWindow::HomeScreen);
 }
 
 void MainWindow::on_viewmember_button_clicked()
@@ -266,7 +276,7 @@ void MainWindow::DisplayMembers()
             hLayout->addWidget(memberWidgets[i]);
         }
         memberInfo->setMinimumSize(1100, 30);
-        memberInfo->setStyleSheet("color: #6895e8; border: 0px;");
+        memberInfo->setStyleSheet("color: #5A98D1; border: 0px;");
         qGrid->addWidget(memberInfo, 0, 0);
         //Labels up the top so the data isnt meaningless --------------------------------------------------------------
 
@@ -328,13 +338,16 @@ void MainWindow::EditMember(LibSystems::Member *member)
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Edit an existing member");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #6895e8; margin-top: 10px; margin-left: 220px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px; margin-left: 220px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Member *last = members->Next(LibSystems::Member::Count() - 1);
 
-    activeElement = new AddMember(this, last, member);
+    AddMember *editMember = new AddMember(this, last, member);
+    activeElement = editMember;
     ui->activeLayout->addWidget(activeElement, 1, 1, Qt::AlignHCenter);
+
+    connect(editMember, &AddMember::Finish, this, &MainWindow::HomeScreen);
 }
 
 void MainWindow::on_overduebooks_button_clicked()
@@ -347,6 +360,106 @@ void MainWindow::on_checkoutbooks_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->checkoutbooks_button);
+
+    QFile reservationsFile("databases/reservations.csv");
+    if (!reservationsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        int e = QtHelpers::ErrorMessageBox("Error", "Couldn't open file");
+        switch(e)
+        {
+        case (QMessageBox::Cancel):
+            MainWindow::HomeScreen();
+            break;
+        case (QMessageBox::Retry):
+            MainWindow::on_checkoutbooks_button_clicked();
+            break;
+        }
+    }
+    QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
+
+    QTextStream in(&reservationsFile);
+    int index = 0;
+    while (!in.atEnd())
+    {
+        QString s[2];
+        int i[2];
+
+        QtHelpers::ParseString(in.readLine(), s);
+        i[0] = s[0].toInt(); i[1] = s[1].toInt();
+
+        LibSystems::Member *m = members->Next(i[0]);
+        LibSystems::Book *b = books->Next(i[1]);
+        CheckoutBooks *cb = new CheckoutBooks(index, b, m, loans, activeElement);
+        vertLayout->addWidget(cb, index, Qt::AlignHCenter);
+        connect(cb, &CheckoutBooks::Remove, this, &MainWindow::RemoveReservation);
+        index++;
+    }
+
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1);
+}
+
+void MainWindow::RemoveReservation(int index)
+{
+    QFile reservationsFile("databases/reservations.csv");
+    if (reservationsFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&reservationsFile);
+        std::vector<QString> reservationVec;
+        int i = 0;
+        while (!in.atEnd())
+        {
+            if (i != index)
+            {
+                reservationVec.push_back(in.readLine());
+            }
+            else
+            {
+                in.readLine();
+            }
+            i++;
+        }
+
+        reservationsFile.close();
+
+        if (reservationsFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream out(&reservationsFile);
+
+            for (QString s : reservationVec)
+            {
+                out << s << "\n";
+            }
+
+            reservationsFile.flush();
+            reservationsFile.close();
+        }
+    }
+
+    MainWindow::on_checkoutbooks_button_clicked();
+}
+
+void MainWindow::HomeScreen()
+{
+    if (activeButton != nullptr)
+    {
+        activeButton->setStyleSheet("");
+        activeButton->setGraphicsEffect(0);
+    }
+    ClearActiveArea();
+    ui->activeSpacer->changeSize(0, 0);
+    QLabel *background = new QLabel(this);
+    background->setMinimumSize(1280, 550);
+    QPixmap img;
+    img.load(":/resources/images/background.png");
+    background->setPixmap(img.scaled(1280, 730));
+    activeElement = background;
+    ui->activeLayout->addWidget(activeElement, 1, 1);
+    qScroll = new QScrollArea;
+    auxWidget = new QWidget;
 }
 
 void MainWindow::ClearActiveArea()
@@ -368,7 +481,7 @@ void MainWindow::SetActiveButton(QPushButton *pressed)
         activeButton->setStyleSheet("");
         activeButton->setGraphicsEffect(0);
     }
-    pressed->setStyleSheet("background-color: #FFFFFF; color: #6895e8; ");
+    pressed->setStyleSheet("background-color: #FFFFFF; color: #5A98D1; ");
     QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
     dropShadow->setOffset(0, 2);
     dropShadow->setColor(QColor::fromRgb(68, 95, 158));

@@ -12,13 +12,13 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
 
     this->setStyleSheet
             (
-                "QPushButton { background-color: #6895e8; }"
+                "QPushButton { background-color: #5A98D1; }"
                 "QPushButton:hover { background-color: #5687d1; }"
                 "QLineEdit { border-radius: 6px; border-style: outset; font: 10pt 'Roboto Regular'; }"
                 "QSpinBox { border-radius: 6px; border-style: outset; font: 10pt 'Roboto Regular'; }"
                 "QComboBox { font: 10pt 'Roboto Regular'; }"
                 "QTextEdit { border-radius: 25px; border-style: solid; border-width: 1px; background-color: white; padding: 10px; font: 10pt 'Roboto Regular'; }"
-                "QSlider::handle { background-color: #6895e8; border-radius: 2px; border-style: outset; }"
+                "QSlider::handle { background-color: #5A98D1; border-radius: 2px; border-style: outset; }"
                 "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
 
@@ -143,6 +143,8 @@ void AddBook::on_saveButton_clicked()
         bookFile.close();
         QtHelpers::InformationMessageBox("Success", "The changes have been saved to the database");
     }
+
+    emit Finish();
 }
 
 void AddBook::on_monthEntry_valueChanged(int arg1)

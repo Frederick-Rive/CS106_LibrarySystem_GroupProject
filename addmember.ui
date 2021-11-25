@@ -323,6 +323,9 @@
    <property name="maximum">
     <number>2021</number>
    </property>
+   <property name="value">
+    <number>2000</number>
+   </property>
   </widget>
   <widget class="QLabel" name="label_9">
    <property name="geometry">

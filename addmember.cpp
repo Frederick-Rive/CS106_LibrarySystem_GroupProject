@@ -11,13 +11,13 @@ AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems
 
     this->setStyleSheet
             (
-                "QPushButton { background-color: #6895e8; }"
+                "QPushButton { background-color: #5A98D1; }"
                 "QPushButton:hover { background-color: #5687d1; }"
                 "QLineEdit { border-radius: 6px; border-style: outset; font: 16pt 'Roboto Regular'; }"
                 "QSpinBox { border-radius: 6px; border-style: outset; font: 16pt 'Roboto Regular'; }"
                 "QCheckBox { font: 12pt 'Roboto Regular'; } "
                 "QCheckBox::indicator { border: 0px; border-radius: 2px; background-color: white; border-style: solid; }"
-                "QCheckBox::indicator::checked { border: 2px; border-radius: 2px; border-color: white; background-color: #6895e8; }"
+                "QCheckBox::indicator::checked { border: 2px; border-radius: 2px; border-color: white; background-color: #5A98D1; }"
             );
     edit = editMember;
     if (edit != nullptr)
@@ -118,6 +118,8 @@ void AddMember::on_pushButton_clicked()
         memberFile.flush();
         memberFile.close();
     }
+
+    emit Finish();
 }
 
 void AddMember::on_monthEntry_valueChanged(int arg1)
