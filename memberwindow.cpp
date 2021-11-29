@@ -1,12 +1,15 @@
 #include "memberwindow.h"
-#include <login.h>
+#include "login.h"
 #include "ui_memberwindow.h"
 #include "bookdisplay.h"
+#include "viewbook.h"
+#include "overduebooks.h"
+#include "viewmember.h"
+#include "returnbooks.h"
 #include <QGraphicsDropShadowEffect>
 #include <QDesktopServices>
 #include <QLineEdit>
 #include <QUrl>
-#include <viewbook.h>
 
 MemberWindow::MemberWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent) :
     QMainWindow(parent),
@@ -174,6 +177,85 @@ void MemberWindow::HomeScreen()
     ui->activeLayout->addWidget(activeElement, 1, 1);
     qScroll = new QScrollArea;
     auxWidget = new QWidget;
+}
+
+void MemberWindow::on_overdue_button_clicked()
+{
+    ClearActiveArea();
+    SetActiveButton(ui->overdue_button);
+
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Overdue Books");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
+    QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (user->GetLoanedBook(i) >= 0)
+        {
+            if (loans->Next(user->GetLoanedBook(i))->isOverDue())
+            {
+                OverdueBooks *overdue = new OverdueBooks(loans->Next(user->GetLoanedBook(i))->GetBook(books), user, loans->Next(user->GetLoanedBook(i)), activeElement);
+                vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
+            }
+        }
+    }
+
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1);
+}
+
+void MemberWindow::on_account_Button_clicked()
+{
+    ClearActiveArea();
+    SetActiveButton(ui->account_Button);
+
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("My Account");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
+    activeElement = new ViewMember(user, loans, this);
+    qScroll = new QScrollArea;
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1);
+}
+
+void MemberWindow::on_returnButton_clicked()
+{
+    ClearActiveArea();
+    SetActiveButton(ui->returnButton);
+
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Return Books");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
+    QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (user->GetLoanedBook(i) >= 0)
+        {
+            ReturnBooks *rtrn = new ReturnBooks(loans->Next(user->GetLoanedBook(i)), books, members, activeElement);
+            vertLayout->addWidget(rtrn, 0, Qt::AlignHCenter);
+            connect(rtrn, &ReturnBooks::Returned, this, &MemberWindow::on_returnButton_clicked);
+        }
+    }
+
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1);
 }
 
 void MemberWindow::on_facebookButton_clicked()

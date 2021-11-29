@@ -52,6 +52,8 @@ private slots:
 
     void RemoveReservation(int index);
 
+    void DisplaySingleMember(LibSystems::Member *member);
+
 private:
     Ui::MainWindow *ui;
     LibSystems::Account user;

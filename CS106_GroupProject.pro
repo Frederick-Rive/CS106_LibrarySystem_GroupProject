@@ -14,13 +14,16 @@ SOURCES += \
     adminwindow.cpp \
     bookdisplay.cpp \
     checkoutbooks.cpp \
+    customcheckoutbooks.cpp \
     librarysystems.cpp \
     login.cpp \
     main.cpp \
     memberinfo.cpp \
     memberwindow.cpp \
     overduebooks.cpp \
-    viewbook.cpp
+    returnbooks.cpp \
+    viewbook.cpp \
+    viewmember.cpp
 
 HEADERS += \
     addbook.h \
@@ -28,12 +31,15 @@ HEADERS += \
     adminwindow.h \
     bookdisplay.h \
     checkoutbooks.h \
+    customcheckoutbooks.h \
     librarysystems.h \
     login.h \
     memberinfo.h \
     memberwindow.h \
     overduebooks.h \
-    viewbook.h
+    returnbooks.h \
+    viewbook.h \
+    viewmember.h
 
 FORMS += \
     addbook.ui \
@@ -41,10 +47,13 @@ FORMS += \
     adminwindow.ui \
     bookdisplay.ui \
     checkoutbooks.ui \
+    customcheckoutbooks.ui \
     login.ui \
     memberwindow.ui \
     overduebooks.ui \
-    viewbook.ui
+    returnbooks.ui \
+    viewbook.ui \
+    viewmember.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

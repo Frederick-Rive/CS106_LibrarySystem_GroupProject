@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
                 "QPushButton:hover:!pressed { background-color: #38588c; }"
                 "QPushButton:pressed { background-color: #FFFFFF; color: #5A98D1; }"
                 "QPushButton#logout_button { border-color: #000000; }"
-                "QLineEdit { border-radius: 15px; border-style: outset; }"
+                "QLineEdit { border-radius: 15px; border-style: outset; padding-left: 5px;}"
                 "QLabel { font: 16pt 'Roboto Regular'; }"
                 "QScrollBar { background-color: #FFFFFF;  width: 5px; }"
                 "QScrollBar::handle { background: #5A98D1; border: 0px; }"

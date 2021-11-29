@@ -35,6 +35,12 @@ private slots:
 
     void DisplaySingleBook(LibSystems::Book *book);
 
+    void on_account_Button_clicked();
+
+    void on_overdue_button_clicked();
+
+    void on_returnButton_clicked();
+
 private:
     Ui::MemberWindow *ui;
     LibSystems::Account *user;

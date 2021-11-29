@@ -251,26 +251,46 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="return_button">
+          <widget class="QPushButton" name="account_Button">
            <property name="minimumSize">
             <size>
              <width>200</width>
              <height>30</height>
             </size>
            </property>
-           <property name="maximumSize">
+           <property name="text">
+            <string>My Account</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="returnButton">
+           <property name="minimumSize">
             <size>
              <width>200</width>
              <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>Return Books</string>
+            <string>Return Book</string>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_5">
+          <spacer name="horizontalSpacer_12">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -494,7 +514,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

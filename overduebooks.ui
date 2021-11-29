@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>942</width>
-    <height>226</height>
+    <width>1020</width>
+    <height>200</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1020</width>
+    <height>200</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -17,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>30</y>
+     <y>20</y>
      <width>100</width>
      <height>160</height>
     </rect>
@@ -26,20 +32,91 @@
     <string/>
    </property>
   </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>90</y>
-     <width>471</width>
-     <height>41</height>
+     <x>210</x>
+     <y>30</y>
+     <width>131</width>
+     <height>141</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLabel" name="authorLabel_2">
+      <property name="text">
+       <string>Title</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="titleLabel_2">
+      <property name="text">
+       <string>Author</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="isbnLabel_2">
+      <property name="text">
+       <string>ISBN</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="genreLabel_2">
+      <property name="text">
+       <string>Genre</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="dueLabel">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>90</y>
+     <width>241</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>DueDate</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>30</y>
+     <width>201</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="titleLabel">
       <property name="text">
        <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -48,12 +125,18 @@
       <property name="text">
        <string>TextLabel</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="isbnLabel">
       <property name="text">
        <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -62,6 +145,9 @@
       <property name="text">
        <string>TextLabel</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
    </layout>
@@ -69,14 +155,14 @@
   <widget class="QPushButton" name="overdueButton">
    <property name="geometry">
     <rect>
-     <x>730</x>
+     <x>840</x>
      <y>90</y>
-     <width>131</width>
-     <height>41</height>
+     <width>150</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
-    <string>Overdue</string>
+    <string>View Member</string>
    </property>
   </widget>
  </widget>
