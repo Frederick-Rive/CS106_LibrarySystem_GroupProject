@@ -56,7 +56,6 @@ void CheckoutBooks::on_confirmButton_clicked()
             if (member->GetLoanedBook(i) == -1)
             {
                 member->SetLoanedBook(i, newloan->GetIndex());
-                qDebug().nospace() << "aaa";
                 break;
             }
         }

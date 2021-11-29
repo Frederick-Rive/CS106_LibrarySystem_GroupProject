@@ -64,8 +64,8 @@ public:
     bool CheckUsername(QString check);
     bool CheckPassword(QString check);
     virtual int GetLoanedBook(int index);
-    virtual void ReturnBook(int loanIndex);
     virtual int GetIndex();
+    virtual int GetLoanedCount();
     virtual int GetOverdueCount(LoanedBook *loans);
     virtual QString GetEmail();
     virtual QString GetContactNumber();

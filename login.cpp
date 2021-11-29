@@ -24,6 +24,10 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
     {
         QDir().mkdir("databases");
         QDir().mkdir("databases/covers");
+
+        QFile books("databases/books.csv"); QFile members("databases/members.csv"); QFile loans("databases/loans.csv"); QFile reserves("databases/reservations.csv");
+        books.open(QIODevice::WriteOnly);members.open(QIODevice::WriteOnly);loans.open(QIODevice::WriteOnly);reserves.open(QIODevice::WriteOnly);
+        books.close();members.close();loans.close();reserves.close();
     }
 
     this->setStyleSheet
@@ -106,6 +110,6 @@ void login::on_pushButton_clicked()
 
 void login::on_closeButton_clicked()
 {
-    this->hide();
+    this->close();
 }
 

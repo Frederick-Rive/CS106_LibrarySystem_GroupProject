@@ -12,6 +12,7 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
 
     this->setStyleSheet
             (
+                "QLabel { color: #5A98D1; }"
                 "QPushButton { background-color: #5A98D1; }"
                 "QPushButton:hover { background-color: #5687d1; }"
                 "QLineEdit { border-radius: 6px; border-style: outset; font: 10pt 'Roboto Regular'; }"

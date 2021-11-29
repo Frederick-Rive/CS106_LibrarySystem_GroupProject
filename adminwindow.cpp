@@ -4,6 +4,11 @@
 #include "bookdisplay.h"
 #include "addmember.h"
 #include "login.h"
+#include "memberinfo.h"
+#include "checkoutbooks.h"
+#include "customcheckoutbooks.h"
+#include "overduebooks.h"
+#include "viewmember.h"
 #include <librarysystems.h>
 #include <QLabel>
 #include <QLayout>
@@ -11,8 +16,6 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <qlineedit.h>
-#include <memberinfo.h>
-#include <checkoutbooks.h>
 
 MainWindow::MainWindow(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, LibSystems::Account *a, QWidget *parent)
     : QMainWindow(parent)
@@ -64,7 +67,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::on_logout_button_clicked()
 {
     user = LibSystems::Account();
@@ -78,7 +80,6 @@ void MainWindow::on_addbook_button_clicked()
     ClearActiveArea();
     SetActiveButton(ui->addbook_button);
 
-    auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Add a new book");
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; padding-top: 10px;");
@@ -101,7 +102,6 @@ void MainWindow::EditBook (LibSystems::Book *book)
 {
     ClearActiveArea();
 
-    auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Edit an existing book");
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; padding-top: 10px;");
@@ -338,7 +338,7 @@ void MainWindow::EditMember(LibSystems::Member *member)
     auxWidget = new QLabel(this);
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Edit an existing member");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px; margin-left: 220px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 15px; margin-left: 220px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Member *last = members->Next(LibSystems::Member::Count() - 1);
@@ -354,12 +354,57 @@ void MainWindow::on_overduebooks_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->overduebooks_button);
+
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Overdue Books");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
+
+    QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
+
+    LibSystems::LoanedBook *thisLoan = loans->Next();
+
+    for (int i = 0; i < LibSystems::LoanedBook::Count(); i++)
+    {
+        if (thisLoan->isOverDue())
+        {
+            OverdueBooks *overdue = new OverdueBooks(thisLoan->GetBook(books), thisLoan->GetMember(members), thisLoan, activeElement);
+            connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplaySingleMember);
+            vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
+        }
+        thisLoan = thisLoan->Next();
+    }
+
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1);
+}
+
+void MainWindow::DisplaySingleMember(LibSystems::Member *member)
+{
+    delete activeElement;
+    delete qScroll;
+
+    activeElement = new ViewMember(member, loans, this);
+    qScroll = new QScrollArea;
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1);
 }
 
 void MainWindow::on_checkoutbooks_button_clicked()
 {
     ClearActiveArea();
     SetActiveButton(ui->checkoutbooks_button);
+
+    QLabel *lab = new QLabel(auxWidget);
+    lab->setText("Checkout Books");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QFile reservationsFile("databases/reservations.csv");
     if (!reservationsFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -377,6 +422,15 @@ void MainWindow::on_checkoutbooks_button_clicked()
     }
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
 
+    CustomCheckoutBooks *ccb = new CustomCheckoutBooks(books, members, loans, activeElement);
+    vertLayout->addWidget(ccb, 0, Qt::AlignHCenter);
+
+    QLabel *reservationLabel = new QLabel(activeElement);
+    reservationLabel->setText("Reservations:");
+    reservationLabel->setStyleSheet("color: #5A98D1; font: 24pt 'Roboto Regular';");
+    vertLayout->addWidget(reservationLabel, 0, Qt::AlignHCenter);
+
+
     QTextStream in(&reservationsFile);
     int index = 0;
     while (!in.atEnd())
@@ -390,7 +444,7 @@ void MainWindow::on_checkoutbooks_button_clicked()
         LibSystems::Member *m = members->Next(i[0]);
         LibSystems::Book *b = books->Next(i[1]);
         CheckoutBooks *cb = new CheckoutBooks(index, b, m, loans, activeElement);
-        vertLayout->addWidget(cb, index, Qt::AlignHCenter);
+        vertLayout->addWidget(cb, 0, Qt::AlignHCenter);
         connect(cb, &CheckoutBooks::Remove, this, &MainWindow::RemoveReservation);
         index++;
     }
@@ -467,9 +521,9 @@ void MainWindow::ClearActiveArea()
     delete activeElement;
     delete qScroll;
     delete auxWidget;
-    activeElement = new QWidget;
-    qScroll = new QScrollArea;
-    auxWidget = new QWidget;
+    activeElement = new QWidget(this);
+    qScroll = new QScrollArea(this);
+    auxWidget = new QWidget(this);
 
     ui->activeSpacer->changeSize(0, 50);
 }

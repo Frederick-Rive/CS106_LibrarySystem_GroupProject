@@ -13,14 +13,19 @@ class OverdueBooks : public QWidget
     Q_OBJECT
 
 public:
-    explicit OverdueBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent = nullptr);
+    OverdueBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent = nullptr);
+    OverdueBooks(LibSystems::Book *b, LibSystems::Account *a, LibSystems::LoanedBook *l, QWidget *parent = nullptr);
     ~OverdueBooks();
+
+signals:
+    void DisplayMember(LibSystems::Member *m);
+
+private slots:
+    void EmitMember();
 
 private:
     Ui::OverdueBooks *ui;
-    LibSystems::Book *book;
     LibSystems::Member *member;
-    LibSystems::LoanedBook *loan;
 };
 
 #endif // OVERDUEBOOKS_H

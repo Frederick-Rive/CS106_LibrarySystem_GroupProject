@@ -11,6 +11,7 @@ AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems
 
     this->setStyleSheet
             (
+                "QLabel { color: #5A98D1; }"
                 "QPushButton { background-color: #5A98D1; }"
                 "QPushButton:hover { background-color: #5687d1; }"
                 "QLineEdit { border-radius: 6px; border-style: outset; font: 16pt 'Roboto Regular'; }"

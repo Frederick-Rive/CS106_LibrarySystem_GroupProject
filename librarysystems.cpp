@@ -185,7 +185,7 @@ QString Account::GetPassword() { return password; }
 bool Account::CheckUsername(QString check) { return (check == username); } //use these to validate login data
 bool Account::CheckPassword(QString check) { return (check == password); }
 int Account::GetLoanedBook(int index) { return -1; }//this is so we can store the users account as an account pointer                                                                  //and still use these functions if they are a member
-void Account::ReturnBook(int loanIndex) { return; }
+int Account::GetLoanedCount() {return -1; }
 int Account::GetOverdueCount(LoanedBook *loans) { return -1; }
 int Account::GetIndex() { return -1; }
 QString Account::GetEmail() { return "NULL"; }
@@ -304,10 +304,7 @@ int Member::GetLoanedCount()
     }
     return rtrn;
 }
-void Member::ReturnBook (int loanIndex) //returns a book. pass in the index of the loanedbook
-{
-
-}
+void Member::ReturnBook (int loanIndex) { loanedBooks[loanIndex] = -1; }
 QString Member::EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date)
 {
     username = u;
@@ -390,7 +387,7 @@ void LoanedBook::SetNext(LoanedBook *n) { links[1] = n; }
 bool LoanedBook::isOverDue () //checks if book is overdue
 {
     QDate current = QDate::currentDate();
-    return (current.dayOfYear() >= dueDate.dayOfYear()); // !!! DOES NOT ACCOUNT FOR BOOKS CHECKED OUT LATE IN YEAR WHICH ARE DUE EARLY NEXT YEAR !!!
+    return ((dueDate.month() >= current.month()) ? current.dayOfYear() >= dueDate.dayOfYear() : false); //accounts for books that are due early next year
 }
 
 Book* LibSystems::InitialiseBooks()
