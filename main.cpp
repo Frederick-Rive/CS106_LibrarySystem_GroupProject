@@ -21,7 +21,8 @@ int main(int argc, char *argv[])
                 "QLabel { font: 16pt 'Roboto Regular'; }"
                 "QScrollBar { background-color: #FFFFFF;  width: 5px; }"
                 "QScrollBar::handle { background: #5A98D1; border: 0px; }"
-                "QScrollArea { border: 1px; border-style: outset; border-radius: 5px; }"
+                "QScrollArea { border: 1px; border-style: outset; }"
+                "QMessageBox QPushButton { background-color: #5A98D1; padding: 10px 30px; }"
             );
 
     login l;

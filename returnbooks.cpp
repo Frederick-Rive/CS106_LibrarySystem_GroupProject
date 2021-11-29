@@ -1,5 +1,6 @@
 #include "returnbooks.h"
 #include "ui_returnbooks.h"
+#include "messageboxes.h"
 #include <QGraphicsDropShadowEffect>
 
 ReturnBooks::ReturnBooks(LibSystems::LoanedBook *l, LibSystems::Book *b, LibSystems::Member *m, QWidget *parent) :
@@ -47,7 +48,7 @@ ReturnBooks::~ReturnBooks()
     delete ui;
 }
 
-void ReturnBooks::on_returnButton_clicked()
+void ReturnBook ()
 {
     LibSystems::Book *thisBook = loan->GetBook(books);
     LibSystems::Member *thisMember = loan->GetMember(members);
@@ -57,7 +58,7 @@ void ReturnBooks::on_returnButton_clicked()
     QFile bookFile("databases/books.csv");
     if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        QtHelpers::ErrorMessageBox("Error", "There was an error writing these changes");
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
         return;
     }
     bookFile.flush();
@@ -74,7 +75,6 @@ void ReturnBooks::on_returnButton_clicked()
     {
         if (thisMember->GetLoanedBook(i) == loan->GetIndex())
         {
-            qDebug().nospace() << "return" << i;
             thisMember->ReturnBook(i);
             break;
         }
@@ -83,7 +83,7 @@ void ReturnBooks::on_returnButton_clicked()
     QFile memberFile("databases/members.csv");
     if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        QtHelpers::ErrorMessageBox("Error", "There was an error saving this data");
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
         return;
     }
     memberFile.flush();
@@ -100,7 +100,7 @@ void ReturnBooks::on_returnButton_clicked()
     QFile loanFile("databases/loans.csv");
     if (!loanFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QtHelpers::ErrorMessageBox("Error", "There was an error saving this data");
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
         return;
     }
 
@@ -123,7 +123,7 @@ void ReturnBooks::on_returnButton_clicked()
     loanFile.close();
     if (!loanFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
     {
-        QtHelpers::ErrorMessageBox("Error", "There was an error saving this data");
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
         return;
     }
 
@@ -137,8 +137,13 @@ void ReturnBooks::on_returnButton_clicked()
     loanFile.flush();
     loanFile.close();
 
-    QtHelpers::InformationMessageBox("Success", "Your book has been returned");
+    LibMessageBoxes::InformationMessageBox("Success", "Your book has been returned");
 
-    emit Returned();
+    emit Finish();
+}
+
+void FlagReturned ()
+{
+
 }
 

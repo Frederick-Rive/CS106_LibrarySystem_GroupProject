@@ -20,6 +20,7 @@ SOURCES += \
     main.cpp \
     memberinfo.cpp \
     memberwindow.cpp \
+    messageboxes.cpp \
     overduebooks.cpp \
     returnbooks.cpp \
     viewbook.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     login.h \
     memberinfo.h \
     memberwindow.h \
+    messageboxes.h \
     overduebooks.h \
     returnbooks.h \
     viewbook.h \

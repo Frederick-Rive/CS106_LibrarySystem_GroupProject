@@ -1,5 +1,6 @@
 #include "viewmember.h"
 #include "ui_viewmember.h"
+#include "messageboxes.h"
 
 ViewMember::ViewMember(LibSystems::Member *member, LibSystems::LoanedBook *loans, QWidget *parent) :
     QWidget(parent),
@@ -46,6 +47,6 @@ ViewMember::~ViewMember()
 
 void ViewMember::on_pushButton_clicked()
 {
-    QtHelpers::InformationMessageBox("Success", "An email has been sent to the member");
+    LibMessageBoxes::InformationMessageBox("Success", "An email has been sent to the member");
 }
 

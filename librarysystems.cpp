@@ -1,32 +1,11 @@
 #include "librarysystems.h"
+#include <QPixmap>
 
 using namespace LibSystems; //if you arent using this namespace by default, remember to prefix anything you use from this file with LibSystems::
 
 int Book::totalBooks = 0; //define static variables, used to determine the number of objects of each type
 int Member::totalMembers = 0;
 int LoanedBook::totalLoans = 0;
-
-int QtHelpers::ErrorMessageBox(QString errorName, QString errorText) //maybe have some functions that make basic error messages? idk
-{
-    QMessageBox *error = new QMessageBox;
-    error->setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
-    error->setWindowTitle(errorName);
-    error->setText(errorText);
-    error->setModal(true);
-    error->setMinimumSize(100, 80);
-    return error->exec();
-}
-
-int QtHelpers::InformationMessageBox(QString infoName, QString infoText) //maybe have some functions that make basic error messages? idk
-{
-    QMessageBox *info = new QMessageBox;
-    info->setStandardButtons(QMessageBox::Ok);
-    info->setWindowTitle(infoName);
-    info->setText(infoText);
-    info->setModal(true);
-    info->setMinimumSize(100, 80);
-    return info->exec();
-}
 
 void QtHelpers::ParseString (QString input, QString *output) //turns the string we get from the file into usable data, stored in a QString array.
 { //make sure that the array is the correct size for the number of comma seperated strings within the input string, or else there will be errors
@@ -50,7 +29,6 @@ void QtHelpers::ParseString (QString input, QString *output) //turns the string 
         i++;
     }
 }
-
 QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate (only use if the qstring is in yyyymmdd format). used to remake dates stored in files
 {
     QDate rtrn;
@@ -69,9 +47,9 @@ QDate QtHelpers::QDateFromQString (QString input) //turns a QString into a QDate
         }
     }
 
-    int y = dates[0].toInt();
+    int d = dates[0].toInt();
     int m = dates[1].toInt();
-    int d = dates[2].toInt();
+    int y = dates[2].toInt();
 
     rtrn.setDate(y, m, d);
 
@@ -321,7 +299,7 @@ QString Member::EditMember(QString u, QString p, QString e, QString c, QString f
     QString rtrn;
     QTextStream ts(&rtrn);
 
-    ts << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << y << '/' << m << '/' << d; //send data to textstream
+    ts << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << d << '/' << m << '/' <<y; //send data to textstream
 
     for (int i : loanedBooks)
     {
@@ -331,12 +309,13 @@ QString Member::EditMember(QString u, QString p, QString e, QString c, QString f
     return rtrn;
 }
 
-LoanedBook::LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev) //constructor
+LoanedBook::LoanedBook (int b, int m, QDate dd, LoanedBook *prev, bool r) //constructor
 {
-    index = i;
+    index = b;
     book = b;
     member = m;
     dueDate = dd;
+    returned = r;
 
     links[0] = prev;
     links[1] = nullptr;
@@ -369,12 +348,14 @@ void LoanedBook::WriteToMemory() //writes to memory
     int y, m, d;
     dueDate.getDate(&y, &m, &d); //convert date to ints, so it can be written into the file
 
-    out << book << ',' << member << ',' << y << '/' << m<< '/' << d << '\n';
+    out << index << ',' << book << ',' << member << ',' << returned << ',' << d << '/' << m<< '/' << y << '\n';
 
     loanFile.flush(); //flush buffer into file
     loanFile.close(); //close
 }
 int LoanedBook::GetIndex() { return index; } //getters
+bool LoanedBook::GetReturned() { return returned; }
+void LoanedBook::SetReturned(bool r) { returned = r; } // setter for this bool, which is designed to be variable
 int LoanedBook::Count() { return totalLoans; }
 QDate LoanedBook::GetDueDate () { return dueDate; }
 Book* LoanedBook::GetBook(Book *books) { return books->Next(book); }
@@ -492,21 +473,22 @@ LoanedBook* LibSystems::InitialseLoans()
 
             read = in.readLine();
 
-            QString parsed[3];
+            QString parsed[4];
             int l[2];
 
             QtHelpers::ParseString(read, &parsed[0]);
             l[0] = parsed[0].toInt();
             l[1] = parsed[1].toInt();
-            QDate date = QtHelpers::QDateFromQString(parsed[2]);
+            bool returned = (parsed[2] == '1');
+            QDate date = QtHelpers::QDateFromQString(parsed[3]);
 
             if (loans.size() == 0)
             {
-                loans.push_back(new LoanedBook(LoanedBook::Count(), l[0], l[1], date, nullptr));
+                loans.push_back(new LoanedBook(l[0], l[1], date, nullptr, returned));
             }
             else
             {
-                loans.push_back(new LoanedBook(LoanedBook::Count(), l[0], l[1], date, loans[loans.size() - 1]));
+                loans.push_back(new LoanedBook(l[0], l[1], date, loans[loans.size() - 1], returned));
                 loans[loans.size() - 2]->SetNext(loans[loans.size() - 1]);
             }
         }

@@ -1,5 +1,6 @@
 #include "viewbook.h"
 #include "ui_viewbook.h"
+#include "messageboxes.h"
 #include <QGraphicsDropShadowEffect>
 
 ViewBook::ViewBook(LibSystems::Book *b, LibSystems::Account *u, QWidget *parent) :
@@ -53,7 +54,7 @@ void ViewBook::ReserveBook()
 
     if (!reservations.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
-        QtHelpers::ErrorMessageBox("Error", "The program failed to reserve this book for you");
+        LibMessageBoxes::ErrorMessageBox("Error", "The program failed to reserve this book for you");
         return;
     }
 
@@ -74,7 +75,7 @@ void ViewBook::ReserveBook()
     QFile bookFile("databases/books.csv");
     if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        QtHelpers::ErrorMessageBox("Error", "The program failed to reserve this book for you");
+        LibMessageBoxes::ErrorMessageBox("Error", "The program failed to reserve this book for you");
         return;
     }
     bookFile.flush();
@@ -86,7 +87,7 @@ void ViewBook::ReserveBook()
         book = book->Next();
     }
 
-    QtHelpers::InformationMessageBox("Success", "Your reservation has been made. Please come to the library in person to collect your book, and bring your card.");
+    LibMessageBoxes::InformationMessageBox("Success", "Your reservation has been made. Please come to the library in person to collect your book, and bring your card.");
 
     emit Finish();
 }

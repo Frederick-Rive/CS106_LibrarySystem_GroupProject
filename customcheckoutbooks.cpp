@@ -1,5 +1,6 @@
 #include "customcheckoutbooks.h"
 #include "ui_customcheckoutbooks.h"
+#include "messageboxes.h"
 
 CustomCheckoutBooks::CustomCheckoutBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent) :
     QWidget(parent),
@@ -37,7 +38,7 @@ void CustomCheckoutBooks::on_pushButton_clicked()
             {
                 loans = (LibSystems::LoanedBook::Count() > 0) ? loans->Next(LibSystems::LoanedBook::Count() - 1) : loans;
 
-                LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(LibSystems::LoanedBook::Count(), selectedBook->GetIndex(), selectedMember->GetIndex(), QDate::currentDate().addDays(14), loans);
+                LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(selectedBook->GetIndex(), selectedMember->GetIndex(), QDate::currentDate().addDays(14), loans);
                 loans->SetNext(newloan);
                 newloan->WriteToMemory();
 
@@ -46,7 +47,7 @@ void CustomCheckoutBooks::on_pushButton_clicked()
                 QFile bookFile("databases/books.csv");
                 if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
                 {
-                    QtHelpers::ErrorMessageBox("Error", "There was an error writing these changes");
+                    LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
                     return;
                 }
                 bookFile.flush();
@@ -71,7 +72,7 @@ void CustomCheckoutBooks::on_pushButton_clicked()
                 QFile memberFile("databases/members.csv");
                 if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
                 {
-                    QtHelpers::ErrorMessageBox("Error", "There was an error saving this data");
+                    LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
                     return;
                 }
                 memberFile.flush();
@@ -87,21 +88,21 @@ void CustomCheckoutBooks::on_pushButton_clicked()
 
                 ui->bcountLabel->setText(QString::number(selectedMember->GetLoanedCount()));
 
-                QtHelpers::InformationMessageBox("Success", "The book will be due on " + newloan->GetDueDate().toString());
+                LibMessageBoxes::InformationMessageBox("Success", "The book will be due on " + newloan->GetDueDate().toString());
             }
             else
             {
-                QtHelpers::ErrorMessageBox("Error", "The member has the maximum number of books currently checked out");
+                LibMessageBoxes::ErrorMessageBox("Error", "The member has the maximum number of books currently checked out");
             }
         }
         else
         {
-            QtHelpers::ErrorMessageBox("Error", "This book is currently unavailable");
+            LibMessageBoxes::ErrorMessageBox("Error", "This book is currently unavailable");
         }
     }
     else
     {
-        QtHelpers::ErrorMessageBox("Error", "Book / Member not set");
+        LibMessageBoxes::ErrorMessageBox("Error", "Book / Member not set");
     }
 }
 
