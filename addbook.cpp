@@ -1,6 +1,7 @@
 #include "addbook.h"
 #include "ui_addbook.h"
 #include "QFileDialog"
+#include "messageboxes.h"
 
 AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *editBook) :
     QWidget(parent),
@@ -85,7 +86,7 @@ void AddBook::on_saveButton_clicked()
         if (book != nullptr) { book->SetNext(newBook); }
         book = newBook;
 
-        QtHelpers::InformationMessageBox("Success", "The new book has been added to the database");
+        LibMessageBoxes::InformationMessageBox("Success", "The new book has been added to the database");
     }
     else
     {
@@ -142,7 +143,7 @@ void AddBook::on_saveButton_clicked()
 
         bookFile.flush();
         bookFile.close();
-        QtHelpers::InformationMessageBox("Success", "The changes have been saved to the database");
+        LibMessageBoxes::InformationMessageBox("Success", "The changes have been saved to the database");
     }
 
     emit Finish();

@@ -17,10 +17,11 @@ public:
     ~ReturnBooks();
 
 signals:
-    void Returned();
+    void Finish();
 
 private slots:
-    void on_returnButton_clicked();
+    void ReturnBook();
+    void FlagReturned();
 
 private:
     Ui::ReturnBooks *ui;

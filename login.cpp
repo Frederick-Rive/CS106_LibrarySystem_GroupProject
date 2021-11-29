@@ -2,6 +2,7 @@
 #include "adminwindow.h"
 #include "memberwindow.h"
 #include "ui_login.h"
+#include "messageboxes.h"
 #include <QMainWindow>
 #include <librarysystems.h>
 #include <QDir>
@@ -64,7 +65,7 @@ void login::on_pushButton_clicked()
         if (LibSystems::Admin.CheckPassword(pEntry))
         {
             *acc = LibSystems::Admin;
-            QtHelpers::InformationMessageBox("Success", "You have logged on as the Admin");
+            LibMessageBoxes::InformationMessageBox("Success", "You have logged on as the Admin");
 
             MainWindow *m = new MainWindow(books, members, loans, acc);
             m->show();
@@ -83,8 +84,7 @@ void login::on_pushButton_clicked()
                 if (thisMember->CheckPassword(pEntry))
                 {
                     acc = thisMember;
-                    qDebug().nospace() << acc->GetFullName();
-                    QtHelpers::InformationMessageBox("Success", "You have logged on as " + thisMember->GetUsername());
+                    LibMessageBoxes::InformationMessageBox("Success", "You have logged on as " + thisMember->GetUsername());
 
                     MemberWindow *m = new MemberWindow(books, members, loans, acc);
                     m->show();
@@ -97,7 +97,7 @@ void login::on_pushButton_clicked()
         }
     }
 
-    switch(QtHelpers::ErrorMessageBox("Error", "Incorrect username/password"))
+    switch(LibMessageBoxes::ErrorMessageBox("Error", "Incorrect username/password"))
     {
     case QMessageBox::Retry:
         //ui->username_LineEdit->setText("");

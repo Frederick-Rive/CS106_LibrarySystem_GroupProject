@@ -1,5 +1,6 @@
 #include "checkoutbooks.h"
 #include "ui_checkoutbooks.h"
+#include "messageboxes.h"
 #include <QGraphicsDropShadowEffect>
 
 CheckoutBooks::CheckoutBooks(int i, LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent) :
@@ -47,7 +48,7 @@ void CheckoutBooks::on_confirmButton_clicked()
     if (member->GetLoanedCount() < 5)
     {
         LibSystems::LoanedBook *last = (loans->Count() > 0) ? loans->Next(LibSystems::LoanedBook::Count() - 1) : loans;
-        LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(LibSystems::LoanedBook::Count(), book->GetIndex(), member->GetIndex(), QDate::currentDate().addDays(14), last);
+        LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(book->GetIndex(), member->GetIndex(), QDate::currentDate().addDays(14), last);
         last->SetNext(newloan);
         newloan->WriteToMemory();
 
@@ -68,7 +69,7 @@ void CheckoutBooks::on_confirmButton_clicked()
         QFile memberFile("databases/members.csv");
         if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
-            QtHelpers::ErrorMessageBox("Error", "There was an error saving this data");
+            LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
             return;
         }
         memberFile.flush();
@@ -80,19 +81,19 @@ void CheckoutBooks::on_confirmButton_clicked()
             member = member->Next();
         }
 
-        QtHelpers::InformationMessageBox("Checkout confirmed", "The book will be due on " + newloan->GetDueDate().toString());
+        LibMessageBoxes::InformationMessageBox("Checkout confirmed", "The book will be due on " + newloan->GetDueDate().toString());
         emit Remove(index);
     }
     else
     {
-        QtHelpers::ErrorMessageBox("Error", "The member's current inventory is too large to give them a new book. They will need to return at least one book first.");
+        LibMessageBoxes::ErrorMessageBox("Error", "The member's current inventory is too large to give them a new book. They will need to return at least one book first.");
         return;
     }
 }
 
 void CheckoutBooks::on_dismissButton_clicked()
 {
-    QtHelpers::InformationMessageBox("Checkout rejected", "hehe");
+    LibMessageBoxes::InformationMessageBox("Checkout rejected", "hehe");
 
     book->SetAvailable(true);
 
@@ -104,7 +105,7 @@ void CheckoutBooks::on_dismissButton_clicked()
     QFile bookFile("databases/books.csv");
     if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        QtHelpers::ErrorMessageBox("Error", "There was an error writing these changes");
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
         return;
     }
     bookFile.flush();

@@ -19,25 +19,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="returnButton">
-   <property name="geometry">
-    <rect>
-     <x>800</x>
-     <y>90</y>
-     <width>150</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>150</width>
-     <height>30</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>Return</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="dueLabel">
    <property name="geometry">
     <rect>
@@ -170,6 +151,31 @@
    <property name="text">
     <string/>
    </property>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>800</x>
+     <y>59</y>
+     <width>160</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="outputLayout">
+    <item>
+     <widget class="QPushButton" name="returnButton">
+      <property name="minimumSize">
+       <size>
+        <width>150</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Return</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

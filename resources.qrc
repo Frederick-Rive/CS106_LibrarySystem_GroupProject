@@ -11,5 +11,6 @@
         <file>images/facebooklogo.png</file>
         <file>images/twitterlogo.png</file>
         <file>Roboto/Roboto-Regular.ttf</file>
+        <file>images/tick.png</file>
     </qresource>
 </RCC>

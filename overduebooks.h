@@ -15,6 +15,9 @@ class OverdueBooks : public QWidget
 public:
     OverdueBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent = nullptr);
     OverdueBooks(LibSystems::Book *b, LibSystems::Account *a, LibSystems::LoanedBook *l, QWidget *parent = nullptr);
+
+    OverdueBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, int time, QWidget *parent = nullptr);
+    OverdueBooks(LibSystems::Book *b, LibSystems::Account *a, LibSystems::LoanedBook *l, int time, QWidget *parent = nullptr);
     ~OverdueBooks();
 
 signals:

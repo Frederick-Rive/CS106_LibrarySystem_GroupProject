@@ -4,8 +4,8 @@
 #include <QTextStream>
 #include <ctime>
 #include <vector>
-#include <QMessageBox>
 #include <QDate>
+#include <QPushButton>
 
 /*Declarations of classes, data members, and member functions. Definitions of functions are found within the librarysystems.cpp file.
  * Including this header file in a cpp file will allow you to use any object / function definied inside.
@@ -116,16 +116,19 @@ class LoanedBook //loanedbook class contains the index of a book and the member 
 {
 private: //data members
     int index, book, member;
+    bool returned;
     QDate dueDate;
     LoanedBook *links[2];
     static int totalLoans;
 
 public:
-    LoanedBook (int i, int b, int m, QDate dd, LoanedBook *prev);
+    LoanedBook (int b, int m, QDate dd, LoanedBook *prev, bool r = false);
     LoanedBook();
     ~LoanedBook();
     void WriteToMemory();
     int GetIndex();
+    bool GetReturned();
+    void SetReturned(bool r);
     static int Count();
     QDate GetDueDate ();
     Book* GetBook(Book *books);
@@ -146,8 +149,6 @@ LoanedBook* InitialseLoans();
 namespace QtHelpers
 {
 void ParseString(QString input, QString *output);
-int ErrorMessageBox(QString errorName, QString errorText);
-int InformationMessageBox(QString infoName, QString infoText);
 QDate QDateFromQString (QString input);
 }
 #endif // LIBRARYSYSTEMS_H

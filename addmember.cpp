@@ -1,5 +1,6 @@
 #include "addmember.h"
 #include "ui_addmember.h"
+#include "messageboxes.h"
 
 AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems::Member *editMember) :
     QWidget(parent),
@@ -59,7 +60,7 @@ void AddMember::on_pushButton_clicked()
         if (member != nullptr) { member->SetNext(newMember); }
         member = newMember;
 
-        QtHelpers::InformationMessageBox("Success", "The new member has been added to the database");
+        LibMessageBoxes::InformationMessageBox("Success", "The new member has been added to the database");
     }
     else
     {
@@ -90,7 +91,7 @@ void AddMember::on_pushButton_clicked()
         }
         else
         {
-            QtHelpers::ErrorMessageBox("Error", "File Didn't Open");
+            LibMessageBoxes::ErrorMessageBox("Error", "File Didn't Open");
             return;
         }
 
@@ -108,11 +109,11 @@ void AddMember::on_pushButton_clicked()
                 }
             }
 
-            QtHelpers::InformationMessageBox("Success", "Your edits have been saved to the database");
+            LibMessageBoxes::InformationMessageBox("Success", "Your edits have been saved to the database");
         }
         else
         {
-            QtHelpers::ErrorMessageBox("Error", "File Didn't Open");
+            LibMessageBoxes::ErrorMessageBox("Error", "File Didn't Open");
             return;
         }
 

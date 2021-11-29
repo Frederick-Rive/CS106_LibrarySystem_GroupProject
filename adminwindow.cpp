@@ -9,6 +9,7 @@
 #include "customcheckoutbooks.h"
 #include "overduebooks.h"
 #include "viewmember.h"
+#include "messageboxes.h"
 #include <librarysystems.h>
 #include <QLabel>
 #include <QLayout>
@@ -356,19 +357,26 @@ void MainWindow::on_overduebooks_button_clicked()
     SetActiveButton(ui->overduebooks_button);
 
     QLabel *lab = new QLabel(auxWidget);
-    lab->setText("Overdue Books");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    lab->setText("Overdue Log");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 15px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
 
     LibSystems::LoanedBook *thisLoan = loans->Next();
+    QDate current = QDate::currentDate();
 
     for (int i = 0; i < LibSystems::LoanedBook::Count(); i++)
     {
         if (thisLoan->isOverDue())
         {
             OverdueBooks *overdue = new OverdueBooks(thisLoan->GetBook(books), thisLoan->GetMember(members), thisLoan, activeElement);
+            connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplaySingleMember);
+            vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
+        }
+        else if (thisLoan->GetDueDate().dayOfYear() <= current.dayOfYear() + 3 || thisLoan->GetDueDate().dayOfYear() < (365 - current.dayOfYear()))
+        {
+            OverdueBooks *overdue = new OverdueBooks(thisLoan->GetBook(books), thisLoan->GetMember(members), thisLoan, thisLoan->GetDueDate().dayOfYear() - current.dayOfYear(), activeElement);
             connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplaySingleMember);
             vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
         }
@@ -402,14 +410,15 @@ void MainWindow::on_checkoutbooks_button_clicked()
     SetActiveButton(ui->checkoutbooks_button);
 
     QLabel *lab = new QLabel(auxWidget);
+    lab->setMinimumHeight(30);
     lab->setText("Checkout Books");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 15px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QFile reservationsFile("databases/reservations.csv");
     if (!reservationsFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        int e = QtHelpers::ErrorMessageBox("Error", "Couldn't open file");
+        int e = LibMessageBoxes::ErrorMessageBox("Error", "Couldn't open file");
         switch(e)
         {
         case (QMessageBox::Cancel):

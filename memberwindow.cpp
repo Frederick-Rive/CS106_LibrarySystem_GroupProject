@@ -6,6 +6,7 @@
 #include "overduebooks.h"
 #include "viewmember.h"
 #include "returnbooks.h"
+#include "messageboxes.h"
 #include <QGraphicsDropShadowEffect>
 #include <QDesktopServices>
 #include <QLineEdit>
@@ -64,7 +65,7 @@ void MemberWindow::on_viewbooks_button_clicked()
     auxWidget = new QWidget(this);
     QLineEdit *searchEdit = new QLineEdit(auxWidget);
     connect(searchEdit, &QLineEdit::returnPressed, this, &MemberWindow::DisplayBooks);
-    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding-top: 10px;");
+    auxWidget->setStyleSheet("font: 12pt 'Roboto Regular'; padding-top: 5px;");
     searchEdit->setStyleSheet("padding: 5px; border-radius: 10px;");
     auxWidget->setMinimumSize(400, 30);
     searchEdit->setMinimumSize(400, 15);
@@ -186,7 +187,7 @@ void MemberWindow::on_overdue_button_clicked()
 
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Overdue Books");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
@@ -217,7 +218,7 @@ void MemberWindow::on_account_Button_clicked()
 
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("My Account");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     activeElement = new ViewMember(user, loans, this);
@@ -236,7 +237,7 @@ void MemberWindow::on_returnButton_clicked()
 
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Return Books");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 20px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
@@ -247,7 +248,7 @@ void MemberWindow::on_returnButton_clicked()
         {
             ReturnBooks *rtrn = new ReturnBooks(loans->Next(user->GetLoanedBook(i)), books, members, activeElement);
             vertLayout->addWidget(rtrn, 0, Qt::AlignHCenter);
-            connect(rtrn, &ReturnBooks::Returned, this, &MemberWindow::on_returnButton_clicked);
+            connect(rtrn, &ReturnBooks::Finish, this, &MemberWindow::on_returnButton_clicked);
         }
     }
 
