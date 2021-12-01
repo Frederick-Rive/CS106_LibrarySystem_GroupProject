@@ -53,7 +53,7 @@ void CheckoutBooks::on_confirmButton_clicked()
         last->SetNext(newloan); //link new loan into the linked list
         newloan->WriteToMemory(); //write new loan to memory
 
-        for (int i = 0; i  < 5; i++)
+        for (int i = 0; i  < 5; i++) //save index of loan to the member
         {
             if (member->GetLoanedBook(i) == -1)
             {
@@ -62,38 +62,38 @@ void CheckoutBooks::on_confirmButton_clicked()
             }
         }
 
-        while (member->Prev() != nullptr)
+        //book is already considered unavailable because it is reserved. dont need to do anything to it
+
+        while (member->Prev() != nullptr) //get head node of member linked list
         {
             member = member->Prev();
         }
 
-        qDebug().nospace() << member->GetUsername();
+        LibSystems::RewriteMembers(member); //rewrite members
 
-        LibSystems::RewriteMembers(member);
-
-        LibMessageBoxes::InformationMessageBox("Checkout confirmed", "The book will be due on " + newloan->GetDueDate().toString());
-        emit Remove(index);
+        LibMessageBoxes::InformationMessageBox("Checkout confirmed", "The book will be due on " + newloan->GetDueDate().toString()); //send success message
+        emit Remove(index); //remove this reservation
     }
     else
     {
-        LibMessageBoxes::ErrorMessageBox("Error", "The member's current inventory is too large to give them a new book. They will need to return at least one book first.");
+        LibMessageBoxes::ErrorMessageBox("Error", "The member's current inventory is too large to give them a new book. They will need to return at least one book first."); //send error message
         return;
     }
 }
 
 void CheckoutBooks::on_dismissButton_clicked()
 {
-    LibMessageBoxes::InformationMessageBox("Checkout rejected", "hehe");
+    book->SetAvailable(true); //set book as available
 
-    book->SetAvailable(true);
-
-    while (book->Prev() != nullptr)
+    while (book->Prev() != nullptr) //get head node of book linked list
     {
         book = book->Prev();
     }
 
-    LibSystems::RewriteBooks(book);
+    LibSystems::RewriteBooks(book); //rewrite the books
 
-    emit Remove(index);
+    LibMessageBoxes::InformationMessageBox("Checkout rejected", "The book is available to anyone again"); //send success message
+
+    emit Remove(index); //remove this reservation
 }
 

@@ -4,18 +4,18 @@
 
 CustomCheckoutBooks::CustomCheckoutBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::CustomCheckoutBooks)
+    ui(new Ui::CustomCheckoutBooks) //constructor
 {
     ui->setupUi(this);
 
-    books = b;
+    books = b; //initialize data members
     members = m;
     loans = l;
 
     selectedBook = books;
     selectedMember = members;
 
-    this->setStyleSheet
+    this->setStyleSheet //style sheets
             (
                 "font: 12pt 'Roboto Regular';"
             );
@@ -23,30 +23,30 @@ CustomCheckoutBooks::CustomCheckoutBooks(LibSystems::Book *b, LibSystems::Member
     ui->pushButton->setStyleSheet("QPushButton {background-color: #5A98D1; } QPushButton::hover { background-color: #38588c; }");
 }
 
-CustomCheckoutBooks::~CustomCheckoutBooks()
+CustomCheckoutBooks::~CustomCheckoutBooks() //destructors
 {
     delete ui;
 }
 
-void CustomCheckoutBooks::on_pushButton_clicked()
+void CustomCheckoutBooks::on_pushButton_clicked() //checkout
 {
-    if (selectedBook->GetIndex() >= 0 && selectedMember->GetIndex() >= 0)
+    if (selectedBook->GetIndex() >= 0 && selectedMember->GetIndex() >= 0) //make sure that the user has selected a book and a member
     {
-        if (selectedBook->IsAvailable())
+        if (selectedBook->IsAvailable()) //make sure the book is available to be checked out
         {
-            if (selectedMember->GetLoanedCount() < 5)
+            if (selectedMember->GetLoanedCount() < 5) //make sure the member isn't at the max number of books
             {
-                loans = (LibSystems::LoanedBook::Count() > 0) ? loans->Next(LibSystems::LoanedBook::Count() - 1) : loans;
+                loans = (LibSystems::LoanedBook::Count() > 0) ? loans->Next(LibSystems::LoanedBook::Count() - 1) : loans; //declare loan pointer as last loan in linked list
 
-                LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(selectedBook->GetIndex(), selectedMember->GetIndex(), QDate::currentDate().addDays(14), loans);
-                loans->SetNext(newloan);
-                newloan->WriteToMemory();
+                LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(selectedBook->GetIndex(), selectedMember->GetIndex(), QDate::currentDate().addDays(14), loans); //generate new loan
+                loans->SetNext(newloan); //link new loan into list
+                newloan->WriteToMemory(); //write new loan into memory
 
-                selectedBook->SetAvailable(false);
+                selectedBook->SetAvailable(false); //set book to unavailable
 
-                LibSystems::RewriteBooks(books);
+                LibSystems::RewriteBooks(books); //write changes into files
 
-                for (int i = 0; i  < 5; i++)
+                for (int i = 0; i  < 5; i++) //write the index of the new loan into the members inventory
                 {
                     if (selectedMember->GetLoanedBook(i) == -1)
                     {
@@ -55,54 +55,54 @@ void CustomCheckoutBooks::on_pushButton_clicked()
                     }
                 }
 
-                LibSystems::RewriteMembers(members);
+                LibSystems::RewriteMembers(members); //write changes of member into file
 
-                ui->bcountLabel->setText(QString::number(selectedMember->GetLoanedCount()));
+                ui->bcountLabel->setText(QString::number(selectedMember->GetLoanedCount())); //update some data displays to reflect changes
+                ui->pushButton->setStyleSheet("QPushButton { background-color: #e88484; } QPushButton::hover { background-color: #a86060; }");
+                ui->pushButton->setText("Unavailable");
 
-                LibMessageBoxes::InformationMessageBox("Success", "The book will be due on " + newloan->GetDueDate().toString());
+                LibMessageBoxes::InformationMessageBox("Success", "The book will be due on " + newloan->GetDueDate().toString()); //send success message
             }
             else
             {
-                LibMessageBoxes::ErrorMessageBox("Error", "The member has the maximum number of books currently checked out");
+                LibMessageBoxes::ErrorMessageBox("Error", "The member has the maximum number of books currently checked out"); //send failure mesage
             }
         }
         else
         {
-            LibMessageBoxes::ErrorMessageBox("Error", "This book is currently unavailable");
+            LibMessageBoxes::ErrorMessageBox("Error", "This book is currently unavailable"); //send failure message
         }
     }
     else
     {
-        LibMessageBoxes::ErrorMessageBox("Error", "Book / Member not set");
+        LibMessageBoxes::ErrorMessageBox("Error", "Book / Member not set"); //send failure message
     }
 }
 
 void CustomCheckoutBooks::on_memberEdit_editingFinished()
 {
-    if (ui->memberEdit->text().size() > 0)
+    if (ui->memberEdit->text().size() > 0) //if the user has entered text
     {
-        LibSystems::Member *current = members->Next();
+        LibSystems::Member *current = members->Next(); // search through members to find one that fits with the search
         QString search = ui->memberEdit->text().toLower();
         for (int i = 0; i < LibSystems::Member::Count(); i++)
         {
-            if (current->GetFullName().toLower().contains(search))
+            if (current->GetFullName().toLower().contains(search)) //once member that fits has been found
             {
-                selectedMember = current;
+                selectedMember = current; //set selected member variable
 
-                ui->nameLabel->setText(selectedMember->GetFullName());
+                ui->nameLabel->setText(selectedMember->GetFullName()); //display varaibles of selected member, so the user knows what they selected
                 ui->indexLabel->setText(QString::number(selectedMember->GetIndex()));
                 ui->bcountLabel->setText(QString::number(selectedMember->GetLoanedCount()));
-                qDebug().nospace() << "cc";
                 ui->oCountLabel->setText(QString::number(selectedMember->GetOverdueCount(loans)));
-                qDebug().nospace() << "cc";
                 break;
             }
             current = current->Next();
         }
     }
-    else
+    else //if user hasnt entered text
     {
-        selectedMember = members;
+        selectedMember = members; //deselect any member, and update widget text to reflect this
 
         ui->nameLabel->setText("---");
         ui->indexLabel->setText("---");
@@ -113,7 +113,7 @@ void CustomCheckoutBooks::on_memberEdit_editingFinished()
 
 void CustomCheckoutBooks::on_bookEdit_editingFinished()
 {
-    if (ui->bookEdit->text().size() > 0)
+    if (ui->bookEdit->text().size() > 0) //same as above but for books. i wont comment all this
     {
         LibSystems::Book *current = books->Next();
         QString search = ui->bookEdit->text().toLower();
@@ -128,7 +128,7 @@ void CustomCheckoutBooks::on_bookEdit_editingFinished()
                 ui->isbnLabel->setText(selectedBook->GetISBN());
                 ui->authorLabel->setText(selectedBook->GetAuthor());
 
-                if (!selectedBook->IsAvailable())
+                if (!selectedBook->IsAvailable()) //update the button to allow admin to see if book is available before attempting to check it out
                 {
                     ui->pushButton->setStyleSheet("QPushButton { background-color: #e88484; } QPushButton::hover { background-color: #a86060; }");
                     ui->pushButton->setText("Unavailable");
