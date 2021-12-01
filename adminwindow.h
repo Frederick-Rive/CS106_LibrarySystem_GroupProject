@@ -54,6 +54,8 @@ private slots:
 
     void DisplaySingleMember(LibSystems::Member *member);
 
+    void on_returnbooks_button_clicked();
+
 private:
     Ui::MainWindow *ui;
     LibSystems::Account user;

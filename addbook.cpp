@@ -5,13 +5,13 @@
 
 AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *editBook) :
     QWidget(parent),
-    ui(new Ui::AddBook)
+    ui(new Ui::AddBook) //constructor
 {
     ui->setupUi(this);
 
-    book = lastBook;
+    book = lastBook; //initialize data member
 
-    this->setStyleSheet
+    this->setStyleSheet // set the css code for this window
             (
                 "QLabel { color: #5A98D1; }"
                 "QPushButton { background-color: #5A98D1; }"
@@ -24,15 +24,15 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
                 "QLineEdit#coverpathEntry { border-radius: 0px; }"
             );
 
-    edit = editBook;
+    edit = editBook; //initialize data member
 
-    if (edit == nullptr)
+    if (edit == nullptr) //adding a new book to the program
     {
         QPixmap defaultCover;
         defaultCover.load(":/resources/images/defaultbookcover.jpg");
         ui->coverlabel->setPixmap(defaultCover.scaled(ui->coverlabel->size()));
     }
-    else
+    else //editing an existing book (code inside sets all entry widgets to have the existing values by default)
     {
         ui->titleEdit->setText(edit->GetTitle()); ui->authorEdit->setText(edit->GetAuthor()); ui->genreBox->setCurrentText(edit->GetGenre()); ui->ddCounter->setValue(edit->GetDeweyDecimal());
         ui->ddSlider->setValue(edit->GetDeweyDecimal()); ui->dayEntry->setValue(edit->GetReleaseDate().day()); ui->monthEntry->setValue(edit->GetReleaseDate().month());
@@ -41,22 +41,22 @@ AddBook::AddBook(QWidget *parent, LibSystems::Book *lastBook, LibSystems::Book *
     }
 }
 
-AddBook::~AddBook()
+AddBook::~AddBook() //destructor
 {
     delete ui;
 }
 
-void AddBook::on_ddSlider_valueChanged(int value)
+void AddBook::on_ddSlider_valueChanged(int value) //keeps the counter value equal to the slider
 {
     ui->ddCounter->setValue(value);
 }
 
-void AddBook::on_ddCounter_valueChanged(int arg1)
+void AddBook::on_ddCounter_valueChanged(int arg1) //keeps the slider value equal to the counter
 {
     ui->ddSlider->setValue(arg1);
 }
 
-void AddBook::on_coverpathSearch_clicked()
+void AddBook::on_coverpathSearch_clicked() //search for an image file to use as the cover
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Select an image", "C:", tr("Image Files (*.png *.jpg *.bmp)"));
     if (filePath.length() > 0)
@@ -68,88 +68,55 @@ void AddBook::on_coverpathSearch_clicked()
     }
 }
 
-void AddBook::on_saveButton_clicked()
+void AddBook::on_saveButton_clicked() //save book
 {
-    if (edit == nullptr)
+    if (edit == nullptr) //if adding a new book
     {
         QDate releaseDate;
-        releaseDate.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
+        releaseDate.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value()); //merge data from date entrys into Qdate
 
         QPixmap cover;
         cover.load(ui->coverpathEntry->text());
         QString filePath = QString("databases/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png");
-        cover.save(filePath);
+        cover.save(filePath); //save book cover to a new, more accessible position.
 
         LibSystems::Book *newBook = new LibSystems::Book(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
-                                               ui->pgEntry->value(), ui->ddCounter->value(), releaseDate, book);
-        newBook->WriteToMemory();
-        if (book != nullptr) { book->SetNext(newBook); }
-        book = newBook;
+                                               ui->pgEntry->value(), ui->ddCounter->value(), releaseDate, book); //make a new book object using the users entrys
+        newBook->WriteToMemory(); //write new book to memory
+        if (book != nullptr) { book->SetNext(newBook); } //link new book into the linked list
 
-        LibMessageBoxes::InformationMessageBox("Success", "The new book has been added to the database");
+        LibMessageBoxes::InformationMessageBox("Success", "The new book has been added to the database"); //give success message
     }
-    else
+    else //if editing existing book
     {
-        QFile bookFile ("databases/books.csv");
+        QDate releaseDate;
+        releaseDate.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());//merge data from date entrys into Qdate
 
-        std::vector<QString> bookVec;
-
-        if (bookFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        if (ui->coverpathEntry->text() != edit->GetCoverPath()) //if the user has changed the cover image
         {
-            QTextStream in (&bookFile);
-
-           QString read;
-
-            for (int i = 0; i < edit->GetIndex(); i++)
-            {
-                bookVec.push_back(in.readLine());
-            }
-
-            QDate releaseDate;
-            releaseDate.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
-
-            if (ui->coverpathEntry->text() != edit->GetCoverPath())
-            {
-                QPixmap cover;
-                cover.load(ui->coverpathEntry->text());
-                ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(edit->GetIndex()) + QString(".png"));
-                cover.save(ui->coverpathEntry->text());
-            }
-
-            bookVec.push_back(edit->EditBook(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), ui->coverpathEntry->text(), ui->blurbEdit->toPlainText(), ui->pgEntry->value(), ui->ddCounter->value(), releaseDate));
-
-            in.readLine();
-
-            while (!in.atEnd())
-            {
-                bookVec.push_back(in.readLine());
-            }
+            QPixmap cover;
+            cover.load(ui->coverpathEntry->text());
+            ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(edit->GetIndex()) + QString(".png"));
+            cover.save(ui->coverpathEntry->text());//save book cover to a new, more accessible position.=
         }
 
-        bookFile.close();
+        //edit the book
+        edit->EditBook(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), ui->coverpathEntry->text(), ui->blurbEdit->toPlainText(), ui->pgEntry->value(), ui->ddCounter->value(), releaseDate);
 
-        if (bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        while (book->Prev() != nullptr) //send book pointer to the head node of linked list
         {
-            QTextStream out(&bookFile);
-
-            for (QString b : bookVec)
-            {
-                if (b.size() > 0)
-                {
-                    out << b << '\n';
-                }
-            }
+            book = book->Prev();
         }
 
-        bookFile.flush();
-        bookFile.close();
-        LibMessageBoxes::InformationMessageBox("Success", "The changes have been saved to the database");
+        LibSystems::RewriteBooks(book); //rewrite the book file to save the new data
+
+        LibMessageBoxes::InformationMessageBox("Success", "The changes have been saved to the database"); //give success message
     }
 
-    emit Finish();
+    emit Finish(); //emit finish signal to adminwindow
 }
 
-void AddBook::on_monthEntry_valueChanged(int arg1)
+void AddBook::on_monthEntry_valueChanged(int arg1) //restrict max value of date entry by current month entry, to ensure entry is valid
 {
     switch (arg1)
     {

@@ -119,15 +119,6 @@ void MemberWindow::DisplayBooks()
             displayBook = displayBook->Next();
         }
 
-        if (column < 6 && column > 1)
-        {
-            for (column; column < 6; column++)
-            {
-                BookDisplay *display = new BookDisplay(activeElement);
-                qGrid->addWidget(display, row, column);
-            }
-        }
-
         qScroll = new QScrollArea(this);
         qScroll->setWidget(activeElement);
         qScroll->setMinimumSize(970, 450);
@@ -216,16 +207,22 @@ void MemberWindow::on_account_Button_clicked()
     ClearActiveArea();
     SetActiveButton(ui->account_Button);
 
+    qDebug().nospace() << "aa";
+
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("My Account");
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
+
+    qDebug().nospace() << "bb";
 
     activeElement = new ViewMember(user, loans, this);
     qScroll = new QScrollArea;
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(1120, 450);
     qScroll->setMaximumSize(1120, 450);
+
+    qDebug().nospace() << "dd";
 
     ui->activeLayout->addWidget(qScroll, 1, 1);
 }
@@ -242,11 +239,13 @@ void MemberWindow::on_returnButton_clicked()
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
 
+    qDebug().nospace() << "aa";
+
     for (int i = 0; i < 5; i++)
     {
-        if (user->GetLoanedBook(i) >= 0)
+        if (user->GetLoanedBook(i) >= 0 && !loans->Next(user->GetLoanedBook(i))->IsReturned())
         {
-            ReturnBooks *rtrn = new ReturnBooks(loans->Next(user->GetLoanedBook(i)), books, members, activeElement);
+            ReturnBooks *rtrn = new ReturnBooks(loans->Next(user->GetLoanedBook(i)), books, activeElement);
             vertLayout->addWidget(rtrn, 0, Qt::AlignHCenter);
             connect(rtrn, &ReturnBooks::Finish, this, &MemberWindow::on_returnButton_clicked);
         }

@@ -48,7 +48,7 @@ public: //member functions
     void SetNext(Book* n);
     static int Count();
     bool IsAvailable();
-    QString EditBook(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r);
+    void EditBook(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r);
     void SetAvailable(bool b);
 };
 
@@ -109,7 +109,7 @@ public:
     Member *Next(int index);
     void SetPrev(Member* p);
     void SetNext(Member* n);
-    QString EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date);
+    void EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date);
 };
 
 class LoanedBook //loanedbook class contains the index of a book and the member it was lent too, and the date that the book is due.
@@ -127,7 +127,7 @@ public:
     ~LoanedBook();
     void WriteToMemory();
     int GetIndex();
-    bool GetReturned();
+    bool IsReturned();
     void SetReturned(bool r);
     static int Count();
     QDate GetDueDate ();
@@ -144,6 +144,11 @@ public:
 Book* InitialiseBooks ();
 Member* InitialiseMembers();
 LoanedBook* InitialseLoans();
+void RewriteBooks(Book *books);
+void RewriteMembers(Member *members);
+void RewriteLoans(LoanedBook *loans);
+void RemoveLoan(int index);
+void RemoveReservation(int index);
 }
 
 namespace QtHelpers

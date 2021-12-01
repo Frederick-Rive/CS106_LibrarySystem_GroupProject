@@ -208,13 +208,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
@@ -242,13 +242,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
@@ -262,7 +262,7 @@
             <cursorShape>PointingHandCursor</cursorShape>
            </property>
            <property name="text">
-            <string>View / Edit Book</string>
+            <string>View / Edit Books</string>
            </property>
           </widget>
          </item>
@@ -276,13 +276,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
@@ -310,13 +310,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
@@ -344,13 +344,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
@@ -378,13 +378,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>160</width>
+             <width>150</width>
              <height>30</height>
             </size>
            </property>
@@ -399,6 +399,25 @@
            </property>
            <property name="text">
             <string>Checkout Books</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="returnbooks_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Return Books</string>
            </property>
           </widget>
          </item>

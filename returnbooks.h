@@ -13,7 +13,8 @@ class ReturnBooks : public QWidget
     Q_OBJECT
 
 public:
-    explicit ReturnBooks(LibSystems::LoanedBook *l, LibSystems::Book *b, LibSystems::Member *m, QWidget *parent = nullptr);
+    ReturnBooks(LibSystems::LoanedBook *l, LibSystems::Book *b, LibSystems::Member *m, QWidget *parent = nullptr);
+    ReturnBooks(LibSystems::LoanedBook *l, LibSystems::Book *b, QWidget *parent = nullptr);
     ~ReturnBooks();
 
 signals:
@@ -22,6 +23,7 @@ signals:
 private slots:
     void ReturnBook();
     void FlagReturned();
+    void FlagNotReturned();
 
 private:
     Ui::ReturnBooks *ui;

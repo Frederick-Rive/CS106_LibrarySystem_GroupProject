@@ -5,16 +5,16 @@
 
 CheckoutBooks::CheckoutBooks(int i, LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::CheckoutBooks)
+    ui(new Ui::CheckoutBooks) //constructor
 {
     ui->setupUi(this);
 
-    index = i;
+    index = i; //initialize data members
     book = b;
     member = m;
     loans = l;
 
-    this->setStyleSheet
+    this->setStyleSheet //set the style sheets for this widget
             (
                 "QLabel { font: 12pt 'Roboto Regular'; }"
                 "QPushButton#confirmButton { background-color: #5A98D1; }"
@@ -24,33 +24,34 @@ CheckoutBooks::CheckoutBooks(int i, LibSystems::Book *b, LibSystems::Member *m, 
                 "QPushButton#cover::hover { background-color: rgba(0,0,0,0); }"
             );
 
+    //set widget text
     ui->titleLabel->setText(book->GetTitle()); ui->authorLabel->setText(book->GetAuthor()); ui->isbnLabel->setText(book->GetISBN()); ui->genreLabel->setText(book->GetGenre());
     ui->indexLabel->setText(QString::number(member->GetIndex())); ui->nameLabel->setText(member->GetFullName()); ui->bcountLabel->setText(QString::number(member->GetLoanedCount())); ui->oCountLabel->setText(QString::number(member->GetOverdueCount(loans)));
 
-    QPixmap c;
+    QPixmap c; //get cover image from cover path
     c.load(book->GetCoverPath());
-    ui->cover->setIcon(QIcon(c));
+    ui->cover->setIcon(QIcon(c)); //display image
     ui->cover->setIconSize(ui->cover->size());
-    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
+    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this); //give cover a drop shadow
     dropShadow->setOffset(0, 4);
     dropShadow->setColor(QColor::fromRgb(200, 200, 200));
     dropShadow->setBlurRadius(20);
     ui->cover->setGraphicsEffect(dropShadow);
 }
 
-CheckoutBooks::~CheckoutBooks()
+CheckoutBooks::~CheckoutBooks() //destructor
 {
     delete ui;
 }
 
 void CheckoutBooks::on_confirmButton_clicked()
 {
-    if (member->GetLoanedCount() < 5)
+    if (member->GetLoanedCount() < 5) //ensure that the member hasn't hit the max number of books they are allowed
     {
-        LibSystems::LoanedBook *last = (loans->Count() > 0) ? loans->Next(LibSystems::LoanedBook::Count() - 1) : loans;
-        LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(book->GetIndex(), member->GetIndex(), QDate::currentDate().addDays(14), last);
-        last->SetNext(newloan);
-        newloan->WriteToMemory();
+        LibSystems::LoanedBook *last = (loans->Count() > 0) ? loans->Next(LibSystems::LoanedBook::Count() - 1) : loans; //declare loan pointer to last node in loan linked list
+        LibSystems::LoanedBook *newloan = new LibSystems::LoanedBook(book->GetIndex(), member->GetIndex(), QDate::currentDate().addDays(14), last); //create a new loan with the member/book, give
+        last->SetNext(newloan); //link new loan into the linked list
+        newloan->WriteToMemory(); //write new loan to memory
 
         for (int i = 0; i  < 5; i++)
         {
@@ -66,20 +67,9 @@ void CheckoutBooks::on_confirmButton_clicked()
             member = member->Prev();
         }
 
-        QFile memberFile("databases/members.csv");
-        if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-        {
-            LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
-            return;
-        }
-        memberFile.flush();
-        memberFile.close();
+        qDebug().nospace() << member->GetUsername();
 
-        while (member != nullptr)
-        {
-            member->WriteToMemory();
-            member = member->Next();
-        }
+        LibSystems::RewriteMembers(member);
 
         LibMessageBoxes::InformationMessageBox("Checkout confirmed", "The book will be due on " + newloan->GetDueDate().toString());
         emit Remove(index);
@@ -102,20 +92,7 @@ void CheckoutBooks::on_dismissButton_clicked()
         book = book->Prev();
     }
 
-    QFile bookFile("databases/books.csv");
-    if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-    {
-        LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
-        return;
-    }
-    bookFile.flush();
-    bookFile.close();
-
-    while (book != nullptr)
-    {
-        book->WriteToMemory();
-        book = book->Next();
-    }
+    LibSystems::RewriteBooks(book);
 
     emit Remove(index);
 }
