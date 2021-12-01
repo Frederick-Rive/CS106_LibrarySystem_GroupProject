@@ -17,9 +17,9 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
 
     if (QDir("databases").exists())
     {
-        books->SetNext((b != nullptr) ? b : LibSystems::InitialiseBooks());
-        members->SetNext((m != nullptr) ? m : LibSystems::InitialiseMembers());
-        loans->SetNext((l != nullptr) ? l : LibSystems::InitialseLoans());
+        books->SetNext((b != nullptr) ? b : LibSystems::InitialiseBooks()); if (LibSystems::Book::Count() > 0) { books->Next()->SetPrev(books); }
+        members->SetNext((m != nullptr) ? m : LibSystems::InitialiseMembers()); if (LibSystems::Member::Count() > 0) { members->Next()->SetPrev(members); }
+        loans->SetNext((l != nullptr) ? l : LibSystems::InitialseLoans()); if (LibSystems::LoanedBook::Count() > 0) { loans->Next()->SetPrev(loans); }
     }
     else
     {
@@ -104,7 +104,7 @@ void login::on_pushButton_clicked()
         //ui->password_LineEdit->setText("");
         break;
     case QMessageBox::Cancel:
-        hide();
+        close();
     }
 }
 

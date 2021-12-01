@@ -72,20 +72,7 @@ void ViewBook::ReserveBook()
         book = book->Prev();
     }
 
-    QFile bookFile("databases/books.csv");
-    if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-    {
-        LibMessageBoxes::ErrorMessageBox("Error", "The program failed to reserve this book for you");
-        return;
-    }
-    bookFile.flush();
-    bookFile.close();
-
-    while (book != nullptr)
-    {
-        book->WriteToMemory();
-        book = book->Next();
-    }
+    LibSystems::RewriteBooks(book);
 
     LibMessageBoxes::InformationMessageBox("Success", "Your reservation has been made. Please come to the library in person to collect your book, and bring your card.");
 

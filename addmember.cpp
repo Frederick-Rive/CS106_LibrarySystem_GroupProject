@@ -4,13 +4,13 @@
 
 AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems::Member *editMember) :
     QWidget(parent),
-    ui(new Ui::AddMember)
+    ui(new Ui::AddMember) //constructor
 {
     ui->setupUi(this);
 
-    member = lastMember;
+    member = lastMember; //initialize data member
 
-    this->setStyleSheet
+    this->setStyleSheet //set css for this widget
             (
                 "QLabel { color: #5A98D1; }"
                 "QPushButton { background-color: #5A98D1; }"
@@ -21,8 +21,8 @@ AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems
                 "QCheckBox::indicator { border: 0px; border-radius: 2px; background-color: white; border-style: solid; }"
                 "QCheckBox::indicator::checked { border: 2px; border-radius: 2px; border-color: white; background-color: #5A98D1; }"
             );
-    edit = editMember;
-    if (edit != nullptr)
+    edit = editMember; //initialize data member
+    if (edit != nullptr) //if editing book (makes entry widgets have default arguments)
     {
         ui->usernameEntry->setText(edit->GetUsername()); ui->passwordEntry->setText(edit->GetPassword()); ui->firstnameEntry->setText(edit->GetFirstName());
         ui->lastnameEntry->setText(edit->GetLastName()); ui->emailEntry->setText(edit->GetEmail()); ui->cntctEntry->setText(edit->GetContactNumber());
@@ -30,12 +30,12 @@ AddMember::AddMember(QWidget *parent, LibSystems::Member *lastMember, LibSystems
     }
 }
 
-AddMember::~AddMember()
+AddMember::~AddMember() //destructor
 {
     delete ui;
 }
 
-void AddMember::on_showPassword_clicked(bool checked)
+void AddMember::on_showPassword_clicked(bool checked) //sets echo mode for password entry based on checkbox
 {
     if (checked)
     {
@@ -47,84 +47,41 @@ void AddMember::on_showPassword_clicked(bool checked)
     }
 }
 
-void AddMember::on_pushButton_clicked()
+void AddMember::on_pushButton_clicked() //saves member
 {
-    if (edit == nullptr)
+    if (edit == nullptr) //if making new member
     {
-        int i[5] = { -1, -1, -1, -1, -1 };
+        int i[5] = { -1, -1, -1, -1, -1 }; //initialses array of loan indices with -1 values (means empty, no loan)
         QDate dob;
-        dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
+        dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value()); //make QDate out of users input
         LibSystems::Member *newMember = new LibSystems::Member(LibSystems::Member::Count(), ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(),
-                                                               ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob, i, member);
-        newMember->WriteToMemory();
-        if (member != nullptr) { member->SetNext(newMember); }
-        member = newMember;
+                                                               ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob, i, member); //makes member with user input
+        newMember->WriteToMemory(); //write new member to memory
+        if (member != nullptr) { member->SetNext(newMember); } //links new member into the member linked list
 
-        LibMessageBoxes::InformationMessageBox("Success", "The new member has been added to the database");
+        LibMessageBoxes::InformationMessageBox("Success", "The new member has been added to the database"); //send success message
     }
-    else
+    else //if editing member
     {
-        QFile memberFile("databases/members.csv");
+        QDate dob;
+        dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());  //make QDate out of users input
+        //edits book with user input
+        edit->EditMember(ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(), ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob);
 
-        std::vector<QString> memberVec;
-
-        if (memberFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        while (member->Prev() != nullptr)
         {
-            QTextStream in(&memberFile);
-
-            for (int i = 0; i < edit->GetIndex(); i++)
-            {
-                memberVec.push_back(in.readLine());
-            }
-
-            QDate dob;
-            dob.setDate(ui->yearEntry->value(), ui->monthEntry->value(), ui->dayEntry->value());
-
-            memberVec.push_back(edit->EditMember(ui->usernameEntry->text(), ui->passwordEntry->text(), ui->emailEntry->text(), ui->cntctEntry->text(), ui->firstnameEntry->text(), ui->lastnameEntry->text(), dob));
-
-            in.readLine();
-
-            while (!in.atEnd())
-            {
-                memberVec.push_back(in.readLine());
-            }
-        }
-        else
-        {
-            LibMessageBoxes::ErrorMessageBox("Error", "File Didn't Open");
-            return;
+            member = member->Prev();
         }
 
-        memberFile.close();
+        LibSystems::RewriteMembers(member); //rewrite member file with new data
 
-        if (memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-        {
-            QTextStream out(&memberFile);
-
-            for (QString s : memberVec)
-            {
-                if (s.size() > 0)
-                {
-                    out << s << '\n';
-                }
-            }
-
-            LibMessageBoxes::InformationMessageBox("Success", "Your edits have been saved to the database");
-        }
-        else
-        {
-            LibMessageBoxes::ErrorMessageBox("Error", "File Didn't Open");
-            return;
-        }
-
-        memberFile.flush();
-        memberFile.close();
+        LibMessageBoxes::InformationMessageBox("Success", "Your edits have been saved to the database"); //send success message
     }
 
-    emit Finish();
+    emit Finish(); //emit finish signal to adminwindow
 }
 
-void AddMember::on_monthEntry_valueChanged(int arg1)
+void AddMember::on_monthEntry_valueChanged(int arg1) //restrict max value of date entry by current month entry, to ensure entry is valid
 {
     switch (arg1)
     {

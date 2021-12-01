@@ -44,21 +44,7 @@ void CustomCheckoutBooks::on_pushButton_clicked()
 
                 selectedBook->SetAvailable(false);
 
-                QFile bookFile("databases/books.csv");
-                if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-                {
-                    LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
-                    return;
-                }
-                bookFile.flush();
-                bookFile.close();
-                books = books->Next();
-
-                while (books != nullptr)
-                {
-                    books->WriteToMemory();
-                    books = books->Next();
-                }
+                LibSystems::RewriteBooks(books);
 
                 for (int i = 0; i  < 5; i++)
                 {
@@ -69,22 +55,7 @@ void CustomCheckoutBooks::on_pushButton_clicked()
                     }
                 }
 
-                QFile memberFile("databases/members.csv");
-                if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
-                {
-                    LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
-                    return;
-                }
-                memberFile.flush();
-                memberFile.close();
-
-                members = members->Next();
-
-                while (members != nullptr)
-                {
-                    members->WriteToMemory();
-                    members = members->Next();
-                }
+                LibSystems::RewriteMembers(members);
 
                 ui->bcountLabel->setText(QString::number(selectedMember->GetLoanedCount()));
 
@@ -121,7 +92,9 @@ void CustomCheckoutBooks::on_memberEdit_editingFinished()
                 ui->nameLabel->setText(selectedMember->GetFullName());
                 ui->indexLabel->setText(QString::number(selectedMember->GetIndex()));
                 ui->bcountLabel->setText(QString::number(selectedMember->GetLoanedCount()));
+                qDebug().nospace() << "cc";
                 ui->oCountLabel->setText(QString::number(selectedMember->GetOverdueCount(loans)));
+                qDebug().nospace() << "cc";
                 break;
             }
             current = current->Next();

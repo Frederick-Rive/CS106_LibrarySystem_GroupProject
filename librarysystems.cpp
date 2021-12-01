@@ -1,5 +1,6 @@
 #include "librarysystems.h"
 #include <QPixmap>
+#include <messageboxes.h>
 
 using namespace LibSystems; //if you arent using this namespace by default, remember to prefix anything you use from this file with LibSystems::
 
@@ -107,7 +108,7 @@ void Book::WriteToMemory () //writes the book into the database. please be caref
     int y, m, d;
     releaseDate.getDate(&y, &m, &d); //convert the date into 3 ints, that can be written into a file
 
-    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << d << ',' << isAvailable << ',' << blurb <<'\n'; //write the bok data into the file
+    out << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << d << "/" << m << "/" << y << ',' << isAvailable << ',' << blurb <<'\n'; //write the bok data into the file
 
     bookFile.flush(); //flush the buffer into the file
     bookFile.close(); //close the file
@@ -131,7 +132,7 @@ void Book::SetNext(Book *n) { links[1] = n; }
 int Book::Count() { return totalBooks; }
 bool Book::IsAvailable() { return isAvailable; }
 void Book::SetAvailable(bool b) { isAvailable = b; } //only a setter for this value. All others should only be changed from within the editbook function
-QString Book::EditBook(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r) //operates basically as a new constructor, except it returns a string ready to be inserted into a file
+void Book::EditBook(QString i, QString t, QString a, QString g, QString cP, QString b, int p, int d, QDate r) //operates basically as a new constructor, except it returns a string ready to be inserted into a file
 {
     isbn = i;
     title = t;
@@ -141,16 +142,7 @@ QString Book::EditBook(QString i, QString t, QString a, QString g, QString cP, Q
     pgCount = p;
     dewey = d;
     releaseDate = r;
-
-    int y, m, dy;
-    releaseDate.getDate(&y, &m, &dy); //convert the date into 3 ints, that can be written into a file
-
-    QString rtrn;
-    QTextStream ts(&rtrn);
-
-    ts << isbn << ',' << title << ',' << author << ',' << genre << ',' << coverPath << ',' << pgCount << ',' << dewey << ',' << y << "/" << m << "/" << dy << ',' << isAvailable << ',' << blurb;
-
-    return rtrn;
+    coverPath = cP;
 }
 
 Account::Account (QString u, QString p) //constructor
@@ -228,7 +220,7 @@ void Member::WriteToMemory () //write to memory
     int d, m, y;
     dob.getDate(&y, &m, &d);
 
-    out << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << y << '/' << m << '/' << d; //send data to textstream
+    out << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << d << '/' << m << '/' << y; //send data to textstream
 
     for (int i : loanedBooks) //add the books the member has loaned to the file
     {
@@ -283,7 +275,7 @@ int Member::GetLoanedCount()
     return rtrn;
 }
 void Member::ReturnBook (int loanIndex) { loanedBooks[loanIndex] = -1; }
-QString Member::EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date)
+void Member::EditMember(QString u, QString p, QString e, QString c, QString fN, QString lN, QDate date)
 {
     username = u;
     password = p;
@@ -292,21 +284,6 @@ QString Member::EditMember(QString u, QString p, QString e, QString c, QString f
     firstName = fN;
     lastName = lN;
     dob = date;
-
-    int d, m, y;
-    dob.getDate(&y, &m, &d);
-
-    QString rtrn;
-    QTextStream ts(&rtrn);
-
-    ts << username << ',' << password << ',' << email << ',' << contactNo << ',' << firstName << ',' << lastName << ',' << d << '/' << m << '/' <<y; //send data to textstream
-
-    for (int i : loanedBooks)
-    {
-        ts << ',' << i;
-    }
-
-    return rtrn;
 }
 
 LoanedBook::LoanedBook (int b, int m, QDate dd, LoanedBook *prev, bool r) //constructor
@@ -348,13 +325,13 @@ void LoanedBook::WriteToMemory() //writes to memory
     int y, m, d;
     dueDate.getDate(&y, &m, &d); //convert date to ints, so it can be written into the file
 
-    out << index << ',' << book << ',' << member << ',' << returned << ',' << d << '/' << m<< '/' << y << '\n';
+    out << book << ',' << member << ',' << returned << ',' << d << '/' << m<< '/' << y << '\n';
 
     loanFile.flush(); //flush buffer into file
     loanFile.close(); //close
 }
 int LoanedBook::GetIndex() { return index; } //getters
-bool LoanedBook::GetReturned() { return returned; }
+bool LoanedBook::IsReturned() { return returned; }
 void LoanedBook::SetReturned(bool r) { returned = r; } // setter for this bool, which is designed to be variable
 int LoanedBook::Count() { return totalLoans; }
 QDate LoanedBook::GetDueDate () { return dueDate; }
@@ -362,7 +339,7 @@ Book* LoanedBook::GetBook(Book *books) { return books->Next(book); }
 Member* LoanedBook::GetMember(Member *members) { return members->Next(member); }
 LoanedBook* LoanedBook::Prev() { return links[0]; }
 LoanedBook* LoanedBook::Next() { return links[1]; }
-LoanedBook* LoanedBook::Next(int index) { LoanedBook* rtrn = links[1]; for (int i = 0; i < index; i++) { rtrn = rtrn->links[1]; } return rtrn; }
+LoanedBook* LoanedBook::Next(int index) { LoanedBook* rtrn = links[1]; while (rtrn->index != index && rtrn->links[1] != nullptr) { rtrn = rtrn->links[1]; } return rtrn; }
 void LoanedBook::SetPrev(LoanedBook *p) { links[0] = p; }
 void LoanedBook::SetNext(LoanedBook *n) { links[1] = n; }
 bool LoanedBook::isOverDue () //checks if book is overdue
@@ -495,5 +472,140 @@ LoanedBook* LibSystems::InitialseLoans()
         return loans[0];
     }
     return nullptr;
+}
+
+void LibSystems::RewriteBooks(Book *books)
+{
+    QFile bookFile("databases/books.csv");
+    if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
+        return;
+    }
+    bookFile.flush();
+    bookFile.close();
+    books = books->Next();
+
+    while (books != nullptr)
+    {
+        books->WriteToMemory();
+        books = books->Next();
+    }
+}
+void LibSystems::RewriteMembers(Member *members)
+{
+    QFile memberFile("databases/members.csv");
+    if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
+        return;
+    }
+    memberFile.flush();
+    memberFile.close();
+
+    members = members->Next();
+
+    while (members != nullptr)
+    {
+        members->WriteToMemory();
+        members = members->Next();
+    }
+}
+void LibSystems::RewriteLoans(LoanedBook *loans)
+{
+    QFile loanfile("databases/loans.csv");
+    if (!loanfile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
+        return;
+    }
+    loanfile.flush();
+    loanfile.close();
+    loans = loans->Next();
+
+    while (loans != nullptr)
+    {
+        loans->WriteToMemory();
+        loans = loans->Next();
+    }
+}
+void LibSystems::RemoveLoan(int index)
+{
+    QFile loanFile("databases/loans.csv");
+    if (!loanFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
+        return;
+    }
+
+    QTextStream in(&loanFile);
+    std::vector<QString> loanVec;
+    int i = 0;
+
+    while (!in.atEnd())
+    {
+        if (index == i)
+        {
+            in.readLine();
+            index++;
+            continue;
+        }
+        loanVec.push_back(in.readLine());
+        i++;
+    }
+
+    loanFile.close();
+    if (!loanFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    {
+        LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
+        return;
+    }
+
+    QTextStream out(&loanFile);
+
+    for (QString l : loanVec)
+    {
+        out << l << "\n";
+    }
+
+    loanFile.flush();
+    loanFile.close();
+}
+void LibSystems::RemoveReservation(int index)
+{
+    QFile reservationsFile("databases/reservations.csv");
+    if (reservationsFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&reservationsFile);
+        std::vector<QString> reservationVec;
+        int i = 0;
+        while (!in.atEnd())
+        {
+            if (i != index)
+            {
+                reservationVec.push_back(in.readLine());
+            }
+            else
+            {
+                in.readLine();
+            }
+            i++;
+        }
+
+        reservationsFile.close();
+
+        if (reservationsFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream out(&reservationsFile);
+
+            for (QString s : reservationVec)
+            {
+                out << s << "\n";
+            }
+
+            reservationsFile.flush();
+            reservationsFile.close();
+        }
+    }
 }
 
