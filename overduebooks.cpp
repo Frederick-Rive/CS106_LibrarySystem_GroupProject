@@ -70,7 +70,7 @@ OverdueBooks::OverdueBooks(LibSystems::Book *b, LibSystems::Account *a, LibSyste
                 "QPushButton#cover { background-color: rgba(0,0,0,0); }"
             );
 
-    ui->overdueButton->setStyleSheet("QPushButton { background-color: #a86060; border-width: 1px; border-color: #e88484; }");
+    ui->overdueButton->setStyleSheet("QPushButton { background-color: #ff8f87; border-width: 1px; border-color: #e88484; }");
     ui->overdueButton->setText("Overdue");
 }
 OverdueBooks::OverdueBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystems::LoanedBook *l, int time, QWidget *parent) :
@@ -106,7 +106,7 @@ OverdueBooks::OverdueBooks(LibSystems::Book *b, LibSystems::Member *m, LibSystem
                 "QPushButton#cover { background-color: rgba(0,0,0,0); }"
             );
 
-    ui->overdueButton->setStyleSheet("QPushButton { background-color: #e88484; border-width: 1px; border-color: #a86060; }"
+    ui->overdueButton->setStyleSheet("QPushButton { background-color: #ff8f87; border-width: 1px; border-color: #a86060; }"
                                         "QPushButton::hover { background-color: #a86060; border-width: 1px; border-color: #e88484; }");
     ui->overdueButton->setText("Days left: " + QString::number(time));
     connect(ui->overdueButton, &QPushButton::clicked, this, &OverdueBooks::EmitMember);
@@ -143,7 +143,7 @@ OverdueBooks::OverdueBooks(LibSystems::Book *b, LibSystems::Account *a, LibSyste
                 "QPushButton#cover { background-color: rgba(0,0,0,0); }"
             );
 
-    ui->overdueButton->setStyleSheet("QPushButton { background-color: #e88484; border-width: 1px; border-color: #a86060; }");
+    ui->overdueButton->setStyleSheet("QPushButton { background-color: #ff8f87; border-width: 1px; border-color: #a86060; }");
     ui->overdueButton->setText("Days left: " + QString::number(time));
 }
 

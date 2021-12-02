@@ -43,9 +43,51 @@ ViewBook::ViewBook(LibSystems::Book *b, LibSystems::Account *u, QWidget *parent)
     }
     else
     {
-        ui->prebookButton->setText("Request");
+        ui->prebookButton->setText("Not Available");
         ui->availableLabel->setText("Not Available");
     }
+}
+
+ViewBook::ViewBook(LibSystems::Book *b, QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::ViewBook)
+{
+    ui->setupUi(this);
+
+    book = b;
+
+    QPixmap cover;
+    cover.load(book->GetCoverPath());
+    ui->coverLabel->setIcon(cover);
+    ui->coverLabel->setIconSize(ui->coverLabel->size());
+    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
+    dropShadow->setOffset(0, 4);
+    dropShadow->setColor(QColor::fromRgb(200, 200, 200));
+    dropShadow->setBlurRadius(20);
+    ui->coverLabel->setGraphicsEffect(dropShadow);
+
+    ui->titleLabel->setText(book->GetTitle()); ui->authorLabel->setText(book->GetAuthor()); ui->pgLabel->setText(QString::number(book->GetPageCount()) + " pages");
+    ui->genreLabel->setText(book->GetGenre()); ui->ddLabel->setText(QString::number(book->GetDeweyDecimal())); ui->isbnLabel->setText(book->GetISBN()); ui->blurbLabel->setText(book->GetBlurb());
+    ui->publishdateLabel->setText(QString::number(book->GetReleaseDate().day()) + "/" + QString::number(book->GetReleaseDate().month()) + "/" + QString::number(book->GetReleaseDate().year()));
+
+    this->setStyleSheet
+            (
+                "QLabel { border-width: 1px; border-style: solid; border-radius: 20px; border-color: #636363; padding-left: 5px; font: 11pt 'Roboto Regular'; }"
+                "QLabel#coverLabel { border-width: 0px; }"
+                "QLabel#blurbLabel { border-radius: 10px; }"
+                "QLabel#availableLabel { background-color: " + (book->IsAvailable() ? QString("#84e89f") : QString("#e88484")) + "  }"
+                "QPushButton { background-color: #5A98D1; border-radius: 20px; } QPushButton#coverLabel { background-color: rgba(0,0,0,0); }"
+                "QPushButton::hover { background-color: #38588c; } QPushButton#coverLabel::hover { background-color: rgba(0,0,0,0); }"
+             );
+    ui->labels->setStyleSheet("QLabel { border-width: 0px; color: #5A98D1; }");
+
+    if (!book->IsAvailable())
+    {
+        ui->availableLabel->setText("Unavailable");
+    }
+
+    ui->prebookButton->setText("Edit Book");
+    connect(ui->prebookButton, &QPushButton::clicked, this, &ViewBook::EditBook);
 }
 
 void ViewBook::ReserveBook()
@@ -82,4 +124,9 @@ void ViewBook::ReserveBook()
 ViewBook::~ViewBook()
 {
     delete ui;
+}
+
+void ViewBook::EditBook()
+{
+    emit EmitBook(book);
 }

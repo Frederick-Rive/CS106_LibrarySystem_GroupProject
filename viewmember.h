@@ -13,15 +13,21 @@ class ViewMember : public QWidget
     Q_OBJECT
 
 public:
-    ViewMember(LibSystems::Member *member, LibSystems::LoanedBook *loans, QWidget *parent = nullptr);
-    ViewMember(LibSystems::Account *member, LibSystems::LoanedBook *loans, QWidget *parent = nullptr);
+    ViewMember(LibSystems::Member *m, LibSystems::LoanedBook *loans, QWidget *parent);
+    ViewMember(LibSystems::Member *m, LibSystems::LoanedBook *loans, LibSystems::Account *u, QWidget *parent = nullptr);
+    ViewMember(LibSystems::Account *m, LibSystems::LoanedBook *loans, QWidget *parent = nullptr);
     ~ViewMember();
 
+signals:
+    void EmitMember(LibSystems::Member *member);
+
 private slots:
-    void on_pushButton_clicked();
+    void SendReminder();
+    void EditMember();
 
 private:
     Ui::ViewMember *ui;
+    LibSystems::Member *member;
 };
 
 #endif // VIEWMEMBER_H

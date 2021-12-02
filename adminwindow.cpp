@@ -9,6 +9,7 @@
 #include "customcheckoutbooks.h"
 #include "overduebooks.h"
 #include "viewmember.h"
+#include "viewbook.h"
 #include "returnbooks.h"
 #include "messageboxes.h"
 #include <librarysystems.h>
@@ -170,14 +171,11 @@ void MainWindow::DisplayBooks()
                 qGrid->addWidget(display, row, column); //put the display into the grid layout
                 column++;
 
-                connect(display, &BookDisplay::BookSignal, this, &MainWindow::EditBook); //call the edit book function when the display is clicked
+                connect(display, &BookDisplay::BookSignal, this, &MainWindow::DisplaySingleBook); //call the edit book function when the display is clicked
                 if (column == 6) //if there are 5 books on the current row, shift down 1 row
                 {
                     row += 1;
                     column = 1;
-                    //QWidget *spacer = new QWidget(activeElement);
-                    //spacer->setMinimumSize(75, 0);
-                    //qGrid->addWidget(spacer, row, 0);
                 }
             }
 
@@ -192,6 +190,22 @@ void MainWindow::DisplayBooks()
     }
 }
 
+void MainWindow::DisplaySingleBook(LibSystems::Book *book)
+{
+    delete activeElement;
+    delete qScroll;
+
+    ViewBook *view = new ViewBook(book, this);
+    activeElement = view;
+    qScroll = new QScrollArea(this);
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(970, 450);
+    qScroll->setMaximumSize(1150, 450);
+    ui->activeLayout->addWidget(qScroll, 1, 1);
+
+    connect(view, &ViewBook::EmitBook, this, &MainWindow::EditBook);
+}
+
 void MainWindow::on_addmember_button_clicked()
 {
     ClearActiveArea(); //destroys whatever the current centre widget is, along with the header
@@ -200,7 +214,7 @@ void MainWindow::on_addmember_button_clicked()
     auxWidget = new QLabel(this); //setup header
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("Add a new member");
-    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px; margin-left: 220px;");
+    auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 15px; margin-left: 220px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     LibSystems::Member *last = (LibSystems::Member::Count() > 0) ? members->Next(LibSystems::Member::Count() - 1) : members; //select the last member in the member linked list
@@ -308,7 +322,7 @@ void MainWindow::DisplayMembers()
 
                 memberInfo->setMinimumSize(1100, 35);
 
-                connect(memberInfo, &MemberInfo::SendMember, this, &MainWindow::EditMember); //allow user to edit member by clicking on their display
+                connect(memberInfo, &MemberInfo::SendMember, this, &MainWindow::DisplaySingleMember); //allow user to edit member by clicking on their display
 
                 qGrid->addWidget(memberInfo, i + 1, 0); //add display to active widget
             }
@@ -322,6 +336,23 @@ void MainWindow::DisplayMembers()
 
         ui->activeLayout->addWidget(qScroll, 1, 1); //add the active wiget to the main screen
     }
+}
+
+void MainWindow::DisplaySingleMember(LibSystems::Member *member)
+{
+    delete activeElement; //delete existing widget (doing this instead of calling the function so that the header remains)
+    delete qScroll;
+
+    ViewMember *viewM = new ViewMember(member, loans, &user, this);
+    activeElement = viewM; //make new viewmember widget
+    qScroll = new QScrollArea; //put a scroll area on the active widget to make it fit into the window
+    qScroll->setWidget(activeElement);
+    qScroll->setMinimumSize(1120, 450);
+    qScroll->setMaximumSize(1120, 450);
+
+    connect(viewM, &ViewMember::EmitMember, this, &MainWindow::EditMember);
+
+    ui->activeLayout->addWidget(qScroll, 1, 1); //add the active wiget to the main screen
 }
 
 void MainWindow::EditMember(LibSystems::Member *member)
@@ -357,22 +388,35 @@ void MainWindow::on_overduebooks_button_clicked()
 
     LibSystems::LoanedBook *thisLoan = loans->Next(); //declare loan pointer as the first non-head loan in the linked list
     QDate current = QDate::currentDate(); //get current date to compare with due dates
+    int overdueCount = 0;
 
     for (int i = 0; i < LibSystems::LoanedBook::Count(); i++) //for each loan in the loan linked list
     {
         if (thisLoan->isOverDue()) //if the loan is overdue
         {
             OverdueBooks *overdue = new OverdueBooks(thisLoan->GetBook(books), thisLoan->GetMember(members), thisLoan, activeElement); //make overdue book widget
-            connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplaySingleMember); //allow user to view member who has book
+            connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplayOverdueMember); //allow user to view member who has book
             vertLayout->addWidget(overdue, 0, Qt::AlignHCenter); //add widget to the active widget
+            overdueCount++;
         }
-        else if (thisLoan->GetDueDate().dayOfYear() <= current.dayOfYear() + 3 || thisLoan->GetDueDate().dayOfYear() < (365 - current.dayOfYear())) //if there is less than 3 days till the book is due
+        else if (thisLoan->GetDueDate().dayOfYear() <= current.dayOfYear() + 3 || thisLoan->GetDueDate().dayOfYear() < (365 - current.dayOfYear() + 3)) //if there is less than 3 days till the book is due
         {
             OverdueBooks *overdue = new OverdueBooks(thisLoan->GetBook(books), thisLoan->GetMember(members), thisLoan, thisLoan->GetDueDate().dayOfYear() - current.dayOfYear(), activeElement);
-            connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplaySingleMember); //same as above, but with a differernt constructor for the overdue books widget
+            connect(overdue, &OverdueBooks::DisplayMember, this, &MainWindow::DisplayOverdueMember); //same as above, but with a differernt constructor for the overdue books widget
             vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
+            overdueCount++;
         }
         thisLoan = thisLoan->Next();
+    }
+
+    if (overdueCount == 0)
+    {
+        QLabel *emptyLabel = new QLabel(activeElement); //declare label that says there are no overdue books if there are no overdue books
+        emptyLabel->setText("There are no overdue books at this time");
+        emptyLabel->setStyleSheet("color: #000000; font: 12pt 'Roboto Regular';");
+        emptyLabel->setMinimumWidth(1120);
+        emptyLabel->setAlignment(Qt::AlignCenter);
+        vertLayout->addWidget(emptyLabel, 0, Qt::AlignHCenter); //put that label in the vertical layout
     }
 
     qScroll->setWidget(activeElement); //put a scroll area on the active widget to make it fit into the window (there is no leak it is deleted)
@@ -382,7 +426,7 @@ void MainWindow::on_overduebooks_button_clicked()
     ui->activeLayout->addWidget(qScroll, 1, 1); //add the active wiget to the main screen
 }
 
-void MainWindow::DisplaySingleMember(LibSystems::Member *member)
+void MainWindow::DisplayOverdueMember(LibSystems::Member *member)
 {
     delete activeElement; //delete existing widget (doing this instead of calling the function so that the header remains)
     delete qScroll;
@@ -449,6 +493,14 @@ void MainWindow::on_checkoutbooks_button_clicked()
         index++;
     }
 
+    if (index == 0)
+    {
+        QLabel *emptyLabel = new QLabel(activeElement); //declare label that says there are no reservations if there are no reservations
+        emptyLabel->setText("There are no reservations at this time");
+        emptyLabel->setStyleSheet("color: #000000; font: 12pt 'Roboto Regular';");\
+        vertLayout->addWidget(emptyLabel, 0, Qt::AlignHCenter); //put that label in the vertical layout
+    }
+
     qScroll->setWidget(activeElement); //put a scroll area on the active widget to make it fit into the window
     qScroll->setMinimumSize(1120, 450);
     qScroll->setMaximumSize(1120, 450);
@@ -474,6 +526,7 @@ void MainWindow::on_returnbooks_button_clicked()
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement); //create vertical layout
+    int returnCount = 0;
 
     if (LibSystems::LoanedBook::Count() > 0) //only perform function if there are loans to display
     {
@@ -487,10 +540,21 @@ void MainWindow::on_returnbooks_button_clicked()
 
                 vertLayout->addWidget(rtrn, 0, Qt::AlignHCenter); //add to vertical layout
                 connect(rtrn, &ReturnBooks::Finish, this, &MainWindow::on_returnbooks_button_clicked); //remake this widget when the admin removes / unflags a loan
-            }
 
+                returnCount++;
+            }
             current = current->Next();
         }
+    }
+
+    if (returnCount == 0)
+    {
+        QLabel *emptyLabel = new QLabel(activeElement); //declare label that says there are no returns if there are no returns
+        emptyLabel->setText("There are no book returns to validate at this time");
+        emptyLabel->setStyleSheet("color: #000000; font: 12pt 'Roboto Regular';");
+        emptyLabel->setMinimumWidth(1120);
+        emptyLabel->setAlignment(Qt::AlignCenter);
+        vertLayout->addWidget(emptyLabel, 0, Qt::AlignHCenter); //put that label in the vertical layout
     }
 
     qScroll->setWidget(activeElement); //put a scroll area on the active widget to make it fit into the window

@@ -6,7 +6,7 @@
 int LibMessageBoxes::ErrorMessageBox(QString errorName, QString errorText) //maybe have some functions that make basic error messages? idk
 {
     QMessageBox *error = new QMessageBox;
-    error->setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
+    error->setStandardButtons(QMessageBox::Retry);
     error->setWindowTitle("Error");
     error->setText(errorName);
     error->setInformativeText(errorText);
@@ -28,4 +28,3 @@ int LibMessageBoxes::InformationMessageBox(QString infoName, QString infoText) /
     //info->setWindowFlag(Qt::FramelessWindowHint);
     return info->exec();
 }
-
