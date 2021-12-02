@@ -372,6 +372,9 @@
      <pointsize>20</pointsize>
     </font>
    </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
    <property name="text">
     <string>Save Book</string>
    </property>

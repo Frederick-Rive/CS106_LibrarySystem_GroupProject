@@ -34,6 +34,8 @@ private slots:
 
     void DisplayBooks();
 
+    void DisplaySingleBook(LibSystems::Book *book);
+
     void on_addmember_button_clicked();
 
     void on_viewmember_button_clicked();
@@ -53,6 +55,8 @@ private slots:
     void RemoveReservation(int index);
 
     void DisplaySingleMember(LibSystems::Member *member);
+
+    void DisplayOverdueMember(LibSystems::Member *member);
 
     void on_returnbooks_button_clicked();
 

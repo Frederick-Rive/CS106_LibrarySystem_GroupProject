@@ -123,6 +123,16 @@ void CustomCheckoutBooks::on_bookEdit_editingFinished()
             {
                 selectedBook = current;
 
+                for (int o = i; o < LibSystems::Book::Count(); o++) //ensures that there are no exact matches that are being ignored because of a casual match earlier in the list
+                {
+                    if (current->GetTitle().toLower() == search)
+                    {
+                        selectedBook = current;
+                        break;
+                    }
+                    current = current->Next();
+                }
+
                 ui->titleLabel->setText(selectedBook->GetTitle());
                 ui->genreLabel->setText(selectedBook->GetGenre());
                 ui->isbnLabel->setText(selectedBook->GetISBN());

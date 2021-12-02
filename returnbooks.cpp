@@ -107,8 +107,6 @@ void ReturnBooks::ReturnBook ()
 
     LibSystems::RewriteBooks(books);
 
-    qDebug().nospace() << "aa";
-
     for (int i = 0; i  < 5; i++)
     {
         if (thisMember->GetLoanedBook(i) == loan->GetIndex())
@@ -118,19 +116,13 @@ void ReturnBooks::ReturnBook ()
         }
     }
 
-    qDebug().nospace() << "bb";
-
     LibSystems::RewriteMembers(members);
 
     LibSystems::RemoveLoan(loan->GetIndex());
 
-    qDebug().nospace() << "cc";
-
     loan->Prev()->SetNext(loan->Next());
     if (loan->Next() != nullptr) { loan->Next()->SetPrev(loan->Prev()); }
     delete loan;
-
-    qDebug().nospace() << "dd";
 
     LibMessageBoxes::InformationMessageBox("Success", "Your book has been returned");
 

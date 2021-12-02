@@ -325,7 +325,7 @@ void LoanedBook::WriteToMemory() //writes to memory
     int y, m, d;
     dueDate.getDate(&y, &m, &d); //convert date to ints, so it can be written into the file
 
-    out << book << ',' << member << ',' << returned << ',' << d << '/' << m<< '/' << y << '\n';
+    out << book << ',' << member << ',' << returned << ',' << d << '/' << m << '/' << y << '\n';
 
     loanFile.flush(); //flush buffer into file
     loanFile.close(); //close
@@ -345,7 +345,7 @@ void LoanedBook::SetNext(LoanedBook *n) { links[1] = n; }
 bool LoanedBook::isOverDue () //checks if book is overdue
 {
     QDate current = QDate::currentDate();
-    return ((dueDate.month() >= current.month()) ? current.dayOfYear() >= dueDate.dayOfYear() : false); //accounts for books that are due early next year
+    return ((current.month() >= dueDate.month()) ? current.dayOfYear() >= dueDate.dayOfYear() : false);
 }
 
 Book* LibSystems::InitialiseBooks()
@@ -540,17 +540,16 @@ void LibSystems::RemoveLoan(int index)
 
     QTextStream in(&loanFile);
     std::vector<QString> loanVec;
-    int i = 0;
 
     while (!in.atEnd())
     {
-        if (index == i)
+        QString read = in.readLine();
+        QString first = read.at(0);
+        int i = first.toInt();
+        if (i != index)
         {
-            in.readLine();
-            index++;
-            continue;
+            loanVec.push_back(read);
         }
-        loanVec.push_back(in.readLine());
         i++;
     }
 

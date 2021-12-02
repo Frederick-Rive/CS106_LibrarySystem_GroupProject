@@ -13,14 +13,17 @@ class ViewBook : public QWidget
     Q_OBJECT
 
 public:
-    explicit ViewBook(LibSystems::Book *book, LibSystems::Account *u, QWidget *parent = nullptr);
+    ViewBook(LibSystems::Book *book, LibSystems::Account *u, QWidget *parent = nullptr);
+    ViewBook(LibSystems::Book *book, QWidget *parent = nullptr);
     ~ViewBook();
 
 signals:
     void Finish();
+    void EmitBook(LibSystems::Book *book);
 
 private slots:
     void ReserveBook();
+    void EditBook();
 
 private:
     Ui::ViewBook *ui;

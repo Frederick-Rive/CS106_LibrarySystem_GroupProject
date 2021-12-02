@@ -183,6 +183,7 @@ void MemberWindow::on_overdue_button_clicked()
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
 
+    QDate current = QDate::currentDate();
     for (int i = 0; i < 5; i++)
     {
         if (user->GetLoanedBook(i) >= 0)
@@ -190,6 +191,11 @@ void MemberWindow::on_overdue_button_clicked()
             if (loans->Next(user->GetLoanedBook(i))->isOverDue())
             {
                 OverdueBooks *overdue = new OverdueBooks(loans->Next(user->GetLoanedBook(i))->GetBook(books), user, loans->Next(user->GetLoanedBook(i)), activeElement);
+                vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
+            }
+            else if (loans->Next(user->GetLoanedBook(i))->GetDueDate().dayOfYear() <= current.dayOfYear() || loans->Next(user->GetLoanedBook(i))->GetDueDate().dayOfYear() < (365 - current.dayOfYear() + 3))
+            {
+                OverdueBooks *overdue = new OverdueBooks(loans->Next(user->GetLoanedBook(i))->GetBook(books), user, loans->Next(user->GetLoanedBook(i)), loans->Next(user->GetLoanedBook(i))->GetDueDate().dayOfYear() - current.dayOfYear(), activeElement);
                 vertLayout->addWidget(overdue, 0, Qt::AlignHCenter);
             }
         }
@@ -207,22 +213,16 @@ void MemberWindow::on_account_Button_clicked()
     ClearActiveArea();
     SetActiveButton(ui->account_Button);
 
-    qDebug().nospace() << "aa";
-
     QLabel *lab = new QLabel(auxWidget);
     lab->setText("My Account");
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 10px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
-
-    qDebug().nospace() << "bb";
 
     activeElement = new ViewMember(user, loans, this);
     qScroll = new QScrollArea;
     qScroll->setWidget(activeElement);
     qScroll->setMinimumSize(1120, 450);
     qScroll->setMaximumSize(1120, 450);
-
-    qDebug().nospace() << "dd";
 
     ui->activeLayout->addWidget(qScroll, 1, 1);
 }
@@ -238,8 +238,6 @@ void MemberWindow::on_returnButton_clicked()
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
     QVBoxLayout *vertLayout = new QVBoxLayout(activeElement);
-
-    qDebug().nospace() << "aa";
 
     for (int i = 0; i < 5; i++)
     {
