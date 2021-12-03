@@ -15,7 +15,7 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
 
     acc = new LibSystems::Account;
 
-    if (QDir("databases").exists())
+    if (QDir("storage").exists())
     {
         books->SetNext((b != nullptr) ? b : LibSystems::InitialiseBooks()); if (LibSystems::Book::Count() > 0) { books->Next()->SetPrev(books); }
         members->SetNext((m != nullptr) ? m : LibSystems::InitialiseMembers()); if (LibSystems::Member::Count() > 0) { members->Next()->SetPrev(members); }
@@ -23,12 +23,42 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
     }
     else
     {
-        QDir().mkdir("databases");
-        QDir().mkdir("databases/covers");
+        QDir().mkdir("storage");
+        QDir().mkdir("storage/covers");
 
-        QFile books("databases/books.csv"); QFile members("databases/members.csv"); QFile loans("databases/loans.csv"); QFile reserves("databases/reservations.csv");
+        QFile books("storage/books.csv"); QFile members("storage/members.csv"); QFile loans("storage/loans.csv"); QFile reserves("storage/reservations.csv");
         books.open(QIODevice::WriteOnly);members.open(QIODevice::WriteOnly);loans.open(QIODevice::WriteOnly);reserves.open(QIODevice::WriteOnly);
         books.close();members.close();loans.close();reserves.close();
+    }
+
+    LibSystems::LoanedBook *thisLoan = loans->Next();
+    QDate current = QDate::currentDate();
+
+    for (int i = 0; i < LibSystems::LoanedBook::Count(); i++)
+    {
+        if (thisLoan->GetDueDate().dayOfYear() == current.dayOfYear())
+        {
+            QFile overdueFile("overdue.txt");
+            if (overdueFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                QTextStream ts(&overdueFile);
+                ts << current.toString(Qt::DateFormat::ISODate) << ": Book '" << thisLoan->GetBook(books)->GetTitle() << "' (ISBN " << thisLoan->GetBook(books)->GetISBN() << ") is overdue\n";
+                overdueFile.flush();
+                overdueFile.close();
+            }
+        }
+        else if (thisLoan->GetDueDate().dayOfYear() < current.dayOfYear() + 3 && thisLoan->GetDueDate().dayOfYear() > current.dayOfYear())
+        {
+            QFile overdueFile("due-date.txt");
+            if (overdueFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                QTextStream ts(&overdueFile);
+                ts << current.toString(Qt::DateFormat::ISODate) << ": Book '" << thisLoan->GetBook(books)->GetTitle() << "' (ISBN " << thisLoan->GetBook(books)->GetISBN() << ") is "
+                    <<  thisLoan->GetDueDate().dayOfYear() - current.dayOfYear() << " days away from being overdue\n";
+                overdueFile.flush();
+                overdueFile.close();
+            }
+        }
     }
 
     this->setStyleSheet

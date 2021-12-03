@@ -97,9 +97,9 @@ Book::Book() //default constructor. Use only for the head of the linked list
     links[0] = nullptr;
     links[1] = nullptr;
 }
-void Book::WriteToMemory () //writes the book into the database. please be careful not to duplicate books in the database
+void Book::WriteToMemory () //writes the book into the storage. please be careful not to duplicate books in the storage
 {
-    QFile bookFile("databases/books.csv");
+    QFile bookFile("storage/books.csv");
 
     if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; } // !!! add a warning message box !!!
 
@@ -211,7 +211,7 @@ Member::~Member()
 }
 void Member::WriteToMemory () //write to memory
 {
-    QFile memberFile("databases/members.csv");
+    QFile memberFile("storage/members.csv");
 
     if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; } // !!! warning message box !!!
 
@@ -316,7 +316,7 @@ LoanedBook::~LoanedBook()
 }
 void LoanedBook::WriteToMemory() //writes to memory
 {
-    QFile loanFile("databases/loans.csv");
+    QFile loanFile("storage/loans.csv");
 
     if (!loanFile.open(QIODevice::WriteOnly | QIODevice::Append)) { return; }
 
@@ -350,7 +350,7 @@ bool LoanedBook::isOverDue () //checks if book is overdue
 
 Book* LibSystems::InitialiseBooks()
 {
-    QFile bookFile ("databases/books.csv");
+    QFile bookFile ("storage/books.csv");
 
     std::vector<Book*> bookVec;
 
@@ -392,7 +392,7 @@ Book* LibSystems::InitialiseBooks()
 
 Member* LibSystems::InitialiseMembers()
 {
-    QFile memberFile ("databases/members.csv");
+    QFile memberFile ("storage/members.csv");
 
     std::vector<Member*> members;
 
@@ -436,7 +436,7 @@ Member* LibSystems::InitialiseMembers()
 
 LoanedBook* LibSystems::InitialseLoans()
 {
-    QFile loanFile ("databases/loans.csv");
+    QFile loanFile ("storage/loans.csv");
 
     std::vector<LoanedBook*> loans;
 
@@ -476,7 +476,7 @@ LoanedBook* LibSystems::InitialseLoans()
 
 void LibSystems::RewriteBooks(Book *books)
 {
-    QFile bookFile("databases/books.csv");
+    QFile bookFile("storage/books.csv");
     if (!bookFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
@@ -494,7 +494,7 @@ void LibSystems::RewriteBooks(Book *books)
 }
 void LibSystems::RewriteMembers(Member *members)
 {
-    QFile memberFile("databases/members.csv");
+    QFile memberFile("storage/members.csv");
     if (!memberFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
@@ -513,7 +513,7 @@ void LibSystems::RewriteMembers(Member *members)
 }
 void LibSystems::RewriteLoans(LoanedBook *loans)
 {
-    QFile loanfile("databases/loans.csv");
+    QFile loanfile("storage/loans.csv");
     if (!loanfile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         LibMessageBoxes::ErrorMessageBox("Error", "There was an error writing these changes");
@@ -531,7 +531,7 @@ void LibSystems::RewriteLoans(LoanedBook *loans)
 }
 void LibSystems::RemoveLoan(int index)
 {
-    QFile loanFile("databases/loans.csv");
+    QFile loanFile("storage/loans.csv");
     if (!loanFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         LibMessageBoxes::ErrorMessageBox("Error", "There was an error saving this data");
@@ -572,7 +572,7 @@ void LibSystems::RemoveLoan(int index)
 }
 void LibSystems::RemoveReservation(int index)
 {
-    QFile reservationsFile("databases/reservations.csv");
+    QFile reservationsFile("storage/reservations.csv");
     if (reservationsFile.open(QIODevice::ReadOnly))
     {
         QTextStream in(&reservationsFile);

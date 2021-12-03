@@ -77,7 +77,7 @@ void AddBook::on_saveButton_clicked() //save book
 
         QPixmap cover;
         cover.load(ui->coverpathEntry->text());
-        QString filePath = QString("databases/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png");
+        QString filePath = QString("storage/covers/") + QString::number(LibSystems::Book::Count()) + QString(".png");
         cover.save(filePath); //save book cover to a new, more accessible position.
 
         LibSystems::Book *newBook = new LibSystems::Book(ui->isbnEdit->text(), ui->titleEdit->text(), ui->authorEdit->text(), ui->genreBox->currentText(), filePath, ui->blurbEdit->toPlainText(),
@@ -96,7 +96,7 @@ void AddBook::on_saveButton_clicked() //save book
         {
             QPixmap cover;
             cover.load(ui->coverpathEntry->text());
-            ui->coverpathEntry->setText(QString("databases/covers/") + QString::number(edit->GetIndex()) + QString(".png"));
+            ui->coverpathEntry->setText(QString("storage/covers/") + QString::number(edit->GetIndex()) + QString(".png"));
             cover.save(ui->coverpathEntry->text());//save book cover to a new, more accessible position.=
         }
 
