@@ -103,6 +103,16 @@ void ReturnBooks::ReturnBook ()
     LibSystems::Book *thisBook = loan->GetBook(books);
     LibSystems::Member *thisMember = loan->GetMember(members);
 
+    QFile returnFile("returns.txt");
+    if (returnFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QDate current = QDate::currentDate();
+        QTextStream ts(&returnFile);
+        ts << current.toString(Qt::DateFormat::ISODate) << ": Member " << thisMember->GetFullName() << " has returned book " << thisBook->GetTitle() << "\n";
+        returnFile.flush();
+        returnFile.close();
+    }
+
     thisBook->SetAvailable(true);
 
     LibSystems::RewriteBooks(books);

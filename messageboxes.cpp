@@ -11,8 +11,6 @@ int LibMessageBoxes::ErrorMessageBox(QString errorName, QString errorText) //may
     error->setText(errorName);
     error->setInformativeText(errorText);
     error->setModal(true);
-    error->setMinimumSize(100, 80);
-    //error->setWindowFlag(Qt::FramelessWindowHint);
     return error->exec();
 }
 
@@ -24,7 +22,5 @@ int LibMessageBoxes::InformationMessageBox(QString infoName, QString infoText) /
     info->setText(infoName);
     info->setInformativeText(infoText);
     info->setModal(true);
-    info->setMinimumSize(100, 80);
-    //info->setWindowFlag(Qt::FramelessWindowHint);
     return info->exec();
 }

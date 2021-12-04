@@ -92,7 +92,7 @@ ViewBook::ViewBook(LibSystems::Book *b, QWidget *parent) :
 
 void ViewBook::ReserveBook()
 {
-    QFile reservations("databases/reservations.csv");
+    QFile reservations("storage/reservations.csv");
 
     if (!reservations.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
     {

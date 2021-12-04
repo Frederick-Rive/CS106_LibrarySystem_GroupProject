@@ -451,7 +451,7 @@ void MainWindow::on_checkoutbooks_button_clicked()
     auxWidget->setStyleSheet("font: 24pt 'Roboto Regular'; color: #5A98D1; margin-top: 15px;");
     ui->activeLayout->addWidget(auxWidget, 0, 1);
 
-    QFile reservationsFile("databases/reservations.csv"); //declare file
+    QFile reservationsFile("storage/reservations.csv"); //declare file
     if (!reservationsFile.open(QIODevice::ReadOnly | QIODevice::Text)) //if the program fails to open the file in read mode
     {
         int e = LibMessageBoxes::ErrorMessageBox("Error", "Couldn't open file"); //send error message
