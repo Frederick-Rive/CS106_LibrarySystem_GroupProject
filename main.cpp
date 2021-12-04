@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
                 "QScrollBar { background-color: #FFFFFF;  width: 5px; }"
                 "QScrollBar::handle { background: #5A98D1; border: 0px; }"
                 "QScrollArea { border: 1px; border-style: outset; }"
-                "QMessageBox QPushButton { background-color: #5A98D1; padding: 10px 30px; }"
+                "QMessageBox QLabel { font: 12pt 'Roboto Regular'; }"
+                "QMessageBox QPushButton { background-color: #5A98D1; padding: 5px 10px; font: 12pt 'Roboto Regular'; border-radius: 5px; }"
             );
 
     login l;

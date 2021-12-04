@@ -25,10 +25,14 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
     {
         QDir().mkdir("storage");
         QDir().mkdir("storage/covers");
+        QDir().mkdir("logs");
 
         QFile books("storage/books.csv"); QFile members("storage/members.csv"); QFile loans("storage/loans.csv"); QFile reserves("storage/reservations.csv");
         books.open(QIODevice::WriteOnly);members.open(QIODevice::WriteOnly);loans.open(QIODevice::WriteOnly);reserves.open(QIODevice::WriteOnly);
         books.close();members.close();loans.close();reserves.close();
+        QFile overdue("logs/overdue.txt"); QFile duedate("logs/duedate.txt"); QFile returns("logs/returns.txt");
+        overdue.open(QIODevice::WriteOnly);duedate.open(QIODevice::WriteOnly);returns.open(QIODevice::WriteOnly);
+        overdue.close();duedate.close();returns.close();
     }
 
     LibSystems::LoanedBook *thisLoan = loans->Next();
@@ -36,9 +40,10 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
 
     for (int i = 0; i < LibSystems::LoanedBook::Count(); i++)
     {
+        LibMessageBoxes::InformationMessageBox(thisLoan->GetDueDate().toString(), current.toString());
         if (thisLoan->GetDueDate().dayOfYear() == current.dayOfYear())
         {
-            QFile overdueFile("overdue.txt");
+            QFile overdueFile("logs/overdue.txt");
             if (overdueFile.open(QIODevice::WriteOnly | QIODevice::Text))
             {
                 QTextStream ts(&overdueFile);
@@ -49,7 +54,7 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
         }
         else if (thisLoan->GetDueDate().dayOfYear() < current.dayOfYear() + 3 && thisLoan->GetDueDate().dayOfYear() > current.dayOfYear())
         {
-            QFile overdueFile("due-date.txt");
+            QFile overdueFile("logs/duedate.txt");
             if (overdueFile.open(QIODevice::WriteOnly | QIODevice::Text))
             {
                 QTextStream ts(&overdueFile);
@@ -59,6 +64,7 @@ login::login(QWidget *parent, LibSystems::Book *b, LibSystems::Member *m, LibSys
                 overdueFile.close();
             }
         }
+        thisLoan = thisLoan->Next();
     }
 
     this->setStyleSheet

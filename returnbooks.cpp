@@ -44,7 +44,8 @@ ReturnBooks::ReturnBooks(LibSystems::LoanedBook *l, LibSystems::Book *b, LibSyst
 
     QPushButton *notReturned = new QPushButton(this);
     notReturned->setText("Not Returned");
-    notReturned->setStyleSheet("QPushButton { background-color: #a86060; border-width: 1px; border-color: #e88484; }");
+    notReturned->setStyleSheet("QPushButton { background-color: #a86060; border-width: 1px; border-color: #e88484; } "
+                               "QPushButton::hover { background-color: #a86060; border-width: 1px; border-color: #e88484; }");
     notReturned->setMinimumSize(150, 30);
     ui->outputLayout->addWidget(notReturned);
 
@@ -103,7 +104,7 @@ void ReturnBooks::ReturnBook ()
     LibSystems::Book *thisBook = loan->GetBook(books);
     LibSystems::Member *thisMember = loan->GetMember(members);
 
-    QFile returnFile("returns.txt");
+    QFile returnFile("logs/returns.txt");
     if (returnFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QDate current = QDate::currentDate();

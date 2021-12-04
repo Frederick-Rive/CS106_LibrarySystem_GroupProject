@@ -17,10 +17,12 @@ CustomCheckoutBooks::CustomCheckoutBooks(LibSystems::Book *b, LibSystems::Member
 
     this->setStyleSheet //style sheets
             (
-                "font: 12pt 'Roboto Regular';"
+                "QLabel { font: 12pt 'Roboto Regular'; }"
+                "QLabel#bookTitle { font: 18pt 'Roboto Regular'; }"
+                "QLabel#memberTitle { font: 18pt 'Roboto Regular'; }"
             );
 
-    ui->pushButton->setStyleSheet("QPushButton {background-color: #5A98D1; } QPushButton::hover { background-color: #38588c; }");
+    ui->pushButton->setStyleSheet("QPushButton { background-color: #5A98D1; } QPushButton::hover { background-color: #38588c; }");
 }
 
 CustomCheckoutBooks::~CustomCheckoutBooks() //destructors
