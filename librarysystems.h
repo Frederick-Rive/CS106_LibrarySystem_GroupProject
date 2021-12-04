@@ -75,7 +75,7 @@ public:
     virtual QDate GetDOB();
 };
 
-static Account Admin("username", "password"); //declaration of Admin account
+static Account Admin("wclLibrarian", "rndmhash"); //declaration of Admin account
 
 class Member : public Account //member class is a child of the account class
 {

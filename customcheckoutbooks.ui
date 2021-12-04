@@ -55,7 +55,7 @@
     <string>Confirm</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="memberTitle">
    <property name="geometry">
     <rect>
      <x>460</x>
@@ -71,7 +71,7 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="bookTitle">
    <property name="geometry">
     <rect>
      <x>80</x>

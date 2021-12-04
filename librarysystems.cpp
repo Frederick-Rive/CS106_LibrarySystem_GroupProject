@@ -345,7 +345,7 @@ void LoanedBook::SetNext(LoanedBook *n) { links[1] = n; }
 bool LoanedBook::isOverDue () //checks if book is overdue
 {
     QDate current = QDate::currentDate();
-    return ((current.month() >= dueDate.month()) ? current.dayOfYear() >= dueDate.dayOfYear() : false);
+    return ((current.month() >= dueDate.month()) ? current.dayOfYear() > dueDate.dayOfYear() : false);
 }
 
 Book* LibSystems::InitialiseBooks()
